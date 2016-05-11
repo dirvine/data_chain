@@ -88,6 +88,31 @@ pub enum DataIdentifier {
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
+pub struct NodeDataBlock {
+    identifier: DataIdentifier,
+    proof: (PublicKey, Signature),
+}
+
+impl NodeDataBlock {
+    pub fn new(&mut self,
+               pub_key: &PublicKey,
+               secret_key: &SecretKey,
+               data_identifier: DataIdentifier)
+               -> Result<NodeDataBlock, Error> {
+        let signature =
+            crypto::sign::sign_detached(&try!(maidsafe_utilities::serialisation::serialise(&self.identifier))[..],
+                                  secret_key);
+
+        Ok(NodeDataBlock {
+            identifier: data_identifier,
+            proof: (pub_key.clone(), signature),
+        })
+
+    }
+}
+
+
+#[derive(RustcEncodable, RustcDecodable)]
 pub struct DataBlock {
     identifier: DataIdentifier,
     proof: HashMap<PublicKey, Signature>,
