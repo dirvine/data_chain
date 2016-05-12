@@ -281,6 +281,8 @@
 <span id="238">238</span>
 <span id="239">239</span>
 <span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -308,29 +310,31 @@
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
 <span class='doccomment'>//! #data_blocks</span>
-<span class='doccomment'>//! Data blocks can be chained to provide verifiable assuredness that they contain network valid i</span>
+<span class='doccomment'>//! Data blocks can be chained to provide verifiable assuredness that they contain network valid</span>
 <span class='doccomment'>//! data and not injected.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! This crate assumes these objects below are relevent to `close_groups` this allows inegrity</span>
-<span class='doccomment'>//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this agroup</span>
-<span class='doccomment'>//! All groups since the group/network started.</span>
+<span class='doccomment'>//! This crate assumes these objects below are relevent to `close_groups` this allows integrity</span>
+<span class='doccomment'>//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this group</span>
+<span class='doccomment'>//! &amp; all groups since the group/network started.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! These chains allow nodes to become `archive nodes` on a network and also ensure data intergrity</span>
+<span class='doccomment'>//! These chains allow nodes to become `archive nodes` on a network and also ensure data integrity</span>
 <span class='doccomment'>//! AS LONG AS the data identifiers hold a validating element such as hash of the data itself.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Another purpose of these chanis is to allow network restarts with valid data. Obviously this</span>
+<span class='doccomment'>//! Another purpose of these chains is to allow network restarts with valid data. Obviously this</span>
 <span class='doccomment'>//! means the network nodes will have to tr and restart as the last known ID they had. Vaults</span>
 <span class='doccomment'>//! will require to accept or reject such nodes in normal operation. On network restart though</span>
 <span class='doccomment'>//! these nodes may be allowed to join a group if they can present a `DataChain` that appears</span>
 <span class='doccomment'>//! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.</span>
 <span class='doccomment'>//! additional nodes will also join this group and hopefully confirm the data integrity is agreed</span>
-<span class='doccomment'>//! as the last `DataBlock` should contain a majorit of existing group memebers that have signed.</span>
+<span class='doccomment'>//! as the last `DataBlock` should contain a majorit of existing group members that have signed.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! Nodes do no require to become `Archive nodes` if they have limied bandwidth or disk space, but</span>
+<span class='doccomment'>//! Nodes do no require to become `Archive nodes` if they have limited bandwidth or disk space, but</span>
 <span class='doccomment'>//! they are still valuable as transient nodes which may deliver data stored whle they are in the</span>
 <span class='doccomment'>//! group. Such nodes may only be involved in consensus and routing stability messages, returning</span>
 <span class='doccomment'>//! a `Nack` to any `Get` request  due to upstream bandwidth limitations.</span>
-
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Several enhancement can be made to this scheme with a much deper investigation into any</span>
+<span class='doccomment'>//! attack vectors. Such as</span>
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span>
            <span class='string'>&quot;https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png&quot;</span>,
        <span class='ident'>html_favicon_url</span> <span class='op'>=</span> <span class='string'>&quot;http://maidsafe.net/img/favicon.ico&quot;</span>,
@@ -430,9 +434,9 @@
 }
 
 <span class='doccomment'>/// used to validate chain `linksi`.</span>
-<span class='doccomment'>/// On a network churn event the latest `DataBlock` is copied ofrm the chain and sent</span>
-<span class='doccomment'>/// To new node. The `lost Nodes` signature is removed. The new node recieves this - signs a</span>
-<span class='doccomment'>/// `NodeBlock  for this `DataIDentifier` and returns it to the `archive node`</span>
+<span class='doccomment'>/// On a network churn event the latest `DataBlock` is copied from the chain and sent</span>
+<span class='doccomment'>/// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a</span>
+<span class='doccomment'>/// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>DataBlock</span> {
     <span class='ident'>identifier</span>: <span class='ident'>DataIdentifier</span>,
@@ -442,8 +446,8 @@
 
 
 <span class='doccomment'>/// Created by holder of chain, can be passed to others as proof of data held.</span>
-<span class='doccomment'>/// This object is verifyable if :</span>
-<span class='doccomment'>/// The last validation constains the majority of current close group</span>
+<span class='doccomment'>/// This object is verifiable if :</span>
+<span class='doccomment'>/// The last validation contains the majority of current close group</span>
 <span class='doccomment'>/// OR on network restart the nodes all must try and restart on</span>
 <span class='doccomment'>/// previous names. They can continue any validation of the holder of a chain.</span>
 <span class='doccomment'>/// This requires nodes to always restart as last ID and if there was no restart they are rejected</span>

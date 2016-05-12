@@ -46,31 +46,34 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-240' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-242' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data_blocks' class='section-header'><a href='#data_blocks'>data_blocks</a></h1>
-<p>Data blocks can be chained to provide verifiable assuredness that they contain network valid i
+<p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
 data and not injected.</p>
 
-<p>This crate assumes these objects below are relevent to <code>close_groups</code> this allows inegrity
-check of the <code>DataChain</code> in so far as it will hold valid data identifiers agreed by this agroup
-All groups since the group/network started.</p>
+<p>This crate assumes these objects below are relevent to <code>close_groups</code> this allows integrity
+check of the <code>DataChain</code> in so far as it will hold valid data identifiers agreed by this group
+&amp; all groups since the group/network started.</p>
 
-<p>These chains allow nodes to become <code>archive nodes</code> on a network and also ensure data intergrity
+<p>These chains allow nodes to become <code>archive nodes</code> on a network and also ensure data integrity
 AS LONG AS the data identifiers hold a validating element such as hash of the data itself.</p>
 
-<p>Another purpose of these chanis is to allow network restarts with valid data. Obviously this
+<p>Another purpose of these chains is to allow network restarts with valid data. Obviously this
 means the network nodes will have to tr and restart as the last known ID they had. Vaults
 will require to accept or reject such nodes in normal operation. On network restart though
 these nodes may be allowed to join a group if they can present a <code>DataChain</code> that appears
 healthy, even if there is not yet enough consensus to <code>trust</code> the data iself just yet.
 additional nodes will also join this group and hopefully confirm the data integrity is agreed
-as the last <code>DataBlock</code> should contain a majorit of existing group memebers that have signed.</p>
+as the last <code>DataBlock</code> should contain a majorit of existing group members that have signed.</p>
 
-<p>Nodes do no require to become <code>Archive nodes</code> if they have limied bandwidth or disk space, but
+<p>Nodes do no require to become <code>Archive nodes</code> if they have limited bandwidth or disk space, but
 they are still valuable as transient nodes which may deliver data stored whle they are in the
 group. Such nodes may only be involved in consensus and routing stability messages, returning
 a <code>Nack</code> to any <code>Get</code> request  due to upstream bandwidth limitations.</p>
+
+<p>Several enhancement can be made to this scheme with a much deper investigation into any
+attack vectors. Such as</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
@@ -78,9 +81,9 @@ a <code>Nack</code> to any <code>Get</code> request  due to upstream bandwidth l
                                title='data_blocks::DataBlock'>DataBlock</a></td>
                         <td class='docblock short'>
                              <p>used to validate chain <code>linksi</code>.
-On a network churn event the latest <code>DataBlock</code> is copied ofrm the chain and sent
-To new node. The <code>lost Nodes</code> signature is removed. The new node recieves this - signs a
-<code>NodeBlock for this</code>DataIDentifier<code>and returns it to the</code>archive node`</p>
+On a network churn event the latest <code>DataBlock</code> is copied from the chain and sent
+To new node. The <code>lost Nodes</code> signature is removed. The new node receives this - signs a
+<code>NodeBlock for this</code>DataIdentifier<code>and returns it to the</code>archive node`</p>
                         </td>
                     </tr>
                 
@@ -89,8 +92,8 @@ To new node. The <code>lost Nodes</code> signature is removed. The new node reci
                                title='data_blocks::DataChain'>DataChain</a></td>
                         <td class='docblock short'>
                              <p>Created by holder of chain, can be passed to others as proof of data held.
-This object is verifyable if :
-The last validation constains the majority of current close group
+This object is verifiable if :
+The last validation contains the majority of current close group
 OR on network restart the nodes all must try and restart on
 previous names. They can continue any validation of the holder of a chain.
 This requires nodes to always restart as last ID and if there was no restart they are rejected
