@@ -88,7 +88,7 @@ quick_error! {
    #[allow(missing_docs)]
      Majority {
             description("Failed to validate chain")
-            display("Data chain error")
+            display("Data chain majority error")
         }
 /// Wrapper for a `maidsafe_utilities::serialisation::SerialisationError`
         SerialisationError(err: serialisation::SerialisationError) {
@@ -131,7 +131,16 @@ impl NodeDataBlock {
     }
 }
 
-
+/// Create by holder of chain, can be passed to others as proof of data held.
+/// This object is verifyable if :
+/// The last validation constains the majority of current close group
+/// OR on network restart the nodes all must try and restart on
+/// previous names. They can continue any validation of the holder of a chain.
+/// This requires nodes to always restart as last ID and if there was no restart they are rejected
+/// at vault level.
+/// If there was a restart then the nodes should validate and continue.
+/// N:B this means all nodes can use a named directory for data_store and clear if they restart
+/// as a new id.
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataBlock {
     identifier: DataIdentifier,
@@ -186,6 +195,9 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 
 
 #[cfg(test)]
+use super::*;
+use crypto::sign::SecretKey;
+i
 mod tests {
     #[test]
     fn it_works() {}
