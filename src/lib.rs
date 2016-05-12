@@ -138,7 +138,7 @@ impl DataChain {
     pub fn validate(&self) -> Result<(), Error> {
         //     self.chain
         //         .iter()
-        //         .skip(1)
+        //         .enumerate()
         //         .foreach(|&x| {
         //             x.proof
         //              .iter()
