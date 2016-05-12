@@ -26,6 +26,26 @@
 //! #data_blocks
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid i
 //! data and not injected.
+//!
+//! This crate assumes these objects below are relevent to `close_groups` this allows inegrity
+//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this agroup
+//! All groups since the group/network started.
+//!
+//! These chains allow nodes to become `archive nodes` on a network and also ensure data intergrity
+//! AS LONG AS the data identifiers hold a validating element such as hash of the data itself.
+//!
+//! Another purpose of these chanis is to allow network restarts with valid data. Obviously this
+//! means the network nodes will have to tr and restart as the last known ID they had. Vaults
+//! will require to accept or reject such nodes in normal operation. On network restart though
+//! these nodes may be allowed to join a group if they can present a `DataChain` that appears
+//! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.
+//! additional nodes will also join this group and hopefully confirm the data integrity is agreed
+//! as the last `DataBlock` should contain a majorit of existing group memebers that have signed.
+//!
+//! Nodes do no require to become `Archive nodes` if they have limied bandwidth or disk space, but
+//! they are still valuable as transient nodes which may deliver data stored whle they are in the
+//! group. Such nodes may only be involved in consensus and routing stability messages, returning
+//! a `Nack` to any `Get` request  due to upstream bandwidth limitations.
 
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
@@ -100,13 +120,14 @@ quick_error! {
 }
 }
 
-
+// dummy data identifiers for this crate
 #[derive(RustcEncodable, RustcDecodable)]
 pub enum DataIdentifier {
     Type1(u64),
     Type2(u64),
 }
 
+/// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct NodeDataBlock {
     identifier: DataIdentifier,
@@ -131,7 +152,16 @@ impl NodeDataBlock {
     }
 }
 
-/// Create by holder of chain, can be passed to others as proof of data held.
+/// used to validate chain `linksi`.
+#[derive(RustcEncodable, RustcDecodable)]
+pub struct DataBlock {
+    identifier: DataIdentifier,
+    proof: HashMap<PublicKey, Signature>,
+    received_order: u64,
+}
+
+
+/// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifyable if :
 /// The last validation constains the majority of current close group
 /// OR on network restart the nodes all must try and restart on
@@ -140,14 +170,7 @@ impl NodeDataBlock {
 /// at vault level.
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data_store and clear if they restart
-/// as a new id.
-#[derive(RustcEncodable, RustcDecodable)]
-pub struct DataBlock {
-    identifier: DataIdentifier,
-    proof: HashMap<PublicKey, Signature>,
-    received_order: u64,
-}
-
+/// as a new id. This allows cleanup of old data_cache directories.
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<DataBlock>,
@@ -197,7 +220,6 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 #[cfg(test)]
 use super::*;
 use crypto::sign::SecretKey;
-i
 mod tests {
     #[test]
     fn it_works() {}

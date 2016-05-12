@@ -4,7 +4,7 @@ name = "data_blocks"
 version = "0.1.0"
 
 [dependencies]
-itertools = ~"0.4.13"
+itertools = "~0.4.13"
 maidsafe_utilities = "~0.5.4"
 quick-error = "~1.0.0"
 rustc-serialize = "~0.3.19"
