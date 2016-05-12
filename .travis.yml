@@ -11,8 +11,7 @@ addons:
       - libcurl4-openssl-dev
       - libelf-dev
       - libdw-dev
-      - binutils-dev 
-      - libsodium-dev
+      - binutils-dev
 
 # run builds for all the trains (and more)
 rust:
@@ -25,6 +24,14 @@ before_script:
   - |
       pip install 'travis-cargo<0.2' --user &&
       export PATH=$HOME/.local/bin:$PATH
+cache:
+  cargo: true
+  directories:
+    - $HOME/libsodium
+    - $HOME/elfutils
+install:
+  - curl -sSLO https://github.com/maidsafe/QA/raw/master/Bash%20Scripts/Travis/install_libsodium.sh
+  - . install_libsodium.sh
 
 # the main build
 script:
