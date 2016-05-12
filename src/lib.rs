@@ -24,29 +24,31 @@
 // relating to use of the SAFE Network Software.
 
 //! #data_blocks
-//! Data blocks can be chained to provide verifiable assuredness that they contain network valid i
+//! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!
-//! This crate assumes these objects below are relevent to `close_groups` this allows inegrity
-//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this agroup
-//! All groups since the group/network started.
+//! This crate assumes these objects below are relevent to `close_groups` this allows integrity
+//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this group
+//! & all groups since the group/network started.
 //!
-//! These chains allow nodes to become `archive nodes` on a network and also ensure data intergrity
+//! These chains allow nodes to become `archive nodes` on a network and also ensure data integrity
 //! AS LONG AS the data identifiers hold a validating element such as hash of the data itself.
 //!
-//! Another purpose of these chanis is to allow network restarts with valid data. Obviously this
+//! Another purpose of these chains is to allow network restarts with valid data. Obviously this
 //! means the network nodes will have to tr and restart as the last known ID they had. Vaults
 //! will require to accept or reject such nodes in normal operation. On network restart though
 //! these nodes may be allowed to join a group if they can present a `DataChain` that appears
 //! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.
 //! additional nodes will also join this group and hopefully confirm the data integrity is agreed
-//! as the last `DataBlock` should contain a majorit of existing group memebers that have signed.
+//! as the last `DataBlock` should contain a majorit of existing group members that have signed.
 //!
-//! Nodes do no require to become `Archive nodes` if they have limied bandwidth or disk space, but
+//! Nodes do no require to become `Archive nodes` if they have limited bandwidth or disk space, but
 //! they are still valuable as transient nodes which may deliver data stored whle they are in the
 //! group. Such nodes may only be involved in consensus and routing stability messages, returning
 //! a `Nack` to any `Get` request  due to upstream bandwidth limitations.
-
+//!
+//! Several enhancement can be made to this scheme with a much deper investigation into any
+//! attack vectors. Such as
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
        html_favicon_url = "http://maidsafe.net/img/favicon.ico",
@@ -146,9 +148,9 @@ impl NodeDataBlock {
 }
 
 /// used to validate chain `linksi`.
-/// On a network churn event the latest `DataBlock` is copied ofrm the chain and sent
-/// To new node. The `lost Nodes` signature is removed. The new node recieves this - signs a
-/// `NodeBlock  for this `DataIDentifier` and returns it to the `archive node`
+/// On a network churn event the latest `DataBlock` is copied from the chain and sent
+/// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
+/// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataBlock {
     identifier: DataIdentifier,
@@ -158,8 +160,8 @@ pub struct DataBlock {
 
 
 /// Created by holder of chain, can be passed to others as proof of data held.
-/// This object is verifyable if :
-/// The last validation constains the majority of current close group
+/// This object is verifiable if :
+/// The last validation contains the majority of current close group
 /// OR on network restart the nodes all must try and restart on
 /// previous names. They can continue any validation of the holder of a chain.
 /// This requires nodes to always restart as last ID and if there was no restart they are rejected
