@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="rustdoc">
+    <meta name="description" content="API documentation for the Rust `data_blocks` crate.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, data_blocks">
+
+    <title>data_blocks - Rust</title>
+
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
+    
+</head>
+<body class="rustdoc">
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    
+
+    <nav class="sidebar">
+        <a href='../data_blocks/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
+        <p class='location'></p><script>window.sidebarCurrent = {name: 'data_blocks', ty: 'mod', relpath: '../'};</script>
+    </nav>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>data_blocks</a></span><span class='out-of-band'><span id='render-detail'>
+            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                [<span class='inner'>&#x2212;</span>]
+            </a>
+        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-240' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'>
+<h1 id='data_blocks' class='section-header'><a href='#data_blocks'>data_blocks</a></h1>
+<p>Data blocks can be chained to provide verifiable assuredness that they contain network valid i
+data and not injected.</p>
+
+<p>This crate assumes these objects below are relevent to <code>close_groups</code> this allows inegrity
+check of the <code>DataChain</code> in so far as it will hold valid data identifiers agreed by this agroup
+All groups since the group/network started.</p>
+
+<p>These chains allow nodes to become <code>archive nodes</code> on a network and also ensure data intergrity
+AS LONG AS the data identifiers hold a validating element such as hash of the data itself.</p>
+
+<p>Another purpose of these chanis is to allow network restarts with valid data. Obviously this
+means the network nodes will have to tr and restart as the last known ID they had. Vaults
+will require to accept or reject such nodes in normal operation. On network restart though
+these nodes may be allowed to join a group if they can present a <code>DataChain</code> that appears
+healthy, even if there is not yet enough consensus to <code>trust</code> the data iself just yet.
+additional nodes will also join this group and hopefully confirm the data integrity is agreed
+as the last <code>DataBlock</code> should contain a majorit of existing group memebers that have signed.</p>
+
+<p>Nodes do no require to become <code>Archive nodes</code> if they have limied bandwidth or disk space, but
+they are still valuable as transient nodes which may deliver data stored whle they are in the
+group. Such nodes may only be involved in consensus and routing stability messages, returning
+a <code>Nack</code> to any <code>Get</code> request  due to upstream bandwidth limitations.</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DataBlock.html'
+                               title='data_blocks::DataBlock'>DataBlock</a></td>
+                        <td class='docblock short'>
+                             <p>used to validate chain <code>linksi</code>.
+On a network churn event the latest <code>DataBlock</code> is copied ofrm the chain and sent
+To new node. The <code>lost Nodes</code> signature is removed. The new node recieves this - signs a
+<code>NodeBlock for this</code>DataIDentifier<code>and returns it to the</code>archive node`</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.DataChain.html'
+                               title='data_blocks::DataChain'>DataChain</a></td>
+                        <td class='docblock short'>
+                             <p>Created by holder of chain, can be passed to others as proof of data held.
+This object is verifyable if :
+The last validation constains the majority of current close group
+OR on network restart the nodes all must try and restart on
+previous names. They can continue any validation of the holder of a chain.
+This requires nodes to always restart as last ID and if there was no restart they are rejected
+at vault level.
+If there was a restart then the nodes should validate and continue.
+N:B this means all nodes can use a named directory for data_store and clear if they restart
+as a new id. This allows cleanup of old data_cache directories.</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.NodeDataBlock.html'
+                               title='data_blocks::NodeDataBlock'>NodeDataBlock</a></td>
+                        <td class='docblock short'>
+                             <p>Sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code> in this group</p>
+                        </td>
+                    </tr>
+                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.DataIdentifier.html'
+                               title='data_blocks::DataIdentifier'>DataIdentifier</a></td>
+                        <td class='docblock short'>
+                             <p>dummy data identifiers for this crate</p>
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='enum' href='enum.Error.html'
+                               title='data_blocks::Error'>Error</a></td>
+                        <td class='docblock short'>
+                             <p>Error types.</p>
+                        </td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <aside id="help" class="hidden">
+        <div>
+            <h1 class="hidden">Help</h1>
+
+            <div class="shortcuts">
+                <h2>Keyboard Shortcuts</h2>
+
+                <dl>
+                    <dt>?</dt>
+                    <dd>Show this help dialog</dd>
+                    <dt>S</dt>
+                    <dd>Focus the search field</dd>
+                    <dt>&larrb;</dt>
+                    <dd>Move up in search results</dd>
+                    <dt>&rarrb;</dt>
+                    <dd>Move down in search results</dd>
+                    <dt>&#9166;</dt>
+                    <dd>Go to active search result</dd>
+                </dl>
+            </div>
+
+            <div class="infos">
+                <h2>Search Tricks</h2>
+
+                <p>
+                    Prefix searches with a type followed by a colon (e.g.
+                    <code>fn:</code>) to restrict the search to a given type.
+                </p>
+
+                <p>
+                    Accepted types are: <code>fn</code>, <code>mod</code>,
+                    <code>struct</code>, <code>enum</code>,
+                    <code>trait</code>, <code>type</code>, <code>macro</code>,
+                    and <code>const</code>.
+                </p>
+
+                <p>
+                    Search functions by type signature (e.g.
+                    <code>vec -> usize</code> or <code>* -> vec</code>)
+                </p>
+            </div>
+        </div>
+    </aside>
+
+    
+
+    <script>
+        window.rootPath = "../";
+        window.currentCrate = "data_blocks";
+        window.playgroundUrl = "";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    
+    <script defer src="../search-index.js"></script>
+</body>
+</html>
