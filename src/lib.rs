@@ -50,24 +50,22 @@
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
        html_favicon_url = "http://maidsafe.net/img/favicon.ico",
-       html_root_url = "http://maidsafe.github.io/crust/")]
+       html_root_url = "http://dirvine.github.io/data_blocks")]
 
 // For explanation of lint checks, run `rustc -W help` or see
-// https://github.
-// com/maidsafe/QA/blob/master/Documentation/Rust%20Lint%20Checks.md
-// FIXME uncomment below
-// #![forbid(bad_style, exceeding_bitshifts, mutable_transmutes, no_mangle_const_items,
-//           unknown_crate_types, warnings)]
-#![allow(deprecated, drop_with_repr_extern, improper_ctypes, missing_docs,
+// https://github.com/maidsafe/QA/blob/master/Documentation/Rust%20Lint%20Checks.md
+#![forbid(bad_style, exceeding_bitshifts, mutable_transmutes, no_mangle_const_items,
+          unknown_crate_types, warnings)]
+#![deny(deprecated, drop_with_repr_extern, improper_ctypes, missing_docs,
         non_shorthand_field_patterns, overflowing_literals, plugin_as_library,
-        private_no_mangle_fns, private_no_mangle_statics, stable_features,
-        unconditional_recursion, unknown_lints, unsafe_code, unused, unused_allocation,
-        unused_attributes, unused_comparisons, unused_features, unused_parens, while_true)]
-// FIXME below should be warn
-#![allow(trivial_casts, trivial_numeric_casts, unused_extern_crates, unused_import_braces,
+        private_no_mangle_fns, private_no_mangle_statics, stable_features, unconditional_recursion,
+        unknown_lints, unsafe_code, unused, unused_allocation, unused_attributes,
+        unused_comparisons, unused_features, unused_parens, while_true)]
+#![warn(trivial_casts, trivial_numeric_casts, unused_extern_crates, unused_import_braces,
         unused_qualifications, unused_results)]
 #![allow(box_pointers, fat_ptr_transmutes, missing_copy_implementations,
          missing_debug_implementations, variant_size_differences)]
+
 
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
@@ -78,49 +76,44 @@ extern crate sodiumoxide;
 extern crate rustc_serialize;
 // extern crate xor_name;
 #[macro_use]
-extern crate quick_error;
-#[macro_use]
 extern crate maidsafe_utilities;
-extern crate itertools;
+// extern crate itertools;
 
 
 use std::collections::HashMap;
 use sodiumoxide::crypto;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
 // use xor_name::XorName;
-use itertools::Itertools;
+// use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 
-quick_error! {
-    /// Crust's universal error type.
-    #[derive(Debug)]
-    pub enum Error {
-   #[allow(missing_docs)]
-     Validation{
-            description("Failed to validate chain")
-            display("Data chain error")
-        }
-   #[allow(missing_docs)]
-     Signature {
-            description("Signature failure")
-            display("Data not signed by given key")
-        }
-   #[allow(missing_docs)]
-     Majority {
-            description("Failed to validate chain")
-            display("Data chain majority error")
-        }
-/// Wrapper for a `maidsafe_utilities::serialisation::SerialisationError`
-        SerialisationError(err: serialisation::SerialisationError) {
-			            description("Serialisation error")
-						display("Serialisation error: {}", err)
-						cause(err)
-					    from()
-	    }
-}
+/// Error types.
+///
+/// Hopefully sodiumoxide eventually defines errors properly, otherwise this makes little sense.
+#[allow(missing_docs)]
+#[derive(Debug)]
+pub enum Error {
+    Serialisation(serialisation::SerialisationError),
+    Crypto,
+    Validation,
+    Signature,
+    Majority,
 }
 
-// dummy data identifiers for this crate
+impl From<serialisation::SerialisationError> for Error {
+    fn from(orig_error: serialisation::SerialisationError) -> Self {
+        Error::Serialisation(orig_error)
+    }
+}
+
+impl From<()> for Error {
+    fn from(_: ()) -> Self {
+        Error::Crypto
+    }
+}
+
+/// dummy data identifiers for this crate
+#[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable)]
 pub enum DataIdentifier {
     Type1(u64),
@@ -135,6 +128,7 @@ pub struct NodeDataBlock {
 }
 
 impl NodeDataBlock {
+    /// Create a DataBlock (used by nodes in network to send to holders of `DataChains`)
     pub fn new(&mut self,
                pub_key: &PublicKey,
                secret_key: &SecretKey,
@@ -153,6 +147,9 @@ impl NodeDataBlock {
 }
 
 /// used to validate chain `linksi`.
+/// On a network churn event the latest `DataBlock` is copied ofrm the chain and sent
+/// To new node. The `lost Nodes` signature is removed. The new node recieves this - signs a
+/// `NodeBlock  for this `DataIDentifier` and returns it to the `archive node`
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataBlock {
     identifier: DataIdentifier,
@@ -177,8 +174,10 @@ pub struct DataChain {
 }
 
 impl DataChain {
+    /// Nodes always validate a chain before accepting it
     pub fn validate(&self) -> Result<(), Error> {
-        Ok(())
+
+        Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
     fn validate_majorities(&self) -> Result<(), Error> {
@@ -219,8 +218,9 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 
 #[cfg(test)]
 use super::*;
-use crypto::sign::SecretKey;
 mod tests {
     #[test]
-    fn it_works() {}
+    fn it_works() {
+        let _keys = crypto::sign::generate_key_pair();
+    }
 }
