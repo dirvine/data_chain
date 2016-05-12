@@ -76,7 +76,17 @@ quick_error! {
     #[derive(Debug)]
     pub enum Error {
    #[allow(missing_docs)]
-     ValidationError {
+     Validation{
+            description("Failed to validate chain")
+            display("Data chain error")
+        }
+   #[allow(missing_docs)]
+     Signature {
+            description("Signature failure")
+            display("Data not signed by given key")
+        }
+   #[allow(missing_docs)]
+     Majority {
             description("Failed to validate chain")
             display("Data chain error")
         }
@@ -126,7 +136,7 @@ impl NodeDataBlock {
 pub struct DataBlock {
     identifier: DataIdentifier,
     proof: HashMap<PublicKey, Signature>,
-    recieved_order: u64,
+    received_order: u64,
 }
 
 #[derive(RustcEncodable, RustcDecodable)]
@@ -136,23 +146,43 @@ pub struct DataChain {
 
 impl DataChain {
     pub fn validate(&self) -> Result<(), Error> {
-        //     self.chain
-        //         .iter()
-        //         .enumerate()
-        //         .foreach(|&x| {
-        //             x.proof
-        //              .iter()
-        //              .foreach(|v| try!(crypto::sign::verify_detached(v.1, &try!(serialisation::serialise(&x.identifier))[..], v.0)))
-        //
-        //         });
-        //     // TODO check each entry is signed by majority of previous entry
-        //     // for first entry [0] check next entry is sigend by majority
-        //     // of next entry
-        // }
         Ok(())
+    }
+
+    fn validate_majorities(&self) -> Result<(), Error> {
+        if self.chain
+               .iter()
+               .zip(self.chain.iter().skip(1))
+               .all(|block| has_majority(block.0, block.1)) {
+            Ok(())
+        } else {
+            Err(Error::Majority)
+        }
+    }
+
+    fn validate_signatures(&self) -> Result<(), Error> {
+        if self.chain
+               .iter()
+               .all(|x| {
+                   if let Ok(data) = serialisation::serialise(&x.identifier) {
+                       x.proof
+                        .iter()
+                        .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
+                   } else {
+                       false
+                   }
+               }) {
+            Ok(())
+        } else {
+            Err(Error::Signature)
+        }
+
     }
 }
 
+fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
+    block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() * 2 > block0.proof.len()
+}
 
 
 #[cfg(test)]
