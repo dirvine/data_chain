@@ -114,14 +114,14 @@ impl From<()> for Error {
 
 /// dummy data identifiers for this crate
 #[allow(missing_docs)]
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub enum DataIdentifier {
     Type1(u64),
     Type2(u64),
 }
 
 /// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeDataBlock {
     identifier: DataIdentifier,
     proof: (PublicKey, Signature),
@@ -129,13 +129,12 @@ pub struct NodeDataBlock {
 
 impl NodeDataBlock {
     /// Create a DataBlock (used by nodes in network to send to holders of `DataChains`)
-    pub fn new(&mut self,
-               pub_key: &PublicKey,
+    pub fn new(pub_key: &PublicKey,
                secret_key: &SecretKey,
                data_identifier: DataIdentifier)
                -> Result<NodeDataBlock, Error> {
         let signature =
-            crypto::sign::sign_detached(&try!(serialisation::serialise(&self.identifier))[..],
+            crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
                                         secret_key);
 
         Ok(NodeDataBlock {
@@ -217,10 +216,25 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 
 
 #[cfg(test)]
-use super::*;
 mod tests {
+    use super::*;
+    use sodiumoxide::crypto;
+
     #[test]
-    fn it_works() {
-        let _keys = crypto::sign::generate_key_pair();
+    fn simple_data_block_comparisons() {
+        let keys = crypto::sign::gen_keypair();
+        let test_data1 = DataIdentifier::Type1(1u64);
+        let test_data2 = DataIdentifier::Type1(1u64);
+        let test_data3 = DataIdentifier::Type2(1u64);
+        let test_node_data_block1 = NodeDataBlock::new(&keys.0, &keys.1, test_data1)
+                                        .expect("fail1");
+        let test_node_data_block2 = NodeDataBlock::new(&keys.0, &keys.1, test_data2)
+                                        .expect("fail2");
+        let test_node_data_block3 = NodeDataBlock::new(&keys.0, &keys.1, test_data3)
+                                        .expect("fail3");
+        assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
+        assert!(test_node_data_block1 != test_node_data_block3.clone());
+        assert!(test_node_data_block2 != test_node_data_block3);
+
     }
 }
