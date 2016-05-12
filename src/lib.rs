@@ -114,7 +114,7 @@ impl From<()> for Error {
     }
 }
 
-/// dummy data identifiers for this crate
+/// Dummy data identifiers for this crate
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub enum DataIdentifier {
@@ -147,7 +147,7 @@ impl NodeDataBlock {
     }
 }
 
-/// used to validate chain `linksi`.
+/// Used to validate chain `linksi`.
 /// On a network churn event the latest `DataBlock` is copied from the chain and sent
 /// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
 /// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`
