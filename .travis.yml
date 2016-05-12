@@ -12,6 +12,7 @@ addons:
       - libelf-dev
       - libdw-dev
       - binutils-dev # optional: only required for the --verify flag of coveralls
+	  - libsodium-dev
 
 # run builds for all the trains (and more)
 rust:
@@ -24,9 +25,6 @@ before_script:
   - |
       pip install 'travis-cargo<0.2' --user &&
       export PATH=$HOME/.local/bin:$PATH
-install:
-	- curl -sSLO https://github.com/maidsafe/QA/raw/master/Bash%20Scripts/Travis/install_libsodium.sh
-  	- . install_libsodium.sh
 
 # the main build
 script:
