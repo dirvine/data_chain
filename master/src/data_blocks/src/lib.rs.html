@@ -283,6 +283,13 @@
 <span id="240">240</span>
 <span id="241">241</span>
 <span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -462,8 +469,8 @@
 
 <span class='kw'>impl</span> <span class='ident'>DataChain</span> {
     <span class='doccomment'>/// Nodes always validate a chain before accepting it</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
-
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>sort</span>();
         <span class='prelude-val'>Ok</span>(<span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>validate_majorities</span>().<span class='ident'>and</span>(<span class='self'>self</span>.<span class='ident'>validate_signatures</span>())))
     }
 
@@ -494,7 +501,11 @@
         } <span class='kw'>else</span> {
             <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Signature</span>)
         }
+    }
 
+    <span class='comment'>// sort with newest elements at end of vector.</span>
+    <span class='kw'>fn</span> <span class='ident'>sort</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>sort_by</span>(<span class='op'>|</span><span class='ident'>a</span>, <span class='ident'>b</span><span class='op'>|</span> <span class='ident'>a</span>.<span class='ident'>received_order</span>.<span class='ident'>cmp</span>(<span class='kw-2'>&amp;</span><span class='ident'>b</span>.<span class='ident'>received_order</span>));
     }
 }
 
@@ -504,6 +515,7 @@
 
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
@@ -525,6 +537,8 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test_node_data_block2</span> <span class='op'>!=</span> <span class='ident'>test_node_data_block3</span>);
 
     }
+
+
 }
 </pre>
 </section>
