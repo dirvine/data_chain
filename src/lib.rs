@@ -176,8 +176,8 @@ pub struct DataChain {
 
 impl DataChain {
     /// Nodes always validate a chain before accepting it
-    pub fn validate(&self) -> Result<(), Error> {
-
+    pub fn validate(&mut self) -> Result<(), Error> {
+        self.sort();
         Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
@@ -208,7 +208,11 @@ impl DataChain {
         } else {
             Err(Error::Signature)
         }
+    }
 
+    // sort with newest elements at end of vector.
+    fn sort(&mut self) {
+        self.chain.sort_by(|a, b| a.received_order.cmp(&b.received_order));
     }
 }
 
@@ -218,6 +222,7 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 
 
 #[cfg(test)]
+
 mod tests {
     use super::*;
     use sodiumoxide::crypto;
@@ -239,4 +244,6 @@ mod tests {
         assert!(test_node_data_block2 != test_node_data_block3);
 
     }
+
+
 }
