@@ -1,5 +1,6 @@
 env:
   global:
+	- TRAVIS_CARGO_NIGHTLY_FEATURE=""
     secure: kesHgJok28j+Cm49avDCOYInozvTJb1iHgyp2CiJmrde6VhZb1rRgguuoN4WLP44zUvX/wy3nFIJL/S8VxhPGJju2aqWfKDzkQg7QIRHhmY6xpKSHjfVs/8M82eqAXPY6DnqyiVmgGUjDQy2tw7xR/Yt+AzkMamcXXqZTdoxugZZbmWmSEMEX2M7FjMzLMXe1kurTBwJXplYrJICgygAOuOfW6HphJy0Mt6jUCQvFzqC8B3SJmGp4Dwk3qIpi6Xa8ALHQrMWOU9ICRzYtl4Jcx59ns0LogxCpMNNIFM6ZERUSOETjsAkaehdaTyKMwzLDU88XqlceBE3wpOYLlnKeil8Yo0WQy7ZC7tCcN75BbUBEPfQLPtPd81nEZcDiHzGLx8ET0mo2mdbyePuq8K35loxJ+TOGX0BPH0EM5s+bDtKiofj/YGr6Bjo01WStlPs3V+i5vgl9UvmBxGewqgDLUI3nxRrtkKjoTDK5w3yRr0TXsPugJq16khKa2O7Phou9zzql4gdkeC6CwAo4K79eaTdhdDWyEp/Vztm8HR0ojOUd85cGM66l6eKTi5mWNSTbIu4xggP/Q0NVyAXvgnd83srw5BI4o5FuslFgEe+gMKop0CTqZQrOzoZtl6fDLGWK/Mpj0jPFyIHHPv+zLTzqeIdtwmM5KxqhEsdfmObBw4=
 sudo: false
 language: rust
@@ -40,9 +41,3 @@ after_success:
   # cost of some speed <https://github.com/huonw/travis-cargo/issues/12>)
   - travis-cargo coveralls --no-sudo --verify
 
-env:
-  global:
-    # override the default `--features unstable` used for the nightly branch (optional)
-    - TRAVIS_CARGO_NIGHTLY_FEATURE=nightly
-    # encrypted github token for doc upload (see `GH_TOKEN` link above)
-    - secure: "..."
