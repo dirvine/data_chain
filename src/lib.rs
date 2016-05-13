@@ -80,11 +80,13 @@ extern crate rustc_serialize;
 extern crate maidsafe_utilities;
 #[cfg(test)]
 extern crate itertools;
+extern crate rayon;
 
 use std::collections::HashMap;
 use sodiumoxide::crypto;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
 use maidsafe_utilities::serialisation;
+use rayon::prelude::*;
 
 /// Error types.
 ///
@@ -119,6 +121,21 @@ pub enum DataIdentifier {
     Type2(u64),
 }
 
+impl DataIdentifier {
+    /// Define a name getter as data identifiers may contain more info that does
+    /// not change the name (such as with structured data and versions etc.)
+    /// In this module we do not care about other info and any validation is outwith this area
+    /// Therefore we will delete before insert etc. based on name alone of the data element
+    pub fn name(&self) -> u64 {
+        match *self {
+            DataIdentifier::Type1(name) => name,
+            DataIdentifier::Type2(name) => name,
+        }
+    }
+}
+
+
+
 /// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeDataBlock {
@@ -148,11 +165,10 @@ impl NodeDataBlock {
 /// On a network churn event the latest `DataBlock` is copied from the chain and sent
 /// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
 /// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(RustcEncodable, RustcDecodable, Clone)]
 pub struct DataBlock {
     identifier: DataIdentifier,
     proof: HashMap<PublicKey, Signature>,
-    received_order: u64,
     deleted: bool, // we can mark as deleted if removing entry would invalidate the chain
 }
 
@@ -162,7 +178,6 @@ impl DataBlock {
         DataBlock {
             identifier: data_id,
             proof: HashMap::new(),
-            received_order: u64::default(),
             deleted: false,
         }
     }
@@ -170,19 +185,10 @@ impl DataBlock {
     pub fn mark_deleted(&mut self) {
         self.deleted = false;
     }
+
     /// Get the identifier
     pub fn identifier(&self) -> &DataIdentifier {
         &self.identifier
-    }
-
-    /// Get received_order
-    pub fn received_order(&self) -> u64 {
-        self.received_order
-    }
-
-    /// set received_order
-    pub fn set_received_order(&mut self, received_order: u64) {
-        self.received_order = received_order
     }
 
     /// Add a NodeDataBlock (i.e. after accumulation there could be slow nodes)
@@ -224,7 +230,6 @@ impl DataChain {
     }
     /// Nodes always validate a chain before accepting it
     pub fn validate(&mut self) -> Result<(), Error> {
-        self.sort();
         Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
@@ -253,8 +258,25 @@ impl DataChain {
         Ok(())
     }
 
-
-
+    /// Delete a block
+    /// Will either remove a block as long as consensus would remain intact
+    /// Otherwise mark as deleted.
+    /// If block is in front of container (`.fisrt()`) then we delete that.
+    pub fn delete(&mut self, name: u64) -> Option<DataBlock> {
+        if let Ok(item) = self.chain
+                              .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
+            if self.chain.len() == item ||
+               self.has_majority(&self.chain[item], &self.chain[item + 1]) {
+                // we can  maintain consensus by removing this iteem
+                return Some(self.chain.remove(item));
+            } else {
+                // mark as deleted
+                self.chain[item].mark_deleted();
+                return Some(self.chain[item].clone());
+            }
+        }
+        None
+    }
 
     fn validate_majorities(&self) -> Result<(), Error> {
         if self.chain
@@ -283,11 +305,6 @@ impl DataChain {
         } else {
             Err(Error::Signature)
         }
-    }
-
-    // sort with newest elements at end of vector.
-    fn sort(&mut self) {
-        self.chain.sort_by(|a, b| a.received_order.cmp(&b.received_order));
     }
 
     fn has_majority(&self, block0: &DataBlock, block1: &DataBlock) -> bool {
@@ -344,7 +361,6 @@ mod tests {
                                       } else {
                                           DataBlock::new(DataIdentifier::Type2(x))
                                       };
-                                      block.set_received_order(x);
                                       let data = serialisation::serialise(&block.identifier)
                                                      .expect("serialise fail");
                                       for y in 0..group_size {
@@ -382,18 +398,17 @@ mod tests {
 
     }
 
-    // #[test]
-    // fn invalidate_chain() {
-    //     let count = 10000;
-    //     let mut data_chain = create_data_chain(count);
-    //     let _ = data_chain.chain.last().expect("could not get last entry").proof.drain();
-    //     match data_chain.validate() {
-    //         Ok(_) => panic!("chain was invalid"),
-    //         Err(_) => {}
-    //     }
-
-    // }
 
     #[test]
-    fn delete_block_of_entries() {}
+    fn delete_all_and_validate() {
+        let count = 100;
+        let mut chain = create_data_chain(count);
+        for i in 0..count {
+            let _ = chain.delete(i);
+        }
+        let _ = chain.validate().expect("validate failed");
+
+    }
+
+
 }
