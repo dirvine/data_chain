@@ -153,6 +153,7 @@ pub struct DataBlock {
     identifier: DataIdentifier,
     proof: HashMap<PublicKey, Signature>,
     received_order: u64,
+    deleted: bool, // we can mark as deleted if removing entry would invalidate the chain
 }
 
 impl DataBlock {
@@ -162,6 +163,7 @@ impl DataBlock {
             identifier: data_id,
             proof: HashMap::new(),
             received_order: u64::default(),
+            deleted: false,
         }
     }
 
