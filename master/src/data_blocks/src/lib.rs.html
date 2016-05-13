@@ -414,6 +414,8 @@
 <span id="371">371</span>
 <span id="372">372</span>
 <span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -570,6 +572,7 @@
     <span class='ident'>identifier</span>: <span class='ident'>DataIdentifier</span>,
     <span class='ident'>proof</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>PublicKey</span>, <span class='ident'>Signature</span><span class='op'>&gt;</span>,
     <span class='ident'>received_order</span>: <span class='ident'>u64</span>,
+    <span class='ident'>deleted</span>: <span class='ident'>bool</span>, <span class='comment'>// we can mark as deleted if removing entry would invalidate the chain</span>
 }
 
 <span class='kw'>impl</span> <span class='ident'>DataBlock</span> {
@@ -579,6 +582,7 @@
             <span class='ident'>identifier</span>: <span class='ident'>data_id</span>,
             <span class='ident'>proof</span>: <span class='ident'>HashMap</span>::<span class='ident'>new</span>(),
             <span class='ident'>received_order</span>: <span class='ident'>u64</span>::<span class='ident'>default</span>(),
+            <span class='ident'>deleted</span>: <span class='boolval'>false</span>,
         }
     }
 
