@@ -76,17 +76,14 @@
 
 extern crate sodiumoxide;
 extern crate rustc_serialize;
-// extern crate xor_name;
 #[macro_use]
 extern crate maidsafe_utilities;
-// extern crate itertools;
-
+#[cfg(test)]
+extern crate itertools;
 
 use std::collections::HashMap;
 use sodiumoxide::crypto;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
-// use xor_name::XorName;
-// use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 
 /// Error types.
@@ -158,6 +155,43 @@ pub struct DataBlock {
     received_order: u64,
 }
 
+impl DataBlock {
+    /// Construct a DataBlock
+    pub fn new(data_id: DataIdentifier) -> DataBlock {
+        DataBlock {
+            identifier: data_id,
+            proof: HashMap::new(),
+            received_order: u64::default(),
+        }
+    }
+
+    /// Get the identifier
+    pub fn identifier(&self) -> &DataIdentifier {
+        &self.identifier
+    }
+
+    /// Get received_order
+    pub fn received_order(&self) -> u64 {
+        self.received_order
+    }
+
+    /// set received_order
+    pub fn set_received_order(&mut self, received_order: u64) {
+        self.received_order = received_order
+    }
+
+    /// Add a NodeDataBlock (i.e. after accumulation there could be slow nodes)
+    pub fn add_node(&mut self, public_key: PublicKey, signature: Signature) -> Result<(), Error> {
+
+        let data = try!(serialisation::serialise(&self.identifier));
+        if crypto::sign::verify_detached(&signature, &data[..], &public_key) {
+            let _ = self.proof.insert(public_key, signature);
+            Ok(())
+        } else {
+            return Err(Error::Signature);
+        }
+    }
+}
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -172,20 +206,56 @@ pub struct DataBlock {
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<DataBlock>,
+    group_size: u64,
 }
 
 impl DataChain {
+    /// Create a new chain with no elements yet.
+    pub fn new(group_size: u64) -> DataChain {
+        DataChain {
+            chain: Vec::new(),
+            group_size: group_size,
+        }
+    }
     /// Nodes always validate a chain before accepting it
     pub fn validate(&mut self) -> Result<(), Error> {
         self.sort();
         Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
+    /// Size of close group (maximum proof size)
+    pub fn group_size(&self) -> u64 {
+        self.group_size
+    }
+
+    /// Add a DataBlock to the chain
+    pub fn add_block(&mut self, data_block: DataBlock) -> Result<(), Error> {
+        let data = try!(serialisation::serialise(&data_block.identifier));
+
+        if let Some(last) = self.chain.last() {
+            if !self.has_majority(last, &data_block) {
+                return Err(Error::Majority);
+            }
+        }
+
+        if !data_block.proof
+                      .iter()
+                      .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
+            return Err(Error::Signature);
+        }
+        // TODO Remove any old copies of this data from the chain. It should not happen though
+        self.chain.push(data_block);
+        Ok(())
+    }
+
+
+
+
     fn validate_majorities(&self) -> Result<(), Error> {
         if self.chain
                .iter()
                .zip(self.chain.iter().skip(1))
-               .all(|block| has_majority(block.0, block.1)) {
+               .all(|block| self.has_majority(block.0, block.1)) {
             Ok(())
         } else {
             Err(Error::Majority)
@@ -214,11 +284,14 @@ impl DataChain {
     fn sort(&mut self) {
         self.chain.sort_by(|a, b| a.received_order.cmp(&b.received_order));
     }
+
+    fn has_majority(&self, block0: &DataBlock, block1: &DataBlock) -> bool {
+        block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
+        self.group_size
+
+    }
 }
 
-fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
-    block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() * 2 > block0.proof.len()
-}
 
 
 #[cfg(test)]
@@ -226,9 +299,12 @@ fn has_majority(block0: &DataBlock, block1: &DataBlock) -> bool {
 mod tests {
     use super::*;
     use sodiumoxide::crypto;
+    use itertools::Itertools;
+    use maidsafe_utilities::serialisation;
+    use std::time;
 
     #[test]
-    fn simple_data_block_comparisons() {
+    fn simple_node_data_block_comparisons() {
         let keys = crypto::sign::gen_keypair();
         let test_data1 = DataIdentifier::Type1(1u64);
         let test_data2 = DataIdentifier::Type1(1u64);
@@ -245,5 +321,53 @@ mod tests {
 
     }
 
+    #[test]
+    fn create_and_validate_data_chain() {
+        let count = 10000;
+        let group_size = 4;
+        let mut archive_node = DataChain::new(group_size);
 
+        let keys = (0..count + group_size)
+                       .map(|_| crypto::sign::gen_keypair())
+                       .collect_vec();
+
+
+
+
+        let mut data_blocks = (0..count)
+                                  .map(|x| {
+                                      let mut block = if x % 2 == 0 {
+                                          DataBlock::new(DataIdentifier::Type1(x))
+                                      } else {
+                                          DataBlock::new(DataIdentifier::Type2(x))
+                                      };
+                                      block.set_received_order(x);
+                                      let data = serialisation::serialise(&block.identifier)
+                                                     .expect("serialise fail");
+                                      for y in 0..group_size {
+                                          let _ = block.add_node(keys[x as usize + y as usize].0,
+                                       crypto::sign::sign_detached(&data[..],
+                                                                   &keys[x as usize + y as usize]
+                                                                        .1));
+                                      }
+                                      block
+                                  })
+                                  .collect_vec();
+
+        let now = time::Instant::now();
+
+        let _ = data_blocks.drain(..)
+                           .map(|x| archive_node.add_block(x).expect("chain fill failed"));
+        println!("Took {:?}.{:?} seconds to add {:?} blocks",
+                 now.elapsed().as_secs(),
+                 now.elapsed().subsec_nanos(),
+                 count);
+        let now1 = time::Instant::now();
+        let _ = archive_node.validate().expect("validate failed");
+        println!("Took {:?}.{:?} seconds to validate  {:?} blocks",
+                 now1.elapsed().as_secs(),
+                 now1.elapsed().subsec_nanos(),
+                 count);
+
+    }
 }
