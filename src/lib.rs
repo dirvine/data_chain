@@ -326,11 +326,9 @@ mod tests {
 
     }
 
-    #[test]
-    fn create_and_validate_data_chain() {
-        let count = 10000;
+    fn create_data_chain(count: u64) -> DataChain {
         let group_size = 4;
-        let mut archive_node = DataChain::new(group_size);
+        let mut chain = DataChain::new(group_size);
 
         let keys = (0..count + group_size)
                        .map(|_| crypto::sign::gen_keypair())
@@ -362,17 +360,40 @@ mod tests {
         let now = time::Instant::now();
 
         let _ = data_blocks.drain(..)
-                           .map(|x| archive_node.add_block(x).expect("chain fill failed"));
+                           .map(|x| chain.add_block(x).expect("chain fill failed"));
         println!("Took {:?}.{:?} seconds to add {:?} blocks",
                  now.elapsed().as_secs(),
                  now.elapsed().subsec_nanos(),
                  count);
+        chain
+    }
+
+    #[test]
+    fn create_and_validate_chain() {
+        let count = 10000;
+        let mut chain = create_data_chain(count);
+
         let now1 = time::Instant::now();
-        let _ = archive_node.validate().expect("validate failed");
+        let _ = chain.validate().expect("validate failed");
         println!("Took {:?}.{:?} seconds to validate  {:?} blocks",
                  now1.elapsed().as_secs(),
                  now1.elapsed().subsec_nanos(),
                  count);
 
     }
+
+    // #[test]
+    // fn invalidate_chain() {
+    //     let count = 10000;
+    //     let mut data_chain = create_data_chain(count);
+    //     let _ = data_chain.chain.last().expect("could not get last entry").proof.drain();
+    //     match data_chain.validate() {
+    //         Ok(_) => panic!("chain was invalid"),
+    //         Err(_) => {}
+    //     }
+
+    // }
+
+    #[test]
+    fn delete_block_of_entries() {}
 }
