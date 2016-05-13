@@ -166,7 +166,10 @@ impl DataBlock {
             deleted: false,
         }
     }
-
+    /// Mark block as deleted
+    pub fn mark_deleted(&mut self) {
+        self.deleted = false;
+    }
     /// Get the identifier
     pub fn identifier(&self) -> &DataIdentifier {
         &self.identifier
