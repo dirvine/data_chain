@@ -165,7 +165,7 @@ impl NodeDataBlock {
 /// On a network churn event the latest `DataBlock` is copied from the chain and sent
 /// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
 /// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`
-#[derive(RustcEncodable, RustcDecodable, Clone)]
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct DataBlock {
     identifier: DataIdentifier,
     proof: HashMap<PublicKey, Signature>,
@@ -183,7 +183,7 @@ impl DataBlock {
     }
     /// Mark block as deleted
     pub fn mark_deleted(&mut self) {
-        self.deleted = false;
+        self.deleted = true;
     }
 
     /// Get the identifier
@@ -230,6 +230,9 @@ impl DataChain {
     }
     /// Nodes always validate a chain before accepting it
     pub fn validate(&mut self) -> Result<(), Error> {
+        if self.chain.is_empty() {
+            return Ok(());
+        }
         Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
@@ -258,21 +261,46 @@ impl DataChain {
         Ok(())
     }
 
+    /// number of non-deleted blocks
+    pub fn len(&self) -> usize {
+        self.chain.iter().filter(|&x| !x.deleted).count()
+    }
+
+    /// Contains no blocks that are not deleted
+    pub fn empty(&self) -> bool {
+        self.len() == 0
+    }
+
     /// Delete a block
     /// Will either remove a block as long as consensus would remain intact
     /// Otherwise mark as deleted.
     /// If block is in front of container (`.fisrt()`) then we delete that.
     pub fn delete(&mut self, name: u64) -> Option<DataBlock> {
-        if let Ok(item) = self.chain
-                              .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
-            if self.chain.len() == item ||
-               self.has_majority(&self.chain[item], &self.chain[item + 1]) {
+
+        if self.chain.is_empty() {
+            return None;
+        }
+
+        if name == self.chain[0].identifier().name() {
+            return Some(self.chain.remove(0));
+        }
+
+        let last_index = self.chain.len();
+        if name == self.chain[last_index].identifier().name() {
+            // mark as deleted
+            self.chain[last_index].mark_deleted();
+            return Some(self.chain[last_index].clone());
+        }
+
+        if let Ok(index) = self.chain
+                               .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
+            if self.has_majority(&self.chain[index + 1], &self.chain[index - 1]) {
                 // we can  maintain consensus by removing this iteem
-                return Some(self.chain.remove(item));
+                return Some(self.chain.remove(index));
             } else {
                 // mark as deleted
-                self.chain[item].mark_deleted();
-                return Some(self.chain[item].clone());
+                self.chain[index].mark_deleted();
+                return Some(self.chain[index].clone());
             }
         }
         None
@@ -344,7 +372,7 @@ mod tests {
     }
 
     fn create_data_chain(count: u64) -> DataChain {
-        let group_size = 4;
+        let group_size = 8;
         let mut chain = DataChain::new(group_size);
 
         let keys = (0..count + group_size)
@@ -354,39 +382,40 @@ mod tests {
 
 
 
-        let mut data_blocks = (0..count)
-                                  .map(|x| {
-                                      let mut block = if x % 2 == 0 {
-                                          DataBlock::new(DataIdentifier::Type1(x))
-                                      } else {
-                                          DataBlock::new(DataIdentifier::Type2(x))
-                                      };
-                                      let data = serialisation::serialise(&block.identifier)
-                                                     .expect("serialise fail");
-                                      for y in 0..group_size {
-                                          let _ = block.add_node(keys[x as usize + y as usize].0,
+        let data_blocks = (0..count)
+                              .map(|x| {
+                                  let mut block = if x % 2 == 0 {
+                                      DataBlock::new(DataIdentifier::Type1(x))
+                                  } else {
+                                      DataBlock::new(DataIdentifier::Type2(x))
+                                  };
+                                  let data = serialisation::serialise(&block.identifier)
+                                                 .expect("serialise fail");
+                                  for y in 0..group_size {
+                                      let _ = block.add_node(keys[x as usize + y as usize].0,
                                        crypto::sign::sign_detached(&data[..],
                                                                    &keys[x as usize + y as usize]
                                                                         .1));
-                                      }
-                                      block
-                                  })
-                                  .collect_vec();
+                                  }
+                                  block
+                              })
+                              .collect_vec();
 
         let now = time::Instant::now();
 
-        let _ = data_blocks.drain(..)
-                           .map(|x| chain.add_block(x).expect("chain fill failed"));
+        for i in data_blocks.iter() {
+            chain.add_block(i.clone()).expect("chain fill failed");
+        }
         println!("Took {:?}.{:?} seconds to add {:?} blocks",
                  now.elapsed().as_secs(),
                  now.elapsed().subsec_nanos(),
-                 count);
+                 chain.len());
         chain
     }
 
     #[test]
     fn create_and_validate_chain() {
-        let count = 10000;
+        let count = 1000;
         let mut chain = create_data_chain(count);
 
         let now1 = time::Instant::now();
@@ -403,9 +432,35 @@ mod tests {
     fn delete_all_and_validate() {
         let count = 100;
         let mut chain = create_data_chain(count);
+
+        assert_eq!(chain.len(), count as usize);
+
         for i in 0..count {
             let _ = chain.delete(i);
         }
+        assert!(chain.empty());
+        let _ = chain.validate().expect("validate failed");
+
+    }
+
+    #[test]
+    fn delete_rev_all_and_validate() {
+        let count = 100i64;
+        let mut chain = create_data_chain(count as u64);
+
+        assert_eq!(chain.len(), count as usize);
+        assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
+                   count as usize);
+
+        for i in count..0 {
+            let _ = chain.delete(i as u64);
+        }
+        let _ = chain.delete(0);
+        // internally all entries there, but marked deleted
+        assert_eq!(chain.chain.iter().map(|x| x.deleted).count(),
+                   count as usize);
+        assert_eq!(chain.len(), count as usize);
+        assert!(!chain.empty());
         let _ = chain.validate().expect("validate failed");
 
     }
