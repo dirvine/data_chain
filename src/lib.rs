@@ -430,21 +430,25 @@ mod tests {
 
     #[test]
     fn delete_all_and_validate() {
-        let count = 100;
-        let mut chain = create_data_chain(count);
+        let count = 100i64;
+        let mut chain = create_data_chain(count as u64);
 
         assert_eq!(chain.len(), count as usize);
+        assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
+                   count as usize);
 
         for i in 0..count {
-            let _ = chain.delete(i);
+            let _ = chain.delete(i as u64);
         }
-        assert!(chain.empty());
-        let _ = chain.validate().expect("validate failed");
 
+        // internally all entries there, but marked deleted (entry 0 removed)
+        assert_eq!(chain.chain.iter().map(|x| x.deleted).count(), 0);
+        assert_eq!(chain.len(), 0);
+        assert!(chain.empty());
     }
 
     #[test]
-    fn delete_rev_all_and_validate() {
+    fn delete_rev_and_validate() {
         let count = 100i64;
         let mut chain = create_data_chain(count as u64);
 
@@ -456,14 +460,15 @@ mod tests {
             let _ = chain.delete(i as u64);
         }
         let _ = chain.delete(0);
-        // internally all entries there, but marked deleted
-        assert_eq!(chain.chain.iter().map(|x| x.deleted).count(),
+        // internally all entries there, but marked deleted (entry 0 removed)
+        assert_eq!(chain.chain.iter().map(|x| x.deleted).count() + 1,
                    count as usize);
-        assert_eq!(chain.len(), count as usize);
+        assert_eq!(chain.len() + 1, count as usize);
         assert!(!chain.empty());
         let _ = chain.validate().expect("validate failed");
 
     }
+
 
 
 }
