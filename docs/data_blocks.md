@@ -14,7 +14,7 @@ have a majority of existing group members if it is republished prior to more tha
 GROUP_SIZE - QUORUM nodes changing. In this situation there is a strong cryptographic proof of the
 data validity.
 
-It is though this recondition that assures the ability for a `DataChain` to be validated and
+It is through this recondition that assures the ability for a `DataChain` to be validated and
 therefore allows data to be republished.
 
 
@@ -107,13 +107,11 @@ impl NodeDataBlock {
 ## Data block
 
 On receipt of a `NodeDataBlock` the receiving node will check first in a cache of `DataBlock`'s
-and then in the `DataChain` itself. On finding an entry it add the node to any `DataBlock`. If
+and then in the `DataChain` itself. On finding an entry it will add the node to any `DataBlock`. If
 no entry is found the receiver will create a new `DataBlock` entry in the cache and await further
 notifications from group members of this `DataIdentifier`.
 
-
-
-This array must be contain at least QUORUM members and be of CLOSE_GROUP length. It must only contain
+This array must contain at least QUORUM members and be of CLOSE_GROUP length. It must only contain
 nodes close to that data element described by the  `DataIdentifier`.
 
 ## Data chain
@@ -134,7 +132,7 @@ constantly be in flux in such a network, but as a safeguard there may be several
 integrity of the chain.**
 
 For this reason, duplicate entries are allowed to exist in the chain. In normal circumstances
-duplicates will not exist as chains are grown only with successful `Put`, `Post` or `Delete`. These
+duplicates will not exist, as chains are grown only with successful `Put`, `Post` or `Delete`. These
 by their definition cannot be for same data.
 
 A `Delete` event will, however, remove an entry from the chain, but only if the chained consensus
