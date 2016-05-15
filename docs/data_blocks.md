@@ -29,15 +29,15 @@ In a fully decentralised network there are many problems to solve, two important
 
 1. Transferring large amounts of data to replicant nodes on each churn event.
 
-2. Allow data to be republished in a secure manner.
+2. Enabling data to be republished in a secure manner.
 
-Point 2 actually encompasses two large issues in itself. The ability to start a node and make it's data
-available is obviously required where we have large amounts of data to maintain. Another large advantage
+Point 2 can be further sub divided. The ability to start a node and make it's data
+available is obviously required where large amounts of data are required to be maintained. Another large advantage
 is the ability for such a network to recover from a full system outage (full network collapse, worldwide
 power outage etc.).
 
 Another very useful "side effect" of data republish is in network upgrades. As long as two versions of
-nodes have the ability to accept and store such data then even incompatible upgrades may be an option, that
+nodes have the ability to accept and store such data, even incompatible upgrades (???????) may be an option, that
 was not previously possible. This component requires some further research, but would appear to offer a
 significant advantage.
 
