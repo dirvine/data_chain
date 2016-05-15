@@ -1,6 +1,6 @@
 # DataChain's
 
-A data structure that may b cryptographically proven to contain valid data that has been secured
+A data structure that may be cryptographically proven to contain valid data that has been secured
 onto a decentralised network.
 
 # Abstract
