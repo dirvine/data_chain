@@ -5,20 +5,20 @@ onto a decentralised network.
 
 # Abstract
 
-A mechanism to lock data descriptors in a containers that may be held on a decentralised network.
+A mechanism to lock data descriptors in containers that may be held on a decentralised network.
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
 signatures. These signatures are of a certain size GROUP_SIZE with a QUORUM required to be
 considered valid (much like N of P sharing). In a decentralised network that has secured groups,
 these signatures are those closest to the holder of a `DataChain`. The `DataChain` will
 have a majority of existing group members if it is republished prior to more than
-GROUP_SIZE - QUORUM nodes changing. In this situation there is a strong cryptographic proof of the
+GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the
 data validity.
 
-When a `DataChain` starts the entries are signed by ever changing, but a majority of previous nodes. 
-As the chain grows this rolling majority of different signatories can be cryptographically confirmed. 
-This process continues to the very top of the chain which will contain entries signed by the majority of the current close group of nodes. This current group of nodes can cryptographically validate the chain since it's inception and thereby confirm the validity of every data element referred to by this chain. 
+When a `DataChain` starts the entries are signed by ever changing majority of pre-existing nodes. 
+As the chain grows, this rolling majority of different signatories can be cryptographically confirmed. 
+This process continues to the very top of the chain which will contain entries signed by the majority of the current close group of nodes. This current group of nodes can cryptographically validate the entire chain and every data element referred to within it. 
 
-As groups change and the network grows, or indeed shrinks, many chains held by various nodes will have a common element. This allows such chains to be cross referenced and build a complete picture of data from the start of the network. These side benefits are merely touching the surface and will be added to during this paper. In essense though this chain of verifyable data elements provides a provable sequence of data validity and also the sequence of such data appearing on the network. 
+As groups change and the network grows, or indeed shrinks, many chains held by various nodes will have a common element. This allows such chains to be cross referenced in order to build a complete picture of data from the start of the network. These side benefits of this feature are significant and will be added to during this paper. In essense, this chain of verifyable data elements provides a provable sequence of data validity and also the sequence of such data appearing on the network. 
 
 It is through this basic recondition of chained majority agreements that assures the ability for a `DataChain` to be validated and therefore allows data to be republished.
 
