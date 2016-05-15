@@ -48,7 +48,7 @@ significant advantage.
 
 A `DataChain` is a chained list of `DataIdentifiers`. A `DataIdentifier` is an object that can uniquely
 identify a data item. These identifiers will hold a cryptographic hash of the underlying data item,
-but may hold additional information such as name, version etc.
+but may also hold additional information such as name, version ...etc...
 
 ```rust
 pub enum DataIdentifier {
