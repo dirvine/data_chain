@@ -121,14 +121,14 @@ nodes close to that data element described by the  `DataIdentifier`.
 
 ## Data chain
 
-On accumulation of a majority of signatories the `DataBlock` will be inserted into the `DataCahin`
-If it cannot be added (yet) due to lack of a majority consensus then it will remain in the cache
+On accumulation of a majority of signatories, the `DataBlock` will be inserted into the `DataChain`
+If it cannot be added (yet) due to lack of a majority consensus, it will remain in the cache
 and await further `NodeDataBlock`'s.'
 
 The `DataChain` is validated via a chain of signed elements where there is a majority of signatures
-in agreement at each step (lock step). From the first element to the last this chain of majority
+in agreement at each step (lock step). From the first element to the last, this chain of majority
 signatures will show that the entire chain is valid. This is due to the fact that the current group
-will also have a majority of current members in agreement with the last entry.
+will also have a majority of current members in agreement with the previous entry.
 
 **To maintain this security, on each churn event the last entry is refreshed to the whole group. This
 is added to the chain if it still maintains consensus. If there are several churn events in succession
@@ -141,8 +141,8 @@ duplicates will not exist, as chains are grown only with successful `Put`, `Post
 by their definition cannot be for same data.
 
 A `Delete` event will, however, remove an entry from the chain, but only if the chained consensus
-would not be broken. If such a delete did cause a gap in the consensus, effectively breaking the chain
-then the entry is maintained and marked as deleted (the actul data is deleted from any disk cache).
+would not be broken. If such a delete did cause a gap in the consensus, effectively breaking the chain,
+the entry would be maintained and marked as deleted (the actul data is deleted from any disk cache).
 
 The `DataChain` is described below.
 
