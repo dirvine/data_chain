@@ -18,7 +18,7 @@ When a `DataChain` starts the entries are signed by ever changing, but a majorit
 As the chain grows this rolling majority of different signatories can be cryptographically confirmed. 
 This process continues to the very top of the chain which will contain entries signed by the majority of the current close group of nodes. This current group of nodes can cryptographically validate the chain since it's inception and thereby confirm the validity of every data element referred to by this chain. 
 
-As groups change and the network grows, or indeed shrinks, many chains held by various nodes will have a common element. This allows such chains to be cross referenced and build a complete picture of data from the start of the network. These side benefits are merely touching the surface and will be added to during this paper. In essens though this chain of verifyable data lements provides a provable sequence of data validity and also the sequence of such data appearing on the network. 
+As groups change and the network grows, or indeed shrinks, many chains held by various nodes will have a common element. This allows such chains to be cross referenced and build a complete picture of data from the start of the network. These side benefits are merely touching the surface and will be added to during this paper. In essense though this chain of verifyable data elements provides a provable sequence of data validity and also the sequence of such data appearing on the network. 
 
 It is through this basic recondition of chained majority agreements that assures the ability for a `DataChain` to be validated and therefore allows data to be republished.
 
