@@ -42,6 +42,9 @@ a provable sequence of data validity and also the sequence of such data appearin
 It is through this basic recondition of chained majority agreements that assures the ability for a
 `DataChain` to be validated and therefore allows data to be republished.
 
+The design described below will show a system where node capabilities are amortised across a network,
+providing a blanace of resources that cna be mixed evenly across a network of nodes with varying 
+capabilities, form mass persistent data storage to very litle, transient data storage.
 
 # Motivation
 
