@@ -373,6 +373,11 @@ as they do not have the ability to respond to many data retrieval requests, if a
 though are still beneficial to the network to provide connectivity and lower level consensus at the
 routing level.
 
+A non archive node can request old data from existing archive nodes in a group, but the rate should be limited 
+in cases where there are already three such nodes in a group. These messages will be the lowest priority messages 
+in the group. Tehreby any attacker will require to become an archive node and this will take time, unless the 
+group falls below three archive nodes in which case the priority is increased on such relocation messages.
+
 ## Chained chains
 
 As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
