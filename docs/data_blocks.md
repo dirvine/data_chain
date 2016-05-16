@@ -351,7 +351,7 @@ The length of the `DataChain` should be as long as possible. Although a node may
 data outwith it's current close group. It is prudent such nodes hold as much of the Chain as
 possible as this all allow quicker rebuild of a network on complete outage. Nodes may keep such
 structures and associated data in a container that prunes older blocks to make space for new blocks
-as new blocks appear.
+as new blocks appear (FIFO or first in first out).
 
 #### Additional requirements of Archive nodes
 
@@ -376,8 +376,8 @@ that these links across chains provide may prove to be extremely useful.
 ## Timestamped order of data
 
 With a small modification to a `DataBlock`, a list of timestamps can be obtained along with the
-proof. The median value of such timtamps can be used to provide a certain range (within a day or
-hour) of the publication date of any data item. This cna also be used to prove first version or
+proof. The median value of such timestamps can be used to provide a certain range (within a day or
+hour) of the publication date of any data item. This can also be used to prove first version or
 attribution of an initial creator of any digital information, regardless of copies existing and
 possibly altered slightly.
 
