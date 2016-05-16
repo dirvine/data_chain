@@ -10,6 +10,12 @@ onto a decentralised network.
 - Immutable data, a data type that has a name == hash of it's contents (it is immutable as changing
   the contents creates a new peice of immutable data).
 - Structured data, a data type that has a fixed name, but mutable contents.
+- GROUP_SIZE, the number of nodes surrounding a network address (Magic number, i.e. selected by
+  developer).
+- QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
+  paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
+- Chain consensus, the face that QUORUM number of signatories exist in the next link (`DataBlock` as
+  described below) that also exist in the previous block.
 
 # Abstract
 
@@ -57,13 +63,12 @@ would appear to offer a significant advantage.
 
 # Detailed design
 
-
 ## Data identifier object
 
 A `DataChain` is a chained list of `DataIdentifiers` plus some form of cryptographic proof. A
-`DataIdentifier` is an object that can uniquely identify a data item. These identifiers will hold a
-cryptographic hash of the underlying data item, but may also hold additional information such as
-name, version ...etc...
+`DataIdentifier` is an object that can uniquely identify and validate a data item. These identifiers
+will hold a cryptographic hash of the underlying data item, but may also hold additional information
+such as name, version ...etc...
 
 ```rust
 pub enum DataIdentifier {
@@ -91,7 +96,8 @@ As well as `DataIdentifier` each `NodeDataBlock` consists of a  `PublicKey/Signa
 `PublicKey` can be proven to be the key that signed the `DataIdentifier` using the signature as the
 proof.
 
-**NB this assumes the PublicKey is in fact the node name of a node close to the `DataIdentifier`**
+**NB this assumes the PublicKey is in fact the node name (or can be extracted from) of a node close
+to the `DataIdentifier`**
 
 ```rust
 
@@ -100,6 +106,9 @@ proof.
 pub struct NodeDataBlock {
     identifier: DataIdentifier,
     proof: (PublicKey, Signature),
+    // Optionally we can include a UTC timestamp here and use this to note time of the data being
+    // put on the network. As this is not exact in an eventual consistency network, the timestamp
+    // would be the median value of a sorted list of timestamps per `DataBlock`
 }
 
 impl NodeDataBlock {
@@ -291,56 +300,90 @@ impl DataChain {
 
 ```
 
+# Requirements of network nodes
+
+In a decentralised network, a large improvement in stability and ability for failure recovery can be
+improved by a few simple steps :
+
+1. Each node should store the nodes it has been connected to. (can be limited if required, as very
+old node addreses are unlikely to reappear).
+
+2. A node should store it's public and secret keys on disk along with it's data and associated
+`DataChain`.
+
+3. On startup a node should attempt to reconnect to the last address it recorded and present it'
+`DataChain`. The group will decide (and shold also have a note of this nodes address (key)) if this
+node is allowed to join this group or instead have to join the network again to be allocated a new
+address.
+    -   The group will make this decision on the length of the nodes `DataChain`. If we consider
+        three large nodes (Archive nodes) can exist per group. Then this node will join the group if
+        it has a `DataChain` longer than the third longest `DataChain` in the group.
+
+4. As nodes will attempt to hold persistent data, all local data can be held in named directories.
+On startup this data will be useful if the node can rejoin a group.  If a node is rejected and
+forced to rejoin the network with a new ID then a new named directory can be created. this allows
+nodes to clean up unused directories effectively.
+
+## Network restart
+
+The process described above will mean that decentralised network, far from potentially losing data
+on restart should recover with a very high degree of certainty.
+
+As nodes will retain a list of previously connected nodes as well as attempt to rejoin a group then
+each node can use it's "remembered" list of previously known node names to validate a majority
+without the other nodes existing. This is a form of offline validation that can be extended further.
+It allows offline validation for a node, but does not allow this validation to be sent to another
+node. The remainder of the old group will have to form again to provide full validation.
+
+# Additional observations
+
+## Archive nodes
+
+Nodes that hold the longest `DataChains` may be considered to be archive nodes. such nodes will be
+responsible for maintaining all network data for specific areas of the network address range.
+
+### Archive node Datachain length
+
+The length of the `DataChain` should be as long as possible. Although a node may not require to hold
+data outwith it's current close group. It is prudent such nodes hold as much of the Chain as
+possible as this all allow quicker rebuild of a network on complete outage. Nodes may keep such
+structures and associated data in a container that prunes older blocks to make space for new blocks
+as new blocks appear.
+
+#### Additional requirements of Archive nodes
+
+If an archive nodes is requested data that is ouwith it's current close group then it should receive
+a higher reward than usual. This will encourage nodes to maintain as much data as possible.
+
+## Non Archive nodes
+
+All nodes in a group will build on their `DataChain`, whether an Archive node or simply attempting
+to become an archive node. Small nodes with little resources though may decide to not create a
+`DataChain`. In these cases these smaller less capable nodes will receive limited rewards as they do
+not have the ability to respond to many data retrieval requests, if any at all. These small nodes
+though are still beneficial to the network to provide connectivity and lower level consensus at the
+routing level.
+
+## Chained chains
+
+As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
+on `DataBlocks` held. such links across chans has not as yet been fully analysed. It is speculated
+that these links across chains may provide may prove to be extremely useful.
+
+## Timestamped order of data
+
+With a small modification to a `DataBlock`, a list of timestamps cna be obtained along with the
+proof. The median value of such timtamps can be used to provide a certain range (within a day or
+hour) of the publication date of any data item. This cna also be used to prove first version or
+attribution of an initial creator of any digital information, regardless of copies existing and
+possibly altered slightly.
+
+## Archive node pointers
+
+The possibility for a group to not have an ability, even with Archive nodes to store all data may
+still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
+known larger nodes outwith their group, by passing data and also passing a `DtaChain` to prove
+validity. This can introduce an addition ot the `DataChain` object to provide pointers to data. In
+such cases the larger nodes should receive a proportion of any reward for doing so.
 
 
-##Prevention of injection attacks
-
-To prevent such data being simply created in an off-line attack. To prevent this, the node must have
-existed in the network and be able to prove this. This does not completely prevent off-line attacks,
-but certainly makes them significantly more difficult and increasingly so as the network grows.
-
-Each Refresh message received from a node is signed by that node to the claimant node. These refresh
-messages
-
-In network restarts there exists a window of opportunity for an injection attack. This is a case
-where invalid SD in particular could be injected. To prevent this the StructuredData refresh message
-must include the hash of the StructuredData element.
-
-####Node memory
-
-Each node id added to the routing table should be "remembered" by all nodes that see this node.
-These remembered NodeId's will allow nodes to tie up refresh message node Id's with those found in
-the `DataBlock` These "previously seen" nodes should be written to the nodes cache file for later
-proof.
-
-
-###Network "difficulty"
-
-The distance of the furthest group member to a nodes own ID is regarded as network difficulty. In
-small networks this will wildly fluctuate. This value must be written to the nodes configuration
-file, in case of SAFE this is the vault configuration file.
-
-###If list of existing data is zero
-
-This is a network restart, therefore we accept these messages as is and confirm there are at least
-GROUP_SIZE nodes signed such messages. The difficult measurement must match (or be less than) that
-of the  current receiving node in the previous network,
-
-###If network difficulty is reduced significantly (less than half previous)
-
-Confirm at least one node in current group exits in the array in the list of that data element.
-
-# Drawbacks
-
-In very small networks (less than approx 3000) network difficulty is a fluctuating number, this can
-probably not be prevented, but may allow unwanted data or in fact prevent valid data from being
-refreshed.
-
-
-# Alternatives
-
-What other designs have been considered? What is the impact of not doing this?
-
-# Unresolved questions
-
-What parts of the design are still to be done?
