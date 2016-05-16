@@ -6,28 +6,29 @@ onto a decentralised network.
 # Definitions used
 
 - Decentralised network, A peer to peer network in xor space, using Kadmelia type addressing.
-- hash, a cryptographic one way function that produces a fixed length representation of any input.
+- Hash, a cryptographic one way function that produces a fixed length representation of any input.
 - Immutable data, a data type that has a name == hash of it's contents (it is immutable as changing
   the contents creates a new peice of immutable data).
 - Structured data, a data type that has a fixed name, but mutable contents.
-- GROUP_SIZE, the number of nodes surrounding a network address (Magic number, i.e. selected by
-  developer).
+- GROUP_SIZE, the number of nodes surrounding a network address.
 - QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
   paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
 - Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
   described below) that also exist in the previous block.
+- Churn event, a movement of data that results from a node switching off and the data being relocated
+  to a 'live' node. 
 
 # Abstract
 
 A mechanism to lock data descriptors in containers that may be held on a decentralised network.
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
-signatures. These signatures are of a certain size GROUP_SIZE with a QUORUM required to be
-considered valid (much like N of P sharing). In a decentralised network that has secured groups,
-these signatures are those closest to the holder of a `DataChain`. The `DataChain` will have a
-majority of existing group members if it is republished prior to more than GROUP_SIZE - QUORUM nodes
-changing. In this situation, there is a strong cryptographic proof of the data validity.
+signatures. These signatures are of a certain size GROUP_SIZE (12 nodes) with a QUORUM (7 nodes) 
+required to be considered valid (much like N of P sharing). In a decentralised network that has 
+secured groups,these signatures are those closest to the holder of a `DataChain`. The `DataChain` 
+will have a majority of existing group members if it is republished prior to more than GROUP_SIZE 
+- QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the data validity.
 
-When a `DataChain` starts the entries are signed by ever changing majority of pre-existing nodes.
+When a `DataChain` starts, the entries are signed by an ever changing majority of pre-existing nodes.
 As the chain grows, this rolling majority of different signatories can be cryptographically
 confirmed.  This process continues to the very top of the chain which will contain entries signed by
 the majority of the current close group of nodes. This current group of nodes can cryptographically
@@ -35,8 +36,7 @@ validate the entire chain and every data element referred to within it.
 
 As groups change and the network grows, or indeed shrinks, many chains held by various nodes will
 have a common element. This allows such chains to be cross referenced in order to build a complete
-picture of data from the start of the network. These side benefits of this feature are significant
-and will be added to during this paper. In essence, this chain of verifiable data elements provides
+picture of data from the start of the network. In essence, this chain of verifiable data elements provides
 a provable sequence of data validity and also the sequence of such data appearing on the network.
 
 It is through this basic recondition of chained majority agreements that assures the ability for a
@@ -54,13 +54,13 @@ In a fully decentralised network there are many problems to solve, two important
 
 2. Enabling data to be republished in a secure manner.
 
-Point 2 can be further sub divided. The ability to start a node and make it's data available is
-obviously required where large amounts of data are required to be maintained. Another large
-advantage is the ability for such a network to recover from a full system outage (full network
-collapse, worldwide power outage etc.).
+Point 2 can be further sub divided. The ability to start a node and make its data available is
+required where large amounts of data are required to be maintained. Another large
+advantage is the ability for such a network to recover from a full system outage, such as a full 
+network collapse, or worldwide power outage, for example.
 
-Another very useful "side effect" of data republish is in network upgrades. As long as two versions
-of nodes have the ability to accept and store such data, even immediate stem wide  upgrades may be
+Furthermore, another very useful "side effect" of data republish is in network upgrades. As long as two 
+versions of nodes have the ability to accept and store such data, even immediate stem wide  upgrades may be
 an option, that was not previously possible. This component requires some further research, but
 would appear to offer a significant advantage.
 
@@ -68,10 +68,10 @@ would appear to offer a significant advantage.
 
 ## Data identifier object
 
-A `DataChain` is a chained list of `DataIdentifiers` plus some form of cryptographic proof. A
-`DataIdentifier` is an object that can uniquely identify and validate a data item. These identifiers
-will hold a cryptographic hash of the underlying data item, but may also hold additional information
-such as name, version ...etc...
+A `DataChain` is a chained list of `DataBlock`'s which are comprised of `DataIdentifiers` that have been 
+cryptographically validated. A `DataIdentifier` is an object that can uniquely identify and validate a data 
+item. These identifiers will hold a cryptographic hash of the underlying data item, but may also hold additional 
+information such as name, version ...etc...
 
 ```rust
 pub enum DataIdentifier {
@@ -136,10 +136,11 @@ impl NodeDataBlock {
 
 ## Data block
 
-On receipt of a `NodeDataBlock` the receiving node will check first in a cache of `DataBlock`'s
-and then in the `DataChain` itself. On finding an entry it will add the node to any `DataBlock`. If
-no entry is found the receiver will create a new `DataBlock` entry in the cache and await further
-notifications from group members of this `DataIdentifier`.
+On receipt of a `NodeDataBlock`(a result of data being stored on the network, for example) the 
+receiving node will check first in a cache of `DataBlock`'s and then in the `DataChain` itself. 
+On finding an entry it will add the node to any `DataBlock`. If no entry is found the receiver 
+will create a new `DataBlock` entry in the cache and await further notifications from group members 
+of this `DataIdentifier`.
 
 This array must contain at least QUORUM members and be of CLOSE_GROUP length. It must only contain
 nodes close to that data element described by the  `DataIdentifier`.
@@ -308,16 +309,16 @@ impl DataChain {
 In a decentralised network, a large improvement in stability and ability for failure recovery can be
 improved by a few simple steps :
 
-1. Each node should store the nodes it has been connected to. (can be limited if required, as very
+1. Each node should store the nodes it has been connected to (can be limited if required, as very
 old node addreses are unlikely to reappear).
 
-2. A node should store it's public and secret keys on disk along with it's data and associated
+2. A node should store its public and secret keys on disk along with its data and associated
 `DataChain`.
 
-3. On startup a node should attempt to reconnect to the last address it recorded and present it's
+3. On startup, a node should attempt to reconnect to the last address it recorded and present its
 `DataChain`. The group will decide (and should also have a note of this nodes address (key)) if this
-node is allowed to join this group or instead have to join the network again to be allocated a new
-address.
+node is allowed to join this group. Alternatively the node may have to join the network again to be 
+allocated a new address.
     -   The group will make this decision on the length of the nodes `DataChain`. If we consider
         three large nodes (Archive nodes) can exist per group. Then this node will join the group if
         it has a `DataChain` longer than the third longest `DataChain` in the group.
@@ -332,8 +333,8 @@ nodes to clean up unused directories effectively.
 The process described above will mean that decentralised network, far from potentially losing data
 on restart should recover with a very high degree of certainty.
 
-As nodes will retain a list of previously connected nodes as well as attempt to rejoin a group then
-each node can use it's "remembered" list of previously known node names to validate a majority
+As nodes will retain a list of previously connected nodes, as well as attempt to rejoin a group,
+each node can use its "remembered" list of previously known node names to validate a majority
 without the other nodes existing. This is a form of offline validation that can be extended further.
 It allows offline validation for a node, but does not allow this validation to be sent to another
 node. The remainder of the old group will have to form again to provide full validation.
