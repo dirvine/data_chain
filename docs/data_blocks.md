@@ -381,6 +381,13 @@ hour) of the publication date of any data item. This cna also be used to prove f
 attribution of an initial creator of any digital information, regardless of copies existing and
 possibly altered slightly.
 
+### Structured data first version
+
+To strengthen the validity of mutable data (StructuredData) the first version (version 0) may be
+maintained in the chain. This will show age of such data, which may be particularly useful in types
+of mutable data that do not change ownership or indeed where network created elements (such as any
+currency) can be further validated.
+
 ## Archive node pointers
 
 The possibility for a group to not have an ability, even with Archive nodes to store all data may
