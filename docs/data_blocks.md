@@ -14,7 +14,7 @@ onto a decentralised network.
   developer).
 - QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
   paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
-- Chain consensus, the face that QUORUM number of signatories exist in the next link (`DataBlock` as
+- Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
   described below) that also exist in the previous block.
 
 # Abstract
