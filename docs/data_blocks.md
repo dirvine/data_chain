@@ -384,6 +384,6 @@ The possibility for a group to not have an ability, even with Archive nodes to s
 still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
 known larger nodes outwith their group, by passing data and also passing a `DtaChain` to prove
 validity. This can introduce an addition ot the `DataChain` object to provide pointers to data. In
-such cases the larger nodes should receive a proportion of any reward for doing so.
+such cases the larger nodes should receive a proportion of any reward for doing so. It is, however, doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed across groups as described above.
 
 
