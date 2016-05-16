@@ -314,8 +314,8 @@ old node addreses are unlikely to reappear).
 2. A node should store it's public and secret keys on disk along with it's data and associated
 `DataChain`.
 
-3. On startup a node should attempt to reconnect to the last address it recorded and present it'
-`DataChain`. The group will decide (and shold also have a note of this nodes address (key)) if this
+3. On startup a node should attempt to reconnect to the last address it recorded and present it's
+`DataChain`. The group will decide (and should also have a note of this nodes address (key)) if this
 node is allowed to join this group or instead have to join the network again to be allocated a new
 address.
     -   The group will make this decision on the length of the nodes `DataChain`. If we consider
