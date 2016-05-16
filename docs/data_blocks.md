@@ -344,7 +344,10 @@ node. The remainder of the old group will have to form again to provide full val
 ## Archive nodes
 
 Nodes that hold the longest `DataChains` may be considered to be archive nodes. such nodes will be
-responsible for maintaining all network data for specific areas of the network address range.
+responsible for maintaining all network data for specific areas of the network address range. There will 
+be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group and it would 
+therefore require a minimum of 3 groups of archive nodes to collude against the network. It is important to 
+note that each group is chosen at random by the network.
 
 ### Archive node Datachain length
 
@@ -356,23 +359,25 @@ as new blocks appear (FIFO or first in first out).
 
 #### Additional requirements of Archive nodes
 
-If an archive nodes is requested data that is ouwith it's current close group then it should receive
-a higher reward than usual. This will encourage nodes to maintain as much data as possible.
+If an archive node requests data that is outwith its current close group, it should receive
+a higher reward than usual. This reward is provided via a crypto graphic token which can be exchanged for network
+services or for other forms of crypto currency, such as bitcoin, via an online exchange. This incentive will 
+encourage nodes to maintain as much data as possible.
 
 ## Non Archive nodes
 
 All nodes in a group will build on their `DataChain`, whether an Archive node or simply attempting
-to become an archive node. Small nodes with little resources though may decide to not create a
-`DataChain`. In these cases these smaller less capable nodes will receive limited rewards as they do
-not have the ability to respond to many data retrieval requests, if any at all. These small nodes
+to become an archive node. Small nodes with little resources though may find it difficult to create a
+`DataChain`of any significance. In these cases these smaller less capable nodes will receive limited rewards 
+as they do not have the ability to respond to many data retrieval requests, if any at all. These small nodes
 though are still beneficial to the network to provide connectivity and lower level consensus at the
 routing level.
 
 ## Chained chains
 
 As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
-on `DataBlocks` held. such links across chans has not as yet been fully analysed. It is speculated
-that these links across chains provide may prove to be extremely useful.
+on `DataBlocks` held. Such links across chains has not as yet been fully analysed, however, it is speculated
+that the ability to cross reference will enable a fuller picture of network data to be built up.
 
 ## Timestamped order of data
 
