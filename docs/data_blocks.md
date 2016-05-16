@@ -368,7 +368,7 @@ routing level.
 
 As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
 on `DataBlocks` held. such links across chans has not as yet been fully analysed. It is speculated
-that these links across chains may provide may prove to be extremely useful.
+that these links across chains provide may prove to be extremely useful.
 
 ## Timestamped order of data
 
