@@ -372,7 +372,7 @@ that these links across chains provide may prove to be extremely useful.
 
 ## Timestamped order of data
 
-With a small modification to a `DataBlock`, a list of timestamps cna be obtained along with the
+With a small modification to a `DataBlock`, a list of timestamps can be obtained along with the
 proof. The median value of such timtamps can be used to provide a certain range (within a day or
 hour) of the publication date of any data item. This cna also be used to prove first version or
 attribution of an initial creator of any digital information, regardless of copies existing and
