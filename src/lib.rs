@@ -252,8 +252,8 @@ impl DataChain {
         }
 
         if !data_block.proof
-                      .iter()
-                      .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
+            .iter()
+            .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
             return Err(Error::Signature);
         }
         // TODO Remove any old copies of this data from the chain. It should not happen though
@@ -293,7 +293,7 @@ impl DataChain {
         }
 
         if let Ok(index) = self.chain
-                               .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
+            .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
             if self.has_majority(&self.chain[index + 1], &self.chain[index - 1]) {
                 // we can  maintain consensus by removing this iteem
                 return Some(self.chain.remove(index));
@@ -308,9 +308,9 @@ impl DataChain {
 
     fn validate_majorities(&self) -> Result<(), Error> {
         if self.chain
-               .iter()
-               .zip(self.chain.iter().skip(1))
-               .all(|block| self.has_majority(block.0, block.1)) {
+            .iter()
+            .zip(self.chain.iter().skip(1))
+            .all(|block| self.has_majority(block.0, block.1)) {
             Ok(())
         } else {
             Err(Error::Majority)
@@ -319,16 +319,16 @@ impl DataChain {
 
     fn validate_signatures(&self) -> Result<(), Error> {
         if self.chain
-               .iter()
-               .all(|x| {
-                   if let Ok(data) = serialisation::serialise(&x.identifier) {
-                       x.proof
+            .iter()
+            .all(|x| {
+                if let Ok(data) = serialisation::serialise(&x.identifier) {
+                    x.proof
                         .iter()
                         .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-                   } else {
-                       false
-                   }
-               }) {
+                } else {
+                    false
+                }
+            }) {
             Ok(())
         } else {
             Err(Error::Signature)
@@ -360,11 +360,11 @@ mod tests {
         let test_data2 = DataIdentifier::Type1(1u64);
         let test_data3 = DataIdentifier::Type2(1u64);
         let test_node_data_block1 = NodeDataBlock::new(&keys.0, &keys.1, test_data1)
-                                        .expect("fail1");
+            .expect("fail1");
         let test_node_data_block2 = NodeDataBlock::new(&keys.0, &keys.1, test_data2)
-                                        .expect("fail2");
+            .expect("fail2");
         let test_node_data_block3 = NodeDataBlock::new(&keys.0, &keys.1, test_data3)
-                                        .expect("fail3");
+            .expect("fail3");
         assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
         assert!(test_node_data_block1 != test_node_data_block3.clone());
         assert!(test_node_data_block2 != test_node_data_block3);
@@ -376,30 +376,30 @@ mod tests {
         let mut chain = DataChain::new(group_size);
 
         let keys = (0..count + group_size)
-                       .map(|_| crypto::sign::gen_keypair())
-                       .collect_vec();
+            .map(|_| crypto::sign::gen_keypair())
+            .collect_vec();
 
 
 
 
         let data_blocks = (0..count)
-                              .map(|x| {
-                                  let mut block = if x % 2 == 0 {
-                                      DataBlock::new(DataIdentifier::Type1(x))
-                                  } else {
-                                      DataBlock::new(DataIdentifier::Type2(x))
-                                  };
-                                  let data = serialisation::serialise(&block.identifier)
-                                                 .expect("serialise fail");
-                                  for y in 0..group_size {
-                                      let _ = block.add_node(keys[x as usize + y as usize].0,
-                                       crypto::sign::sign_detached(&data[..],
-                                                                   &keys[x as usize + y as usize]
-                                                                        .1));
-                                  }
-                                  block
-                              })
-                              .collect_vec();
+            .map(|x| {
+                let mut block = if x % 2 == 0 {
+                    DataBlock::new(DataIdentifier::Type1(x))
+                } else {
+                    DataBlock::new(DataIdentifier::Type2(x))
+                };
+                let data = serialisation::serialise(&block.identifier).expect("serialise fail");
+                for y in 0..group_size {
+                    let _ = block.add_node(keys[x as usize + y as usize].0,
+                                           crypto::sign::sign_detached(&data[..],
+                                                                       &keys[x as usize +
+                                                                             y as usize]
+                                                                           .1));
+                }
+                block
+            })
+            .collect_vec();
 
         let now = time::Instant::now();
 
