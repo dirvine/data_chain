@@ -15,8 +15,7 @@ onto a decentralised network.
   paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
 - Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
   described below) that also exist in the previous block.
-- Churn event, a movement of data that results from a node switching off and the data being relocated
-  to a 'live' node. 
+- Churn event, a change in the group, either by a node leaving or a node joining. 
 
 # Abstract
 
