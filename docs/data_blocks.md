@@ -153,7 +153,8 @@ await further `NodeDataBlock`'s.'
 The `DataChain` is validated via a chain of signed elements where there is a majority of signatures
 in agreement at each step (lock step). From the first element to the last, this chain of majority
 signatures will show that the entire chain is valid. This is due to the fact that the current group
-will also have a majority of current members in agreement with the previous entry.
+will also have a majority of current members in agreement with the previous entry. **N:B The current
+signatories sign the current `DataIDentifier` and the previous `DataBlock`.**
 
 **To maintain this security, on each churn event the last entry is refreshed to the whole group.
 This is added to the chain if it still maintains consensus. If there are several churn events in
