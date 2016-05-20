@@ -116,20 +116,20 @@ impl From<()> for Error {
 /// Dummy data identifiers for this crate
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub enum DataIdentifier {
+pub enum BlockIdentifier {
     Type1(u64),
     Type2(u64),
 }
 
-impl DataIdentifier {
+impl BlockIdentifier {
     /// Define a name getter as data identifiers may contain more info that does
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
     pub fn name(&self) -> u64 {
         match *self {
-            DataIdentifier::Type1(name) => name,
-            DataIdentifier::Type2(name) => name,
+            BlockIdentifier::Type1(name) => name,
+            BlockIdentifier::Type2(name) => name,
         }
     }
 }
@@ -139,7 +139,7 @@ impl DataIdentifier {
 /// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeDataBlock {
-    identifier: DataIdentifier,
+    identifier: BlockIdentifier,
     proof: (PublicKey, Signature),
 }
 
@@ -147,7 +147,7 @@ impl NodeDataBlock {
     /// Create a DataBlock (used by nodes in network to send to holders of `DataChains`)
     pub fn new(pub_key: &PublicKey,
                secret_key: &SecretKey,
-               data_identifier: DataIdentifier)
+               data_identifier: BlockIdentifier)
                -> Result<NodeDataBlock, Error> {
         let signature =
             crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
@@ -164,17 +164,17 @@ impl NodeDataBlock {
 /// Used to validate chain `linksi`.
 /// On a network churn event the latest `DataBlock` is copied from the chain and sent
 /// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
-/// `NodeBlock  for this `DataIdentifier` and returns it to the `archive node`
+/// `NodeBlock  for this `BlockIdentifier` and returns it to the `archive node`
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct DataBlock {
-    identifier: DataIdentifier,
+    identifier: BlockIdentifier,
     proof: HashMap<PublicKey, Signature>,
     deleted: bool, // we can mark as deleted if removing entry would invalidate the chain
 }
 
 impl DataBlock {
     /// Construct a DataBlock
-    pub fn new(data_id: DataIdentifier) -> DataBlock {
+    pub fn new(data_id: BlockIdentifier) -> DataBlock {
         DataBlock {
             identifier: data_id,
             proof: HashMap::new(),
@@ -187,7 +187,7 @@ impl DataBlock {
     }
 
     /// Get the identifier
-    pub fn identifier(&self) -> &DataIdentifier {
+    pub fn identifier(&self) -> &BlockIdentifier {
         &self.identifier
     }
 
@@ -356,9 +356,9 @@ mod tests {
     #[test]
     fn simple_node_data_block_comparisons() {
         let keys = crypto::sign::gen_keypair();
-        let test_data1 = DataIdentifier::Type1(1u64);
-        let test_data2 = DataIdentifier::Type1(1u64);
-        let test_data3 = DataIdentifier::Type2(1u64);
+        let test_data1 = BlockIdentifier::Type1(1u64);
+        let test_data2 = BlockIdentifier::Type1(1u64);
+        let test_data3 = BlockIdentifier::Type2(1u64);
         let test_node_data_block1 = NodeDataBlock::new(&keys.0, &keys.1, test_data1)
             .expect("fail1");
         let test_node_data_block2 = NodeDataBlock::new(&keys.0, &keys.1, test_data2)
@@ -385,9 +385,9 @@ mod tests {
         let data_blocks = (0..count)
             .map(|x| {
                 let mut block = if x % 2 == 0 {
-                    DataBlock::new(DataIdentifier::Type1(x))
+                    DataBlock::new(BlockIdentifier::Type1(x))
                 } else {
-                    DataBlock::new(DataIdentifier::Type2(x))
+                    DataBlock::new(BlockIdentifier::Type2(x))
                 };
                 let data = serialisation::serialise(&block.identifier).expect("serialise fail");
                 for y in 0..group_size {
