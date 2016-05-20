@@ -77,6 +77,7 @@ pub enum DataIdentifier {
     Immutable(sha512),
     Structured(sha512, XorName, u64),
     //         hash    name     version
+    GroupIdentifier(sha512), // A special entry to agree on hash of current group (used in churn events)
 }
 
 impl DataIdentifier {
@@ -156,11 +157,12 @@ signatures will show that the entire chain is valid. This is due to the fact tha
 will also have a majority of current members in agreement with the previous entry. **N:B The current
 signatories sign the current `DataIDentifier` and the previous `DataBlock`.**
 
-**To maintain this security, on each churn event the last entry is refreshed to the whole group.
-This is added to the chain if it still maintains consensus. If there are several churn events in
-succession then there may be several copies of that entry in the chain. This is an unlikely event as
-data should constantly be in flux in such a network, but as a safeguard there may be several entries
-to maintain integrity of the chain.**
+**To maintain this security, on each churn event each node in the new group must sign an entry in the chain 
+that is the current group. Teh current group is all of the nodes in the current groop with relation 
+to this `DataChain`. This must be done on every churn event to ensure no nodes can be later inserted 
+into the chain. There are several mechanisms to allow this such as a parallel chain of nodes and groups
+or indeed insert into the chain a speck=ial `DataBlock` which is in fact the group agreement block.**
+
 
 For this reason, duplicate entries are allowed to exist in the chain. In normal circumstances
 duplicates will not exist, as chains are grown only with successful `Put`, `Post` or `Delete`. These
