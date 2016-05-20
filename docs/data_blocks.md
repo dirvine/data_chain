@@ -15,16 +15,16 @@ onto a decentralised network.
   paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
 - Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
   described below) that also exist in the previous block.
-- Churn event, a change in the group, either by a node leaving or a node joining. 
+- Churn event, a change in the group, either by a node leaving or a node joining.
 
 # Abstract
 
 A mechanism to lock data descriptors in containers that may be held on a decentralised network.
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
-signatures. These signatures are of a certain size GROUP_SIZE (12 nodes) with a QUORUM (7 nodes) 
-required to be considered valid (much like N of P sharing). In a decentralised network that has 
-secured groups,these signatures are those closest to the holder of a `DataChain`. The `DataChain` 
-will have a majority of existing group members if it is republished prior to more than GROUP_SIZE 
+signatures. These signatures are of a certain size GROUP_SIZE (12 nodes) with a QUORUM (7 nodes)
+required to be considered valid (much like N of P sharing). In a decentralised network that has
+secured groups,these signatures are those closest to the holder of a `DataChain`. The `DataChain`
+will have a majority of existing group members if it is republished prior to more than GROUP_SIZE
 - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the data validity.
 
 When a `DataChain` starts, the entries are signed by an ever changing majority of pre-existing nodes.
@@ -55,10 +55,10 @@ In a fully decentralised network there are many problems to solve, two important
 
 Point 2 can be further sub divided. The ability to start a node and make its data available is
 required where large amounts of data are required to be maintained. Another large
-advantage is the ability for such a network to recover from a full system outage, such as a full 
+advantage is the ability for such a network to recover from a full system outage, such as a full
 network collapse, or worldwide power outage, for example.
 
-Furthermore, another very useful "side effect" of data republish is in network upgrades. As long as two 
+Furthermore, another very useful "side effect" of data republish is in network upgrades. As long as two
 versions of nodes have the ability to accept and store such data, even immediate stem wide  upgrades may be
 an option, that was not previously possible. This component requires some further research, but
 would appear to offer a significant advantage.
@@ -67,9 +67,9 @@ would appear to offer a significant advantage.
 
 ## Data identifier object
 
-A `DataChain` is a chained list of `DataBlock`'s which are comprised of `DataIdentifiers` that have been 
-cryptographically validated. A `DataIdentifier` is an object that can uniquely identify and validate a data 
-item. These identifiers will hold a cryptographic hash of the underlying data item, but may also hold additional 
+A `DataChain` is a chained list of `DataBlock`'s which are comprised of `DataIdentifiers` that have been
+cryptographically validated. A `DataIdentifier` is an object that can uniquely identify and validate a data
+item. These identifiers will hold a cryptographic hash of the underlying data item, but may also hold additional
 information such as name, version ...etc...
 
 ```rust
@@ -136,10 +136,10 @@ impl NodeDataBlock {
 
 ## Data block
 
-On receipt of a `NodeDataBlock`(a result of data being stored on the network, for example) the 
-receiving node will check first in a cache of `DataBlock`'s and then in the `DataChain` itself. 
-On finding an entry it will add the node to any `DataBlock`. If no entry is found the receiver 
-will create a new `DataBlock` entry in the cache and await further notifications from group members 
+On receipt of a `NodeDataBlock`(a result of data being stored on the network, for example) the
+receiving node will check first in a cache of `DataBlock`'s and then in the `DataChain` itself.
+On finding an entry it will add the node to any `DataBlock`. If no entry is found the receiver
+will create a new `DataBlock` entry in the cache and await further notifications from group members
 of this `DataIdentifier`.
 
 This array must contain at least QUORUM members and be of CLOSE_GROUP length. It must only contain
@@ -157,9 +157,9 @@ signatures will show that the entire chain is valid. This is due to the fact tha
 will also have a majority of current members in agreement with the previous entry. **N:B The current
 signatories sign the current `DataIDentifier` and the previous `DataBlock`.**
 
-**To maintain this security, on each churn event each node in the new group must sign an entry in the chain 
-that is the current group. Teh current group is all of the nodes in the current groop with relation 
-to this `DataChain`. This must be done on every churn event to ensure no nodes can be later inserted 
+**To maintain this security, on each churn event each node in the new group must sign an entry in the chain
+that is the current group. The current group is all of the nodes in the current group with relation
+to this `DataChain`. This must be done on every churn event to ensure no nodes can be later inserted
 into the chain. There are several mechanisms to allow this such as a parallel chain of nodes and groups
 or indeed insert into the chain a speck=ial `DataBlock` which is in fact the group agreement block.**
 
@@ -319,7 +319,7 @@ old node addreses are unlikely to reappear).
 
 3. On startup, a node should attempt to reconnect to the last address it recorded and present its
 `DataChain`. The group will decide (and should also have a note of this nodes address (key)) if this
-node is allowed to join this group. Alternatively the node may have to join the network again to be 
+node is allowed to join this group. Alternatively the node may have to join the network again to be
 allocated a new address.
     -   The group will make this decision on the length of the nodes `DataChain`. If we consider
         three large nodes (Archive nodes) can exist per group. Then this node will join the group if
@@ -346,9 +346,9 @@ node. The remainder of the old group will have to form again to provide full val
 ## Archive nodes
 
 Nodes that hold the longest `DataChains` may be considered to be archive nodes. such nodes will be
-responsible for maintaining all network data for specific areas of the network address range. There will 
-be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group and it would 
-therefore require a minimum of 3 groups of archive nodes to collude against the network. It is important to 
+responsible for maintaining all network data for specific areas of the network address range. There will
+be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group and it would
+therefore require a minimum of 3 groups of archive nodes to collude against the network. It is important to
 note that each group is chosen at random by the network.
 
 ### Archive node Datachain length
@@ -363,21 +363,21 @@ as new blocks appear (FIFO or first in first out).
 
 If an archive node requests data that is outwith its current close group, it should receive
 a higher reward than usual. This reward is provided via a crypto graphic token which can be exchanged for network
-services or for other forms of crypto currency, such as bitcoin, via an online exchange. This incentive will 
+services or for other forms of crypto currency, such as bitcoin, via an online exchange. This incentive will
 encourage nodes to maintain as much data as possible.
 
 ## Non Archive nodes
 
 All nodes in a group will build on their `DataChain`, whether an Archive node or simply attempting
 to become an archive node. Small nodes with little resources though may find it difficult to create a
-`DataChain`of any significance. In these cases these smaller less capable nodes will receive limited rewards 
+`DataChain`of any significance. In these cases these smaller less capable nodes will receive limited rewards
 as they do not have the ability to respond to many data retrieval requests, if any at all. These small nodes
 though are still beneficial to the network to provide connectivity and lower level consensus at the
 routing level.
 
-A non archive node can request old data from existing archive nodes in a group, but the rate should be limited 
-in cases where there are already three such nodes in a group. These messages will be the lowest priority messages 
-in the group. Tehreby any attacker will require to become an archive node and this will take time, unless the 
+A non archive node can request old data from existing archive nodes in a group, but the rate should be limited
+in cases where there are already three such nodes in a group. These messages will be the lowest priority messages
+in the group. Tehreby any attacker will require to become an archive node and this will take time, unless the
 group falls below three archive nodes in which case the priority is increased on such relocation messages.
 
 ## Chained chains
