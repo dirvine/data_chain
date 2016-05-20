@@ -40,7 +40,7 @@
 //! these nodes may be allowed to join a group if they can present a `DataChain` that appears
 //! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.
 //! additional nodes will also join this group and hopefully confirm the data integrity is agreed
-//! as the last `DataBlock` should contain a majorit of existing group members that have signed.
+//! as the last `Block` should contain a majorit of existing group members that have signed.
 //!
 //! Nodes do no require to become `Archive nodes` if they have limited bandwidth or disk space, but
 //! they are still valuable as transient nodes which may deliver data stored whle they are in the
@@ -138,22 +138,22 @@ impl BlockIdentifier {
 
 /// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub struct NodeDataBlock {
+pub struct NodeBlock {
     identifier: BlockIdentifier,
     proof: (PublicKey, Signature),
 }
 
-impl NodeDataBlock {
-    /// Create a DataBlock (used by nodes in network to send to holders of `DataChains`)
+impl NodeBlock {
+    /// Create a Block (used by nodes in network to send to holders of `DataChains`)
     pub fn new(pub_key: &PublicKey,
                secret_key: &SecretKey,
                data_identifier: BlockIdentifier)
-               -> Result<NodeDataBlock, Error> {
+               -> Result<NodeBlock, Error> {
         let signature =
             crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
                                         secret_key);
 
-        Ok(NodeDataBlock {
+        Ok(NodeBlock {
             identifier: data_identifier,
             proof: (pub_key.clone(), signature),
         })
@@ -162,20 +162,20 @@ impl NodeDataBlock {
 }
 
 /// Used to validate chain `linksi`.
-/// On a network churn event the latest `DataBlock` is copied from the chain and sent
+/// On a network churn event the latest `Block` is copied from the chain and sent
 /// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
 /// `NodeBlock  for this `BlockIdentifier` and returns it to the `archive node`
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
-pub struct DataBlock {
+pub struct Block {
     identifier: BlockIdentifier,
     proof: HashMap<PublicKey, Signature>,
     deleted: bool, // we can mark as deleted if removing entry would invalidate the chain
 }
 
-impl DataBlock {
-    /// Construct a DataBlock
-    pub fn new(data_id: BlockIdentifier) -> DataBlock {
-        DataBlock {
+impl Block {
+    /// Construct a Block
+    pub fn new(data_id: BlockIdentifier) -> Block {
+        Block {
             identifier: data_id,
             proof: HashMap::new(),
             deleted: false,
@@ -191,7 +191,7 @@ impl DataBlock {
         &self.identifier
     }
 
-    /// Add a NodeDataBlock (i.e. after accumulation there could be slow nodes)
+    /// Add a NodeBlock (i.e. after accumulation there could be slow nodes)
     pub fn add_node(&mut self, public_key: PublicKey, signature: Signature) -> Result<(), Error> {
 
         let data = try!(serialisation::serialise(&self.identifier));
@@ -216,7 +216,7 @@ impl DataBlock {
 /// as a new id. This allows cleanup of old data_cache directories.
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
-    chain: Vec<DataBlock>,
+    chain: Vec<Block>,
     group_size: u64,
 }
 
@@ -241,8 +241,8 @@ impl DataChain {
         self.group_size
     }
 
-    /// Add a DataBlock to the chain
-    pub fn add_block(&mut self, data_block: DataBlock) -> Result<(), Error> {
+    /// Add a Block to the chain
+    pub fn add_block(&mut self, data_block: Block) -> Result<(), Error> {
         let data = try!(serialisation::serialise(&data_block.identifier));
 
         if let Some(last) = self.chain.last() {
@@ -275,7 +275,7 @@ impl DataChain {
     /// Will either remove a block as long as consensus would remain intact
     /// Otherwise mark as deleted.
     /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete(&mut self, name: u64) -> Option<DataBlock> {
+    pub fn delete(&mut self, name: u64) -> Option<Block> {
 
         if self.chain.is_empty() {
             return None;
@@ -335,7 +335,7 @@ impl DataChain {
         }
     }
 
-    fn has_majority(&self, block0: &DataBlock, block1: &DataBlock) -> bool {
+    fn has_majority(&self, block0: &Block, block1: &Block) -> bool {
         block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
         self.group_size
 
@@ -359,12 +359,9 @@ mod tests {
         let test_data1 = BlockIdentifier::Type1(1u64);
         let test_data2 = BlockIdentifier::Type1(1u64);
         let test_data3 = BlockIdentifier::Type2(1u64);
-        let test_node_data_block1 = NodeDataBlock::new(&keys.0, &keys.1, test_data1)
-            .expect("fail1");
-        let test_node_data_block2 = NodeDataBlock::new(&keys.0, &keys.1, test_data2)
-            .expect("fail2");
-        let test_node_data_block3 = NodeDataBlock::new(&keys.0, &keys.1, test_data3)
-            .expect("fail3");
+        let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
+        let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
+        let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
         assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
         assert!(test_node_data_block1 != test_node_data_block3.clone());
         assert!(test_node_data_block2 != test_node_data_block3);
@@ -385,9 +382,9 @@ mod tests {
         let data_blocks = (0..count)
             .map(|x| {
                 let mut block = if x % 2 == 0 {
-                    DataBlock::new(BlockIdentifier::Type1(x))
+                    Block::new(BlockIdentifier::Type1(x))
                 } else {
-                    DataBlock::new(BlockIdentifier::Type2(x))
+                    Block::new(BlockIdentifier::Type2(x))
                 };
                 let data = serialisation::serialise(&block.identifier).expect("serialise fail");
                 for y in 0..group_size {
