@@ -84,6 +84,9 @@ extern crate rayon;
 
 use std::collections::HashMap;
 use sodiumoxide::crypto;
+// use sodiumoxide::crypto::hash;
+use sodiumoxide::crypto::hash::sha256::Digest;
+use sodiumoxide::crypto::hash::sha256;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
 use maidsafe_utilities::serialisation;
 use rayon::prelude::*;
@@ -119,18 +122,30 @@ impl From<()> for Error {
 pub enum BlockIdentifier {
     Type1(u64),
     Type2(u64),
+    Link(Digest), // hash of group (all current close group id's)
 }
+
 
 impl BlockIdentifier {
     /// Define a name getter as data identifiers may contain more info that does
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn name(&self) -> u64 {
+    pub fn name(&self) -> Option<u64> {
         match *self {
-            BlockIdentifier::Type1(name) => name,
-            BlockIdentifier::Type2(name) => name,
+            BlockIdentifier::Type1(name) => Some(name),
+            BlockIdentifier::Type2(name) => Some(name),
+            BlockIdentifier::Link(_) => None, // links do not have names
         }
+    }
+
+    /// Create a new chain link
+    pub fn link(&mut self, group_ids: &mut [PublicKey]) -> Result<BlockIdentifier, Error> {
+        // sort array first
+        // hash sorted array
+        let sorted = group_ids.sort();
+        let serialised = try!(serialisation::serialise(&sorted));
+        Ok(BlockIdentifier::Link(sha256::hash(&serialised)))
     }
 }
 
@@ -184,6 +199,11 @@ impl Block {
     /// Mark block as deleted
     pub fn mark_deleted(&mut self) {
         self.deleted = true;
+    }
+
+    /// name of block si name of identifier
+    pub fn name(&self) -> Option<u64> {
+        self.identifier.name()
     }
 
     /// Get the identifier
@@ -275,35 +295,13 @@ impl DataChain {
     /// Will either remove a block as long as consensus would remain intact
     /// Otherwise mark as deleted.
     /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete(&mut self, name: u64) -> Option<Block> {
+    pub fn delete(&mut self, name: u64) {
 
-        if self.chain.is_empty() {
-            return None;
-        }
-
-        if name == self.chain[0].identifier().name() {
-            return Some(self.chain.remove(0));
-        }
-
-        let last_index = self.chain.len();
-        if name == self.chain[last_index].identifier().name() {
-            // mark as deleted
-            self.chain[last_index].mark_deleted();
-            return Some(self.chain[last_index].clone());
-        }
-
-        if let Ok(index) = self.chain
-            .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
-            if self.has_majority(&self.chain[index + 1], &self.chain[index - 1]) {
-                // we can  maintain consensus by removing this iteem
-                return Some(self.chain.remove(index));
-            } else {
-                // mark as deleted
-                self.chain[index].mark_deleted();
-                return Some(self.chain[index].clone());
-            }
-        }
-        None
+        self.chain.retain(|x| if let Some(y) = x.name() {
+            y != name
+        } else {
+            false
+        });
     }
 
     fn validate_majorities(&self) -> Result<(), Error> {
