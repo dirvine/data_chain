@@ -21,17 +21,33 @@ onto a decentralised network.
 
 A mechanism to lock data descriptors in containers that may be held on a decentralised network.
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
-signatures. These signatures are of a certain size GROUP_SIZE (12 nodes) with a QUORUM (7 nodes)
+signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7 nodes)
 required to be considered valid (much like N of P sharing). In a decentralised network that has
 secured groups,these signatures are those closest to the holder of a `DataChain`. The `DataChain`
 will have a majority of existing group members if it is republished prior to more than GROUP_SIZE
 - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the data validity.
 
-When a `DataChain` starts, the entries are signed by an ever changing majority of pre-existing nodes.
+When a `DataChain` starts, the first item is a `link`. This is a block that uses the identity of a
+close group on the network. This `link` has an associated proof that is the `PublicKey` and
+a corresponding signature for each node. The `Signature` is the signed `link` block.  On each
+`churn` event a new link is created and again signed by all members of the close_group.
+
+Data block entries are signed by an ever changing majority of pre-existing nodes.
 As the chain grows, this rolling majority of different signatories can be cryptographically
-confirmed.  This process continues to the very top of the chain which will contain entries signed by
+confirmed (via `links`).  This process continues to the very top of the chain which will contain entries signed by
 the majority of the current close group of nodes. This current group of nodes can cryptographically
-validate the entire chain and every data element referred to within it.
+validate the entire chain and every data element referred to within it in reverse order.
+
+A data chain may look like
+
+`link:data:data:data:data:link:link:data:data`
+
+or
+
+`link:link:link:data:link:link:link:data:link`
+
+The `links` maintain group consensus and the data elements should be individually validate all
+data blocks though the group consensus provided by the preceding `link`.
 
 As groups change and the network grows, or indeed shrinks, many chains held by various nodes will
 have a common element. This allows such chains to be cross referenced in order to build a complete
@@ -82,16 +98,37 @@ pub enum DataIdentifier {
 
 impl DataIdentifier {
 
-pub fn name(&self) -> XorName {
+pub fn name(&self) -> Option<XorName> {
     match *self {
-        DataIdentifier::Immutable(hash) => XorName::new(hash),
-        DataIdentifier::Structured(_, name, _) => name
+        DataIdentifier::Immutable(hash) => Some(XorName::new(hash)),
+        DataIdentifier::Structured(_, name, _) =>Some(name),
+        _ => None // links have no name
     }
 }
 
 }
 
 ```
+
+## Proof of block
+
+There are two proof types as described below :
+
+```rust
+pub enum Proof {
+    Link([(PublicKey, Option<Signature>); GROUP_SIZE]),
+    Block([Option<Signature>; GROUP_SIZE]),
+}
+```
+
+A link proof contains all `PublicKeys` of group members. On construction it will contain no signatures
+as these are waiting to be received by the current node. On successful receipt of a majority of
+the group members then this link is valid. Several links may appear in order on the `chain`.
+
+A `Block` proof contains an array of optional signatures. As each group member agrees to a
+`Put`, `Post` or `Delete` request then this array is filled in. To allow the chain to be as compact
+as possible, the `Block` proof contains only signatures and these are in the same order as the
+`link` proofs.
 
 ## Node data block
 
@@ -104,27 +141,25 @@ to the `DataIdentifier`**
 
 ```rust
 
-/// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
+/// If data block then this is semt by any group member when data is `Put`, `Post` or `Delete`.
+/// If this is a link then it is sent with a `churn` event.
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub struct NodeDataBlock {
-    identifier: DataIdentifier,
+pub struct NodeBlock {
+    identifier: BlockIdentifier,
     proof: (PublicKey, Signature),
-    // Optionally we can include a UTC timestamp here and use this to note time of the data being
-    // put on the network. As this is not exact in an eventual consistency network, the timestamp
-    // would be the median value of a sorted list of timestamps per `DataBlock`
 }
 
-impl NodeDataBlock {
-    /// Create a DataBlock (used by nodes in network to send to holders of `DataChains`)
+impl NodeBlock {
+    /// Create a Block (used by nodes in network to send to holders of `DataChains`)
     pub fn new(pub_key: &PublicKey,
                secret_key: &SecretKey,
-               data_identifier: DataIdentifier)
-               -> Result<NodeDataBlock, Error> {
+               data_identifier: BlockIdentifier)
+               -> Result<NodeBlock, Error> {
         let signature =
             crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
                                         secret_key);
 
-        Ok(NodeDataBlock {
+        Ok(NodeBlock {
             identifier: data_identifier,
             proof: (pub_key.clone(), signature),
         })
@@ -136,42 +171,23 @@ impl NodeDataBlock {
 
 ## Data block
 
-On receipt of a `NodeDataBlock`(a result of data being stored on the network, for example) the
-receiving node will check first in a cache of `DataBlock`'s and then in the `DataChain` itself.
-On finding an entry it will add the node to any `DataBlock`. If no entry is found the receiver
-will create a new `DataBlock` entry in the cache and await further notifications from group members
-of this `DataIdentifier`.
-
-This array must contain at least QUORUM members and be of CLOSE_GROUP length. It must only contain
-nodes close to that data element described by the  `DataIdentifier`.
+This array must contain at least QUORUM members signatures and be of CLOSE_GROUP length. It must only contain
+nodes close to that data element described by the  `DataIdentifier`. This is enforced at the time
+of insertion into the block `proof`.
 
 ## Data chain
 
-On accumulation of a majority of signatories, the `DataBlock` will be inserted into the `DataChain`
-If it cannot be added (yet) due to lack of a majority consensus, it will remain in the cache and
-await further `NodeDataBlock`'s.'
-
 The `DataChain` is validated via a chain of signed elements where there is a majority of signatures
-in agreement at each step (lock step). From the first element to the last, this chain of majority
+in agreement at each `link` step (lock step). From the first element to the last, this chain of majority
 signatures will show that the entire chain is valid. This is due to the fact that the current group
 will also have a majority of current members in agreement with the previous entry. **N:B The current
-signatories sign the current `DataIDentifier` and the previous `DataBlock`.**
+signatories sign the current `DataIDentifier` and the previous `link`.**
 
 **To maintain this security, on each churn event each node in the new group must sign an entry in the chain
 that is the current group. The current group is all of the nodes in the current group with relation
 to this `DataChain`. This must be done on every churn event to ensure no nodes can be later inserted
 into the chain. There are several mechanisms to allow this such as a parallel chain of nodes and groups
-or indeed insert into the chain a speck=ial `DataBlock` which is in fact the group agreement block.**
-
-
-For this reason, duplicate entries are allowed to exist in the chain. In normal circumstances
-duplicates will not exist, as chains are grown only with successful `Put`, `Post` or `Delete`. These
-by their definition cannot be for same data.
-
-A `Delete` event will, however, remove an entry from the chain, but only if the chained consensus
-would not be broken. If such a delete did cause a gap in the consensus, effectively breaking the
-chain, the entry would be maintained and marked as deleted (the actul data is deleted from any disk
-cache).
+or indeed insert into the chain a special `DataBlock` which is in fact the group agreement block (`link`).**
 
 The `DataChain` is described below.
 
@@ -182,127 +198,6 @@ pub struct DataChain {
     group_size: u64,
 }
 
-impl DataChain {
-    /// Create a new chain with no elements yet.
-    pub fn new(group_size: u64) -> DataChain {
-        DataChain {
-            chain: Vec::new(),
-            group_size: group_size,
-        }
-    }
-    /// Nodes always validate a chain before accepting it
-    pub fn validate(&mut self) -> Result<(), Error> {
-        if self.chain.is_empty() {
-            return Ok(());
-        }
-        Ok(try!(self.validate_majorities().and(self.validate_signatures())))
-    }
-
-    /// Size of close group (maximum proof size)
-    pub fn group_size(&self) -> u64 {
-        self.group_size
-    }
-
-    /// Add a DataBlock to the chain
-    pub fn add_block(&mut self, data_block: DataBlock) -> Result<(), Error> {
-        let data = try!(serialisation::serialise(&data_block.identifier));
-
-        if let Some(last) = self.chain.last() {
-            if !self.has_majority(last, &data_block) {
-                return Err(Error::Majority);
-            }
-        }
-
-        if !data_block.proof
-                      .iter()
-                      .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
-            return Err(Error::Signature);
-        }
-        // TODO Remove any old copies of this data from the chain. It should not happen though
-        self.chain.push(data_block);
-        Ok(())
-    }
-
-    /// number of non-deleted blocks
-    pub fn len(&self) -> usize {
-        self.chain.iter().filter(|&x| !x.deleted).count()
-    }
-
-    /// Contains no blocks that are not deleted
-    pub fn empty(&self) -> bool {
-        self.len() == 0
-    }
-
-    /// Delete a block
-    /// Will either remove a block as long as consensus would remain intact
-    /// Otherwise mark as deleted.
-    /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete(&mut self, name: u64) -> Option<DataBlock> {
-
-        if self.chain.is_empty() {
-            return None;
-        }
-
-        if name == self.chain[0].identifier().name() {
-            return Some(self.chain.remove(0));
-        }
-
-        let last_index = self.chain.len();
-        if name == self.chain[last_index].identifier().name() {
-            // mark as deleted
-            self.chain[last_index].mark_deleted();
-            return Some(self.chain[last_index].clone());
-        }
-
-        if let Ok(index) = self.chain
-                               .binary_search_by(|probe| probe.identifier().name().cmp(&name)) {
-            if self.has_majority(&self.chain[index + 1], &self.chain[index - 1]) {
-                // we can  maintain consensus by removing this iteem
-                return Some(self.chain.remove(index));
-            } else {
-                // mark as deleted
-                self.chain[index].mark_deleted();
-                return Some(self.chain[index].clone());
-            }
-        }
-        None
-    }
-
-    fn validate_majorities(&self) -> Result<(), Error> {
-        if self.chain
-               .iter()
-               .zip(self.chain.iter().skip(1))
-               .all(|block| self.has_majority(block.0, block.1)) {
-            Ok(())
-        } else {
-            Err(Error::Majority)
-        }
-    }
-
-    fn validate_signatures(&self) -> Result<(), Error> {
-        if self.chain
-               .iter()
-               .all(|x| {
-                   if let Ok(data) = serialisation::serialise(&x.identifier) {
-                       x.proof
-                        .iter()
-                        .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-                   } else {
-                       false
-                   }
-               }) {
-            Ok(())
-        } else {
-            Err(Error::Signature)
-        }
-    }
-
-    fn has_majority(&self, block0: &DataBlock, block1: &DataBlock) -> bool {
-        block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
-        self.group_size
-
-    }
-}
 
 ```
 

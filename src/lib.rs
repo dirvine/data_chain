@@ -27,28 +27,23 @@
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!
-//! This crate assumes these objects below are relevent to `close_groups` this allows integrity
-//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this group
-//! & all groups since the group/network started.
+//! A chain will look like
 //!
-//! These chains allow nodes to become `archive nodes` on a network and also ensure data integrity
-//! AS LONG AS the data identifiers hold a validating element such as hash of the data itself.
+//! `link:data:data:data:data:link:link:data:data`
+//! The link is a group agreement chain component which is created by sorting the closest nodes
+//! to a network node (Address) and sending this hash, signed to that node.
+//! The recipient will then receive these, `NodeBlocks` and create the chain link.
+//! This link will allow the agreed members of the group so sign `DataBlocks` for the chain
+//! If a majority of the link members sign the data, it is validly in the chain.
+//! On group membership changes, a new link is constructed in the chain and the process repeats.
+//! A chain can split and nodes will maintain several chains, dependent on data overlaps with
+//! the chains links.
+//! The link identifier is the hash of all group members that contains the current node.
 //!
-//! Another purpose of these chains is to allow network restarts with valid data. Obviously this
-//! means the network nodes will have to tr and restart as the last known ID they had. Vaults
-//! will require to accept or reject such nodes in normal operation. On network restart though
-//! these nodes may be allowed to join a group if they can present a `DataChain` that appears
-//! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.
-//! additional nodes will also join this group and hopefully confirm the data integrity is agreed
-//! as the last `Block` should contain a majorit of existing group members that have signed.
-//!
-//! Nodes do no require to become `Archive nodes` if they have limited bandwidth or disk space, but
-//! they are still valuable as transient nodes which may deliver data stored whle they are in the
-//! group. Such nodes may only be involved in consensus and routing stability messages, returning
-//! a `Nack` to any `Get` request  due to upstream bandwidth limitations.
-//!
-//! Several enhancement can be made to this scheme with a much deper investigation into any
-//! attack vectors. Such as
+//! Containers of Chain Links only may also be maintained in groups to prove historic memberships
+//! of a network. It is not well enough understoof the validity of this action, but it may prove
+//! valuable in the event of network restarts.
+
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
        html_favicon_url = "http://maidsafe.net/img/favicon.ico",
@@ -82,7 +77,6 @@ extern crate maidsafe_utilities;
 extern crate itertools;
 extern crate rayon;
 
-use std::collections::HashMap;
 use sodiumoxide::crypto;
 // use sodiumoxide::crypto::hash;
 use sodiumoxide::crypto::hash::sha256::Digest;
@@ -90,6 +84,8 @@ use sodiumoxide::crypto::hash::sha256;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
 use maidsafe_utilities::serialisation;
 use rayon::prelude::*;
+
+const GROUP_SIZE: usize = 8;
 
 /// Error types.
 ///
@@ -125,7 +121,6 @@ pub enum BlockIdentifier {
     Link(Digest), // hash of group (all current close group id's)
 }
 
-
 impl BlockIdentifier {
     /// Define a name getter as data identifiers may contain more info that does
     /// not change the name (such as with structured data and versions etc.)
@@ -140,18 +135,18 @@ impl BlockIdentifier {
     }
 
     /// Create a new chain link
-    pub fn link(&mut self, group_ids: &mut [PublicKey]) -> Result<BlockIdentifier, Error> {
-        // sort array first
-        // hash sorted array
+    /// All group members should do this on each churn event
+    /// All group members should also agree on the exact same members
+    /// In a kademlia network then the kademlia invariant should enforce this group agreement.
+    pub fn new_link(&mut self, group_ids: &mut [PublicKey]) -> Result<BlockIdentifier, Error> {
         let sorted = group_ids.sort();
         let serialised = try!(serialisation::serialise(&sorted));
         Ok(BlockIdentifier::Link(sha256::hash(&serialised)))
     }
 }
 
-
-
-/// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
+/// If data block then this is semt by any group member when data is `Put`, `Post` or `Delete`.
+/// If this is a link then it is sent with a `churn` event.
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeBlock {
     identifier: BlockIdentifier,
@@ -176,32 +171,51 @@ impl NodeBlock {
     }
 }
 
-/// Used to validate chain `linksi`.
-/// On a network churn event the latest `Block` is copied from the chain and sent
-/// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
-/// `NodeBlock  for this `BlockIdentifier` and returns it to the `archive node`
+/// Every block has an attached proof type (group of signatures)
+/// Link proofs also contain the public keys allowed to sign data blocks.
+/// The link is ordered
+/// Block signatures are placed in the appropriate slot of the array
+#[allow(missing_docs)]
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
+pub enum Proof {
+    Link(Vec<(PublicKey, Option<Signature>)>),
+    Block([Option<Signature>; GROUP_SIZE]),
+}
+
+/// Used to validate chain
+/// Block can be a data item or
+/// a chain link.
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct Block {
     identifier: BlockIdentifier,
-    proof: HashMap<PublicKey, Signature>,
-    deleted: bool, // we can mark as deleted if removing entry would invalidate the chain
+    proof: Proof,
 }
 
 impl Block {
-    /// Construct a Block
-    pub fn new(data_id: BlockIdentifier) -> Block {
+    /// construct a block
+    pub fn new_block(data_id: BlockIdentifier) -> Block {
         Block {
             identifier: data_id,
-            proof: HashMap::new(),
-            deleted: false,
+            proof: Proof::Block([None; GROUP_SIZE]),
         }
+
     }
-    /// Mark block as deleted
-    pub fn mark_deleted(&mut self) {
-        self.deleted = true;
+    /// construct a link (requires group members signing keys are known)
+    pub fn new_link(data_id: BlockIdentifier, group_keys: &mut Vec<PublicKey>) -> Block {
+        group_keys.sort();
+        // FIXME
+        let sorted_proof = group_keys.iter()
+            .map(|x| (x.clone(), None))
+            .collect();
+
+        Block {
+            identifier: data_id,
+            proof: Proof::Link(sorted_proof),
+        }
+
     }
 
-    /// name of block si name of identifier
+    /// name of block is name of identifier
     pub fn name(&self) -> Option<u64> {
         self.identifier.name()
     }
@@ -212,11 +226,15 @@ impl Block {
     }
 
     /// Add a NodeBlock (i.e. after accumulation there could be slow nodes)
-    pub fn add_node(&mut self, public_key: PublicKey, signature: Signature) -> Result<(), Error> {
+    pub fn add_node(&mut self, pub_key: PublicKey, sig: Signature) -> Result<(), Error> {
 
         let data = try!(serialisation::serialise(&self.identifier));
-        if crypto::sign::verify_detached(&signature, &data[..], &public_key) {
-            let _ = self.proof.insert(public_key, signature);
+        if crypto::sign::verify_detached(&sig, &data[..], &pub_key) {
+            // match self.proof {
+            // 	Proof::Link(key, sig)	=>
+            // 	Proof::Block(sig) =>
+            // };
+            // let _ = self.proof.insert(public_key, signature);
             Ok(())
         } else {
             return Err(Error::Signature);
@@ -262,40 +280,48 @@ impl DataChain {
     }
 
     /// Add a Block to the chain
-    pub fn add_block(&mut self, data_block: Block) -> Result<(), Error> {
-        let data = try!(serialisation::serialise(&data_block.identifier));
-
-        if let Some(last) = self.chain.last() {
-            if !self.has_majority(last, &data_block) {
-                return Err(Error::Majority);
-            }
-        }
-
-        if !data_block.proof
-            .iter()
-            .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
-            return Err(Error::Signature);
-        }
-        // TODO Remove any old copies of this data from the chain. It should not happen though
-        self.chain.push(data_block);
+    pub fn add_block(&mut self, _data_block: Block) -> Result<(), Error> {
+        // let data = try!(serialisation::serialise(&data_block.identifier));
+        //
+        // if let Some(last) = self.chain.last() {
+        //     if !self.has_majority(last, &data_block) {
+        //         return Err(Error::Majority);
+        //     }
+        // }
+        //
+        // if !data_block.proof
+        //     .iter()
+        //     .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
+        //     return Err(Error::Signature);
+        // }
+        // // TODO Remove any old copies of this data from the chain. It should not happen though
+        // self.chain.push(data_block);
         Ok(())
     }
 
     /// number of non-deleted blocks
     pub fn len(&self) -> usize {
-        self.chain.iter().filter(|&x| !x.deleted).count()
+        self.chain.len()
     }
 
     /// Contains no blocks that are not deleted
     pub fn empty(&self) -> bool {
-        self.len() == 0
+        self.chain.is_empty()
     }
 
-    /// Delete a block
+    /// Delete a block (will not delete a link)
+    pub fn delete(&mut self, data_id: BlockIdentifier) {
+        match data_id {
+            BlockIdentifier::Link(_) => {}
+            _ => self.chain.retain(|x| *x.identifier() != data_id),
+        }
+    }
+
+    /// Delete a block refered to by name
     /// Will either remove a block as long as consensus would remain intact
     /// Otherwise mark as deleted.
     /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete(&mut self, name: u64) {
+    pub fn delete_name(&mut self, name: u64) {
 
         self.chain.retain(|x| if let Some(y) = x.name() {
             y != name
@@ -316,27 +342,28 @@ impl DataChain {
     }
 
     fn validate_signatures(&self) -> Result<(), Error> {
-        if self.chain
-            .iter()
-            .all(|x| {
-                if let Ok(data) = serialisation::serialise(&x.identifier) {
-                    x.proof
-                        .iter()
-                        .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-                } else {
-                    false
-                }
-            }) {
-            Ok(())
-        } else {
-            Err(Error::Signature)
-        }
+        Ok(())
+        // if self.chain
+        //     .iter()
+        //     .all(|x| {
+        //         if let Ok(data) = serialisation::serialise(&x.identifier) {
+        //             x.proof
+        //                 .iter()
+        //                 .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
+        //         } else {
+        //             false
+        //         }
+        //     }) {
+        //     Ok(())
+        // } else {
+        //     Err(Error::Signature)
+        // }
     }
 
-    fn has_majority(&self, block0: &Block, block1: &Block) -> bool {
-        block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
-        self.group_size
-
+    fn has_majority(&self, _block0: &Block, _block1: &Block) -> bool {
+        // block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
+        // self.group_size
+        false
     }
 }
 
