@@ -304,11 +304,10 @@ impl DataChain {
     }
 
     fn get_recent_link(&self, block: &Block) -> Option<&Block> {
-
         self.chain
             .iter()
             .rev()
-            .skip_while(|x| x.identifier() == block.identifier())
+            .skip_while(|x| x.identifier() != block.identifier())
             .find((|&x| x.is_link()))
     }
 
@@ -330,6 +329,31 @@ impl DataChain {
         } else {
             Err(Error::Majority)
         }
+    }
+
+    fn validate_block(&self, block: &Block, proof: &Proof) -> Result<(), Error> {
+        let id = try!(serialisation::serialise(block.identifier()));
+        if let Some(link) = self.get_recent_link(block) {
+            for (count, (key, _)) in link.iter().enumerate() {
+                if let Some(item) = block.iter().nth(count) {
+                    if crypto::sign::verify_detached(item.id, key) {
+                        continue;
+                    } else {
+                        return Err(Error::Signature);
+                    }
+                } else {
+                    return Err(Error::Signature);
+                }
+            }
+            if count * 2 > GROUP_SIZE {
+                return Ok(());
+            } else {
+                return Err(Error::Majority);
+            }
+        } else {
+            return Err(Error::Signature);
+        }
+
     }
 
     fn validate_signatures(&self) -> Result<(), Error> {
