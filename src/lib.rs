@@ -215,6 +215,14 @@ impl Block {
 
     }
 
+    /// is this a link
+    pub fn is_link(&self) -> bool {
+        match self.proof {
+            Proof::Link(_) => true,
+            Proof::Block(_) => false,
+        }
+    }
+
     /// name of block is name of identifier
     pub fn name(&self) -> Option<u64> {
         self.identifier.name()
@@ -223,22 +231,6 @@ impl Block {
     /// Get the identifier
     pub fn identifier(&self) -> &BlockIdentifier {
         &self.identifier
-    }
-
-    /// Add a NodeBlock (i.e. after accumulation there could be slow nodes)
-    pub fn add_node(&mut self, pub_key: PublicKey, sig: Signature) -> Result<(), Error> {
-
-        let data = try!(serialisation::serialise(&self.identifier));
-        if crypto::sign::verify_detached(&sig, &data[..], &pub_key) {
-            // match self.proof {
-            // 	Proof::Link(key, sig)	=>
-            // 	Proof::Block(sig) =>
-            // };
-            // let _ = self.proof.insert(public_key, signature);
-            Ok(())
-        } else {
-            return Err(Error::Signature);
-        }
     }
 }
 
@@ -255,16 +247,12 @@ impl Block {
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
-    group_size: u64,
 }
 
 impl DataChain {
     /// Create a new chain with no elements yet.
-    pub fn new(group_size: u64) -> DataChain {
-        DataChain {
-            chain: Vec::new(),
-            group_size: group_size,
-        }
+    pub fn new() -> DataChain {
+        DataChain { chain: Vec::new() }
     }
     /// Nodes always validate a chain before accepting it
     pub fn validate(&mut self) -> Result<(), Error> {
@@ -274,29 +262,10 @@ impl DataChain {
         Ok(try!(self.validate_majorities().and(self.validate_signatures())))
     }
 
-    /// Size of close group (maximum proof size)
-    pub fn group_size(&self) -> u64 {
-        self.group_size
-    }
 
     /// Add a Block to the chain
-    pub fn add_block(&mut self, _data_block: Block) -> Result<(), Error> {
-        // let data = try!(serialisation::serialise(&data_block.identifier));
-        //
-        // if let Some(last) = self.chain.last() {
-        //     if !self.has_majority(last, &data_block) {
-        //         return Err(Error::Majority);
-        //     }
-        // }
-        //
-        // if !data_block.proof
-        //     .iter()
-        //     .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
-        //     return Err(Error::Signature);
-        // }
-        // // TODO Remove any old copies of this data from the chain. It should not happen though
-        // self.chain.push(data_block);
-        Ok(())
+    pub fn add_block(&mut self, data_block: Block) {
+        self.chain.push(data_block);
     }
 
     /// number of non-deleted blocks
@@ -328,6 +297,22 @@ impl DataChain {
         } else {
             false
         });
+    }
+
+    fn get_last_link(&self) -> Option<&Block> {
+        self.chain.iter().rev().find((|&x| x.is_link()))
+    }
+
+    fn get_recent_link(&self, block: &Block) -> Option<&Block> {
+
+        if let Some(pos) = self.chain
+            .iter()
+            .rev()
+            .position(|x| x.identifier() == block.identifier()) {
+            self.chain.iter().rev().skip(pos).find((|&x| x.is_link()))
+        } else {
+            None
+        }
     }
 
     fn validate_majorities(&self) -> Result<(), Error> {
