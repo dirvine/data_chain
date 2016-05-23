@@ -286,7 +286,7 @@ impl DataChain {
         }
     }
 
-    /// Delete a block refered to by name
+    /// Delete a block referred to by name
     /// Will either remove a block as long as consensus would remain intact
     /// Otherwise mark as deleted.
     /// If block is in front of container (`.fisrt()`) then we delete that.
@@ -305,17 +305,23 @@ impl DataChain {
 
     fn get_recent_link(&self, block: &Block) -> Option<&Block> {
 
-        if let Some(pos) = self.chain
+        self.chain
             .iter()
             .rev()
-            .position(|x| x.identifier() == block.identifier()) {
-            self.chain.iter().rev().skip(pos).find((|&x| x.is_link()))
-        } else {
-            None
-        }
+            .skip_while(|x| x.identifier() == block.identifier())
+            .find((|&x| x.is_link()))
     }
 
     fn validate_majorities(&self) -> Result<(), Error> {
+
+        // if Some(item) = self.chain.iter().find(|&x| x.is_link()) {
+        // 	let data = try!(serialisation::serialise(&item.identifier));
+        // 	if item.proof.iter().filter(|x| x.1.is_some() &&
+        //           crypto::sign::verify_detached(x.1, &data[..], x.0) ).count() * 2 > GROUP_SIZE {
+        //
+        // 	}
+        // }
+
         if self.chain
             .iter()
             .zip(self.chain.iter().skip(1))
