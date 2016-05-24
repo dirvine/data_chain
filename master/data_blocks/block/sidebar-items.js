@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Block","Used to validate chain Block can be a data item or a chain link."]]});

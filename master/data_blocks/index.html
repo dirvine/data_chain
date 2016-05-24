@@ -46,86 +46,69 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-414' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-105' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data_blocks' class='section-header'><a href='#data_blocks'>data_blocks</a></h1>
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
 data and not injected.</p>
 
-<p>This crate assumes these objects below are relevent to <code>close_groups</code> this allows integrity
-check of the <code>DataChain</code> in so far as it will hold valid data identifiers agreed by this group
-&amp; all groups since the group/network started.</p>
+<p>A chain will look like</p>
 
-<p>These chains allow nodes to become <code>archive nodes</code> on a network and also ensure data integrity
-AS LONG AS the data identifiers hold a validating element such as hash of the data itself.</p>
+<p><code>link:data:data:data:data:link:link:data:data</code>
+The link is a group agreement chain component which is created by sorting the closest nodes
+to a network node (Address) and sending this hash, signed to that node.
+The recipient will then receive these, <code>NodeBlocks</code> and create the chain link.
+This link will allow the agreed members of the group so sign <code>DataBlocks</code> for the chain
+If a majority of the link members sign the data, it is validly in the chain.
+On group membership changes, a new link is constructed in the chain and the process repeats.
+A chain can split and nodes will maintain several chains, dependent on data overlaps with
+the chains links.
+The link identifier is the hash of all group members that contains the current node.</p>
 
-<p>Another purpose of these chains is to allow network restarts with valid data. Obviously this
-means the network nodes will have to tr and restart as the last known ID they had. Vaults
-will require to accept or reject such nodes in normal operation. On network restart though
-these nodes may be allowed to join a group if they can present a <code>DataChain</code> that appears
-healthy, even if there is not yet enough consensus to <code>trust</code> the data iself just yet.
-additional nodes will also join this group and hopefully confirm the data integrity is agreed
-as the last <code>DataBlock</code> should contain a majorit of existing group members that have signed.</p>
-
-<p>Nodes do no require to become <code>Archive nodes</code> if they have limited bandwidth or disk space, but
-they are still valuable as transient nodes which may deliver data stored whle they are in the
-group. Such nodes may only be involved in consensus and routing stability messages, returning
-a <code>Nack</code> to any <code>Get</code> request  due to upstream bandwidth limitations.</p>
-
-<p>Several enhancement can be made to this scheme with a much deper investigation into any
-attack vectors. Such as</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<p>Containers of Chain Links only may also be maintained in groups to prove historic memberships
+of a network. It is not well enough understoof the validity of this action, but it may prove
+valuable in the event of network restarts.</p>
+</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='struct' href='struct.DataBlock.html'
-                               title='data_blocks::DataBlock'>DataBlock</a></td>
+                        <td><a class='mod' href='block/index.html'
+                               title='data_blocks::block'>block</a></td>
                         <td class='docblock short'>
-                             <p>Used to validate chain <code>linksi</code>.
-On a network churn event the latest <code>DataBlock</code> is copied from the chain and sent
-To new node. The <code>lost Nodes</code> signature is removed. The new node receives this - signs a
-<code>NodeBlock for this</code>DataIdentifier<code>and returns it to the</code>archive node`</p>
+                             <p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
+links</p>
                         </td>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='struct' href='struct.DataChain.html'
-                               title='data_blocks::DataChain'>DataChain</a></td>
+                        <td><a class='mod' href='data_chain/index.html'
+                               title='data_blocks::data_chain'>data_chain</a></td>
                         <td class='docblock short'>
-                             <p>Created by holder of chain, can be passed to others as proof of data held.
-This object is verifiable if :
-The last validation contains the majority of current close group
-OR on network restart the nodes all must try and restart on
-previous names. They can continue any validation of the holder of a chain.
-This requires nodes to always restart as last ID and if there was no restart they are rejected
-at vault level.
-If there was a restart then the nodes should validate and continue.
-N:B this means all nodes can use a named directory for data_store and clear if they restart
-as a new id. This allows cleanup of old data_cache directories.</p>
+                             <p>A container of <code>links</code> (validated group membership blocks) and normal <code>blocks</code> (data elements)</p>
                         </td>
                     </tr>
                 
                     <tr class=' module-item'>
-                        <td><a class='struct' href='struct.NodeDataBlock.html'
-                               title='data_blocks::NodeDataBlock'>NodeDataBlock</a></td>
+                        <td><a class='mod' href='error/index.html'
+                               title='data_blocks::error'>error</a></td>
                         <td class='docblock short'>
-                             <p>Sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code> in this group</p>
+                             <p>Error types for this crate</p>
                         </td>
                     </tr>
-                </table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+                
+                    <tr class=' module-item'>
+                        <td><a class='mod' href='node_block/index.html'
+                               title='data_blocks::node_block'>node_block</a></td>
+                        <td class='docblock short'>
+                             <p>A node block is a partial block, sent by group members to each other to create a <code>Block</code></p>
+                        </td>
+                    </tr>
+                </table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='enum' href='enum.DataIdentifier.html'
-                               title='data_blocks::DataIdentifier'>DataIdentifier</a></td>
+                        <td><a class='constant' href='constant.GROUP_SIZE.html'
+                               title='data_blocks::GROUP_SIZE'>GROUP_SIZE</a></td>
                         <td class='docblock short'>
-                             <p>Dummy data identifiers for this crate</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='enum' href='enum.Error.html'
-                               title='data_blocks::Error'>Error</a></td>
-                        <td class='docblock short'>
-                             <p>Error types.</p>
+                             <p>Required for consensus agreements. We should work this out though, Magic numbers :-(</p>
                         </td>
                     </tr>
                 </table></section>

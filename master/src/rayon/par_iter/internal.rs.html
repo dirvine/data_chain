@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/rayon-0.3.1/src/par_iter/internal.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/rayon-0.4.0/src/par_iter/internal.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>internal.rs.html -- source</title>
@@ -173,7 +173,6 @@
 <span id="130">130</span>
 <span id="131">131</span>
 <span id="132">132</span>
-<span id="133">133</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Internal traits and functions used to implement parallel</span>
 <span class='doccomment'>//! iteration. These should be considered highly unstable: users of</span>
@@ -193,7 +192,7 @@
 <span class='doccomment'>/// A producer which will produce a fixed number of items N. This is</span>
 <span class='doccomment'>/// not queryable through the API; the consumer is expected to track</span>
 <span class='doccomment'>/// it.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Producer</span>: <span class='ident'>IntoIterator</span> <span class='op'>+</span> <span class='ident'>Send</span> {
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Producer</span>: <span class='ident'>IntoIterator</span> <span class='op'>+</span> <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sized</span> {
     <span class='doccomment'>/// Cost to produce `len` items, where `len` must be `N`.</span>
     <span class='kw'>fn</span> <span class='ident'>cost</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>f64</span>;
 
@@ -203,7 +202,7 @@
 }
 
 <span class='doccomment'>/// A consumer which consumes items that are fed to it.</span>
-<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>&gt;</span>: <span class='ident'>Send</span> {
+<span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>&gt;</span>: <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sized</span> {
     <span class='kw'>type</span> <span class='ident'>Folder</span>: <span class='ident'>Folder</span><span class='op'>&lt;</span><span class='ident'>Item</span>, <span class='prelude-ty'>Result</span><span class='op'>=</span><span class='ident'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Reducer</span>: <span class='ident'>Reducer</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='prelude-ty'>Result</span>: <span class='ident'>Send</span>;
@@ -307,7 +306,6 @@
 <span class='kw'>impl</span> <span class='ident'>Reducer</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>NoopReducer</span> {
     <span class='kw'>fn</span> <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>_left</span>: (), <span class='ident'>_right</span>: ()) { }
 }
-
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

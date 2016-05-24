@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["SliceIter",""],["SliceProducer",""]]});
+initSidebarItems({"struct":[["ChunksIter",""],["SliceChunksProducer",""],["SliceIter",""],["SliceProducer",""]]});
