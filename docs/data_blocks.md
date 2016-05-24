@@ -24,8 +24,7 @@ Such structures are cryptographically secured in lock step using a consensus of 
 signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7 nodes)
 required to be considered valid (much like N of P sharing). In a decentralised network that has
 secured groups,these signatures are those closest to the holder of a `DataChain`. The `DataChain`
-will have a majority of existing group members if it is republished prior to more than GROUP_SIZE
-- QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the data validity.
+will have a majority of existing group members if it is republished prior to more than GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the data validity.
 
 When a `DataChain` starts, the first item is a `link`. This is a block that uses the identity of a
 close group on the network. This `link` has an associated proof that is the `PublicKey` and
