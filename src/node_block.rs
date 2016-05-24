@@ -56,3 +56,26 @@ impl NodeBlock {
 
     }
 }
+
+#[cfg(test)]
+
+mod tests {
+    use super::*;
+    use block_identifier::BlockIdentifier;
+    use sodiumoxide::crypto;
+
+    #[test]
+    fn node_block_comparisons() {
+        let keys = crypto::sign::gen_keypair();
+        let test_data1 = BlockIdentifier::Type1(1u64);
+        let test_data2 = BlockIdentifier::Type1(1u64);
+        let test_data3 = BlockIdentifier::Type2(1u64);
+        let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
+        let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
+        let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
+        assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
+        assert!(test_node_data_block1 != test_node_data_block3.clone());
+        assert!(test_node_data_block2 != test_node_data_block3);
+
+    }
+}

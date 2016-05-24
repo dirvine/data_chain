@@ -73,8 +73,8 @@ extern crate sodiumoxide;
 extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
-#[cfg(test)]
-extern crate itertools;
+// #[cfg(test)]
+// extern crate itertools;
 // extern crate rayon;
 
 /// Required for consensus agreements. We should work this out though, Magic numbers :-(
