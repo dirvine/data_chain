@@ -98,6 +98,7 @@ pub enum Error {
     Validation,
     Signature,
     Majority,
+    NoLink,
 }
 
 impl From<serialisation::SerialisationError> for Error {
@@ -118,6 +119,9 @@ impl From<()> for Error {
 pub enum BlockIdentifier {
     Type1(u64),
     Type2(u64),
+    /// This digest represents **this nodes** current close group
+    /// This is unique to this node, but known by all nodes connected to it
+    /// in this group.
     Link(Digest), // hash of group (all current close group id's)
 }
 
@@ -145,8 +149,10 @@ impl BlockIdentifier {
     }
 }
 
-/// If data block then this is semt by any group member when data is `Put`, `Post` or `Delete`.
+/// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
+/// A `Link` is a nodeblock that each member must send each other in times of churn.
+/// These will not accumulate but be `ManagedNode`  to `ManagedNode` messages in the routing layer
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeBlock {
     identifier: BlockIdentifier,
@@ -180,6 +186,24 @@ impl NodeBlock {
 pub enum Proof {
     Link(Vec<(PublicKey, Option<Signature>)>),
     Block([Option<Signature>; GROUP_SIZE]),
+}
+
+impl Proof {
+    /// link proof
+    pub fn link_proof(&self) -> Option<&Vec<(PublicKey, Option<Signature>)>> {
+        match *self {
+            Proof::Link(ref proof) => Some(&proof),
+            _ => None,
+        }
+    }
+
+    /// link proof
+    pub fn block_proof(&self) -> Option<&[Option<Signature>; GROUP_SIZE]> {
+        match *self {
+            Proof::Block(ref proof) => Some(&proof),
+            _ => None,
+        }
+    }
 }
 
 /// Used to validate chain
@@ -223,6 +247,11 @@ impl Block {
         }
     }
 
+    /// access proof
+    pub fn proof(&self) -> &Proof {
+        &self.proof
+    }
+
     /// name of block is name of identifier
     pub fn name(&self) -> Option<u64> {
         self.identifier.name()
@@ -259,7 +288,11 @@ impl DataChain {
         if self.chain.is_empty() {
             return Ok(());
         }
-        Ok(try!(self.validate_majorities().and(self.validate_signatures())))
+        // Ok(try!(self.validate_majorities().and(self.validate_signatures())))
+        // validate links
+        // validate blocks
+        // prune blocks that will never complete (no remaining consensus available)
+        Ok(())
     }
 
 
@@ -274,7 +307,7 @@ impl DataChain {
     }
 
     /// Contains no blocks that are not deleted
-    pub fn empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.chain.is_empty()
     }
 
@@ -299,7 +332,8 @@ impl DataChain {
         });
     }
 
-    fn get_last_link(&self) -> Option<&Block> {
+    /// Should equal the current common_close_group
+    pub fn get_last_link(&self) -> Option<&Block> {
         self.chain.iter().rev().find((|&x| x.is_link()))
     }
 
@@ -311,7 +345,8 @@ impl DataChain {
             .find((|&x| x.is_link()))
     }
 
-    fn validate_majorities(&self) -> Result<(), Error> {
+    #[allow(unused)]
+    fn validate_links(&self) -> Result<(), Error> {
 
         // if Some(item) = self.chain.iter().find(|&x| x.is_link()) {
         // 	let data = try!(serialisation::serialise(&item.identifier));
@@ -331,31 +366,37 @@ impl DataChain {
         }
     }
 
-    fn validate_block(&self, block: &Block, proof: &Proof) -> Result<(), Error> {
-        let id = try!(serialisation::serialise(block.identifier()));
-        if let Some(link) = self.get_recent_link(block) {
-            for (count, (key, _)) in link.iter().enumerate() {
-                if let Some(item) = block.iter().nth(count) {
-                    if crypto::sign::verify_detached(item.id, key) {
-                        continue;
-                    } else {
-                        return Err(Error::Signature);
-                    }
-                } else {
-                    return Err(Error::Signature);
-                }
-            }
-            if count * 2 > GROUP_SIZE {
-                return Ok(());
-            } else {
-                return Err(Error::Majority);
-            }
-        } else {
-            return Err(Error::Signature);
+    /// Validate an individual block. Will get latest link and confirm all signatures
+    /// were from last known group. Majority of sigs is confirmed.
+    pub fn validate_block(&self, block: &Block) -> Result<(), Error> {
+        if let Some(ref link) = self.get_recent_link(block) {
+            try!(self.validate_block_with_proof(block, &link.proof))
         }
-
+        return Err(Error::NoLink);
     }
 
+    fn validate_block_with_proof(&self, block: &Block, proof: &Proof) -> Result<(), Error> {
+        let id = try!(serialisation::serialise(block.identifier()));
+        if let Some(link_proof) = proof.link_proof() {
+            let mut good = 0;
+            for (count, &(key, _)) in link_proof.iter().enumerate() {
+                if let Some(ref item) = block.proof()
+                    .block_proof()
+                    .and_then(|x| x.iter().nth(count))
+                    .and_then(|&x| x) {
+                    if crypto::sign::verify_detached(item, &id[..], &key) {
+                        good += 1;
+                    }
+                }
+            }
+            if good * 2 > GROUP_SIZE {
+                return Ok(());
+            }
+        }
+        return Err(Error::Majority);
+    }
+
+    #[allow(unused)]
     fn validate_signatures(&self) -> Result<(), Error> {
         Ok(())
         // if self.chain
@@ -375,6 +416,7 @@ impl DataChain {
         // }
     }
 
+    #[allow(unused)]
     fn has_majority(&self, _block0: &Block, _block1: &Block) -> bool {
         // block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
         // self.group_size
