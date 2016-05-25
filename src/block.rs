@@ -43,7 +43,7 @@ impl Block {
     pub fn new_block(data_id: BlockIdentifier) -> Block {
         Block {
             identifier: data_id,
-            proof: Proof::Block([None; ::GROUP_SIZE]),
+            proof: Proof::Block([None; super::GROUP_SIZE]),
         }
 
     }

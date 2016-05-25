@@ -164,25 +164,45 @@ impl DataChain {
         return Err(Error::Majority);
     }
 
+    // Confirm a link contains majority members and they all signed digest
     #[allow(unused)]
-    fn validate_signatures(&self) -> Result<(), Error> {
-        Ok(())
-        // if self.chain
-        //     .iter()
-        //     .all(|x| {
-        //         if let Ok(data) = serialisation::serialise(&x.identifier) {
-        //             x.proof
-        //                 .iter()
-        //                 .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-        //         } else {
-        //             false
-        //         }
-        //     }) {
-        //     Ok(())
-        // } else {
-        //     Err(Error::Signature)
-        // }
+    fn validate_link_signatories(&self, link: &Block) -> Result<(), Error> {
+        let id = try!(serialisation::serialise(link.identifier()));
+        if let Some(link_proof) = link.proof().link_proof() {
+            let mut good = 0;
+            for &(key, sig) in link_proof.iter() {
+                if let Some(signature) = sig {
+                    if crypto::sign::verify_detached(&signature, &id[..], &key) {
+                        good += 1;
+                    }
+                }
+            }
+            if good * 2 > ::GROUP_SIZE {
+                return Ok(());
+            }
+        }
+        return Err(Error::Majority);
     }
+
+    // /// Validate all links in chain
+    // fn validate_links(&self) -> Result<(), Error> {
+    //     Ok(())
+    //     // if self.chain
+    //     //     .iter()
+    //     //     .all(|x| {
+    //     //         if let Ok(data) = serialisation::serialise(&x.identifier) {
+    //     //             x.proof
+    //     //                 .iter()
+    //     //                 .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
+    //     //         } else {
+    //     //             false
+    //     //         }
+    //     //     }) {
+    //     //     Ok(())
+    //     // } else {
+    //     //     Err(Error::Signature)
+    //     // }
+    // }
 
     #[allow(unused)]
     fn has_majority(&self, _block0: &Block, _block1: &Block) -> bool {
