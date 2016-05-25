@@ -23,7 +23,7 @@
 // and limitations
 // relating to use of the SAFE Network Software.
 
-//! #data_blocks
+//! #data_chain
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!

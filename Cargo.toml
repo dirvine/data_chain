@@ -1,6 +1,6 @@
 [package]
 authors = ["David Irvine <david.irvine@maidsafe.net>"]
-name = "data_blocks"
+name = "data_chain"
 version = "0.1.0"
 
 [dependencies]

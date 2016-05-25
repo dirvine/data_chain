@@ -184,25 +184,6 @@ impl DataChain {
         return Err(Error::Majority);
     }
 
-    // /// Validate all links in chain
-    // fn validate_links(&self) -> Result<(), Error> {
-    //     Ok(())
-    //     // if self.chain
-    //     //     .iter()
-    //     //     .all(|x| {
-    //     //         if let Ok(data) = serialisation::serialise(&x.identifier) {
-    //     //             x.proof
-    //     //                 .iter()
-    //     //                 .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-    //     //         } else {
-    //     //             false
-    //     //         }
-    //     //     }) {
-    //     //     Ok(())
-    //     // } else {
-    //     //     Err(Error::Signature)
-    //     // }
-    // }
 
     #[allow(unused)]
     fn has_majority(&self, _block0: &Block, _block1: &Block) -> bool {
