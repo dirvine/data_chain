@@ -27,9 +27,26 @@
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!
-//! A chain will look like
+//! A chain nay look like
 //!
-//! `link:data:data:data:data:link:link:data:data`
+//! ```norun
+//! `link` - all current group members - cryptographically secured as valid
+//!
+//!  data - DataIdentifiers interspersed in a chain of links
+//!
+//!  data - each block signed by a majority of members of last known link
+//!
+//!  ....
+//!
+//! `link` - As churn events occur and groups change new links are created
+//!
+//! `link` - each link will have a majority (usually n - 1 actually) members of previous link
+//! ```
+//!
+//!  The chain, when presented to the current close_group (the group identified in last link)
+//!  can be validated as holding data that has been agreed by the network over time to exist,
+//!  A chain provides cryptographic proofs of data and group memberships over time.
+//!
 //! The link is a group agreement chain component which is created by sorting the closest nodes
 //! to a network node (Address) and sending this hash, signed to that node.
 //! The recipient will then receive these, `NodeBlocks` and create the chain link.
@@ -93,7 +110,7 @@ pub mod data_chain;
 /// A node block is a partial block, sent by group members to each other to create a `Block`
 pub mod node_block;
 
-/// Identify the variant parts of a block, for links this is just the Digest of the hash of that group.
+/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
 mod block_identifier;
 
 /// A container of, either
