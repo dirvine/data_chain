@@ -174,7 +174,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_block</span>(<span class='ident'>data_id</span>: <span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>Block</span> {
         <span class='ident'>Block</span> {
             <span class='ident'>identifier</span>: <span class='ident'>data_id</span>,
-            <span class='ident'>proof</span>: <span class='ident'>Proof</span>::<span class='ident'>Block</span>([<span class='prelude-val'>None</span>; ::<span class='ident'>GROUP_SIZE</span>]),
+            <span class='ident'>proof</span>: <span class='ident'>Proof</span>::<span class='ident'>Block</span>([<span class='prelude-val'>None</span>; <span class='ident'>super</span>::<span class='ident'>GROUP_SIZE</span>]),
         }
 
     }

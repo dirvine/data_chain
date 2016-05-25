@@ -362,6 +362,26 @@
 <span id="319">319</span>
 <span id="320">320</span>
 <span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -529,25 +549,45 @@
         <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Majority</span>);
     }
 
+    <span class='comment'>// Confirm a link contains majority members and they all signed digest</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>validate_signatures</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='prelude-val'>Ok</span>(())
-        <span class='comment'>// if self.chain</span>
-        <span class='comment'>//     .iter()</span>
-        <span class='comment'>//     .all(|x| {</span>
-        <span class='comment'>//         if let Ok(data) = serialisation::serialise(&amp;x.identifier) {</span>
-        <span class='comment'>//             x.proof</span>
-        <span class='comment'>//                 .iter()</span>
-        <span class='comment'>//                 .all(|v| crypto::sign::verify_detached(v.1, &amp;data[..], v.0))</span>
-        <span class='comment'>//         } else {</span>
-        <span class='comment'>//             false</span>
-        <span class='comment'>//         }</span>
-        <span class='comment'>//     }) {</span>
-        <span class='comment'>//     Ok(())</span>
-        <span class='comment'>// } else {</span>
-        <span class='comment'>//     Err(Error::Signature)</span>
-        <span class='comment'>// }</span>
+    <span class='kw'>fn</span> <span class='ident'>validate_link_signatories</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>link</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='ident'>link</span>.<span class='ident'>identifier</span>()));
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>link_proof</span>) <span class='op'>=</span> <span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>link_proof</span>() {
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>good</span> <span class='op'>=</span> <span class='number'>0</span>;
+            <span class='kw'>for</span> <span class='kw-2'>&amp;</span>(<span class='ident'>key</span>, <span class='ident'>sig</span>) <span class='kw'>in</span> <span class='ident'>link_proof</span>.<span class='ident'>iter</span>() {
+                <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>signature</span>) <span class='op'>=</span> <span class='ident'>sig</span> {
+                    <span class='kw'>if</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='kw-2'>&amp;</span><span class='ident'>signature</span>, <span class='kw-2'>&amp;</span><span class='ident'>id</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>key</span>) {
+                        <span class='ident'>good</span> <span class='op'>+=</span> <span class='number'>1</span>;
+                    }
+                }
+            }
+            <span class='kw'>if</span> <span class='ident'>good</span> <span class='op'>*</span> <span class='number'>2</span> <span class='op'>&gt;</span> ::<span class='ident'>GROUP_SIZE</span> {
+                <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
+            }
+        }
+        <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Majority</span>);
     }
+
+    <span class='comment'>// /// Validate all links in chain</span>
+    <span class='comment'>// fn validate_links(&amp;self) -&gt; Result&lt;(), Error&gt; {</span>
+    <span class='comment'>//     Ok(())</span>
+    <span class='comment'>//     // if self.chain</span>
+    <span class='comment'>//     //     .iter()</span>
+    <span class='comment'>//     //     .all(|x| {</span>
+    <span class='comment'>//     //         if let Ok(data) = serialisation::serialise(&amp;x.identifier) {</span>
+    <span class='comment'>//     //             x.proof</span>
+    <span class='comment'>//     //                 .iter()</span>
+    <span class='comment'>//     //                 .all(|v| crypto::sign::verify_detached(v.1, &amp;data[..], v.0))</span>
+    <span class='comment'>//     //         } else {</span>
+    <span class='comment'>//     //             false</span>
+    <span class='comment'>//     //         }</span>
+    <span class='comment'>//     //     }) {</span>
+    <span class='comment'>//     //     Ok(())</span>
+    <span class='comment'>//     // } else {</span>
+    <span class='comment'>//     //     Err(Error::Signature)</span>
+    <span class='comment'>//     // }</span>
+    <span class='comment'>// }</span>
 
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>has_majority</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>_block0</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>, <span class='ident'>_block1</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
