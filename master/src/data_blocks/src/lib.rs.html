@@ -146,6 +146,23 @@
 <span id="103">103</span>
 <span id="104">104</span>
 <span id="105">105</span>
+<span id="106">106</span>
+<span id="107">107</span>
+<span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
+<span id="116">116</span>
+<span id="117">117</span>
+<span id="118">118</span>
+<span id="119">119</span>
+<span id="120">120</span>
+<span id="121">121</span>
+<span id="122">122</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -176,9 +193,26 @@
 <span class='doccomment'>//! Data blocks can be chained to provide verifiable assuredness that they contain network valid</span>
 <span class='doccomment'>//! data and not injected.</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! A chain will look like</span>
+<span class='doccomment'>//! A chain nay look like</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! `link:data:data:data:data:link:link:data:data`</span>
+<span class='doccomment'>//! ```norun</span>
+<span class='doccomment'>//! `link` - all current group members - cryptographically secured as valid</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!  data - DataIdentifiers interspersed in a chain of links</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!  data - each block signed by a majority of members of last known link</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!  ....</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! `link` - As churn events occur and groups change new links are created</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! `link` - each link will have a majority (usually n - 1 actually) members of previous link</span>
+<span class='doccomment'>//! ```</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//!  The chain, when presented to the current close_group (the group identified in last link)</span>
+<span class='doccomment'>//!  can be validated as holding data that has been agreed by the network over time to exist,</span>
+<span class='doccomment'>//!  A chain provides cryptographic proofs of data and group memberships over time.</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! The link is a group agreement chain component which is created by sorting the closest nodes</span>
 <span class='doccomment'>//! to a network node (Address) and sending this hash, signed to that node.</span>
 <span class='doccomment'>//! The recipient will then receive these, `NodeBlocks` and create the chain link.</span>
@@ -242,7 +276,7 @@
 <span class='doccomment'>/// A node block is a partial block, sent by group members to each other to create a `Block`</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>node_block</span>;
 
-<span class='doccomment'>/// Identify the variant parts of a block, for links this is just the Digest of the hash of that group.</span>
+<span class='doccomment'>/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.</span>
 <span class='kw'>mod</span> <span class='ident'>block_identifier</span>;
 
 <span class='doccomment'>/// A container of, either</span>
