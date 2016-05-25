@@ -34,13 +34,14 @@
 //!
 //!  data - DataIdentifiers interspersed in a chain of links
 //!
-//!  data - each block signed by a majority of members of last known link
+//!  data - each block signed by a majority of previous link
 //!
 //!  ....
 //!
-//! `link` - As churn events occur and groups change new links are created
+//! `link` - As churn events occur new links are created
 //!
-//! `link` - each link will have a majority (usually n - 1 actually) members of previous link
+//! `link` - each link will have a majority
+//!          (usually n - 1 actually) members of previous link
 //! ```
 //!
 //!  The chain, when presented to the current close_group (the group identified in last link)
