@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-122' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/data_blocks/src/lib.rs.html#26-123' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data_blocks' class='section-header'><a href='#data_blocks'>data_blocks</a></h1>
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
@@ -58,13 +58,14 @@ data and not injected.</p>
 
  data - DataIdentifiers interspersed in a chain of links
 
- data - each block signed by a majority of members of last known link
+ data - each block signed by a majority of previous link
 
  ....
 
-`link` - As churn events occur and groups change new links are created
+`link` - As churn events occur new links are created
 
-`link` - each link will have a majority (usually n - 1 actually) members of previous link
+`link` - each link will have a majority
+         (usually n - 1 actually) members of previous link
 </code></pre>
 
 <p>The chain, when presented to the current close_group (the group identified in last link)

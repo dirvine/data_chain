@@ -163,6 +163,7 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
+<span id="123">123</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -200,13 +201,14 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!  data - DataIdentifiers interspersed in a chain of links</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!  data - each block signed by a majority of members of last known link</span>
+<span class='doccomment'>//!  data - each block signed by a majority of previous link</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!  ....</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! `link` - As churn events occur and groups change new links are created</span>
+<span class='doccomment'>//! `link` - As churn events occur new links are created</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! `link` - each link will have a majority (usually n - 1 actually) members of previous link</span>
+<span class='doccomment'>//! `link` - each link will have a majority</span>
+<span class='doccomment'>//!          (usually n - 1 actually) members of previous link</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!  The chain, when presented to the current close_group (the group identified in last link)</span>
