@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `error` mod in crate `data_blocks`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, error">
+    <meta name="description" content="API documentation for the Rust `data_chain` mod in crate `data_chain`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, data_chain">
 
-    <title>data_blocks::error - Rust</title>
+    <title>data_chain::data_chain - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -26,8 +26,8 @@
     
 
     <nav class="sidebar">
-        <a href='../../data_blocks/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
-        <p class='location'><a href='../index.html'>data_blocks</a></p><script>window.sidebarCurrent = {name: 'error', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <a href='../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
+        <p class='location'><a href='../index.html'>data_chain</a></p><script>window.sidebarCurrent = {name: 'data_chain', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,19 +42,28 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_blocks</a>::<wbr><a class='mod' href=''>error</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_chain</a>::<wbr><a class='mod' href=''>data_chain</a></span><span class='out-of-band'><span id='render-detail'>
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-8' class='srclink' href='../../src/data_blocks/src/error.rs.html#26-81' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>Error types for this crate</p>
-</div><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
+        </span><a id='src-121' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#27-194' title='goto source code'>[src]</a></span></h1>
+<div class='docblock'><p>A container of <code>links</code> (validated group membership blocks) and normal <code>blocks</code> (data elements)</p>
+</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                     <tr class=' module-item'>
-                        <td><a class='enum' href='enum.Error.html'
-                               title='data_blocks::error::Error'>Error</a></td>
+                        <td><a class='struct' href='struct.DataChain.html'
+                               title='data_chain::data_chain::DataChain'>DataChain</a></td>
                         <td class='docblock short'>
-                             <p>Error types.</p>
+                             <p>Created by holder of chain, can be passed to others as proof of data held.
+This object is verifiable if :
+The last validation contains the majority of current close group
+OR on network restart the nodes all must try and restart on
+previous names. They can continue any validation of the holder of a chain.
+This requires nodes to always restart as last ID and if there was no restart they are rejected
+at vault level.
+If there was a restart then the nodes should validate and continue.
+N:B this means all nodes can use a named directory for data_store and clear if they restart
+as a new id. This allows cleanup of old data_cache directories.</p>
                         </td>
                     </tr>
                 </table></section>
@@ -110,7 +119,7 @@
 
     <script>
         window.rootPath = "../../";
-        window.currentCrate = "data_blocks";
+        window.currentCrate = "data_chain";
         window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>

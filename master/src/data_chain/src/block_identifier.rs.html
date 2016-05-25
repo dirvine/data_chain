@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/proof.rs`.">
+    <meta name="description" content="Source to the Rust file `src/block_identifier.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>proof.rs.html -- source</title>
+    <title>block_identifier.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
@@ -26,7 +26,7 @@
     
 
     <nav class="sidebar">
-        <a href='../../../data_blocks/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
+        <a href='../../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
         
     </nav>
 
@@ -97,6 +97,17 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -123,35 +134,46 @@
 <span class='comment'>// and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::{<span class='ident'>Signature</span>, <span class='ident'>PublicKey</span>};
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>::<span class='ident'>Digest</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
+<span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
 
+<span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 
-<span class='doccomment'>/// Every block has an attached proof type (group of signatures)</span>
-<span class='doccomment'>/// Link proofs also contain the public keys allowed to sign data blocks.</span>
-<span class='doccomment'>/// The link is ordered</span>
-<span class='doccomment'>/// Block signatures are placed in the appropriate slot of the array</span>
+<span class='doccomment'>/// Dummy data identifiers for this crate</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>)]</span>
-<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Proof</span> {
-    <span class='ident'>Link</span>(<span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>PublicKey</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Signature</span><span class='op'>&gt;</span>)<span class='op'>&gt;</span>),
-    <span class='ident'>Block</span>([<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Signature</span><span class='op'>&gt;</span>; ::<span class='ident'>GROUP_SIZE</span>]),
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>, <span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>BlockIdentifier</span> {
+    <span class='ident'>Type1</span>(<span class='ident'>u64</span>),
+    <span class='ident'>Type2</span>(<span class='ident'>u64</span>),
+    <span class='doccomment'>/// This digest represents **this nodes** current close group</span>
+    <span class='doccomment'>/// This is unique to this node, but known by all nodes connected to it</span>
+    <span class='doccomment'>/// in this group.</span>
+    <span class='ident'>Link</span>(<span class='ident'>Digest</span>), <span class='comment'>// hash of group (all current close group id&#39;s)</span>
 }
 
-<span class='kw'>impl</span> <span class='ident'>Proof</span> {
-    <span class='doccomment'>/// link proof</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>link_proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span>(<span class='ident'>PublicKey</span>, <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Signature</span><span class='op'>&gt;</span>)<span class='op'>&gt;&gt;</span> {
+<span class='kw'>impl</span> <span class='ident'>BlockIdentifier</span> {
+    <span class='doccomment'>/// Define a name getter as data identifiers may contain more info that does</span>
+    <span class='doccomment'>/// not change the name (such as with structured data and versions etc.)</span>
+    <span class='doccomment'>/// In this module we do not care about other info and any validation is outwith this area</span>
+    <span class='doccomment'>/// Therefore we will delete before insert etc. based on name alone of the data element</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Proof</span>::<span class='ident'>Link</span>(<span class='kw-2'>ref</span> <span class='ident'>proof</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>proof</span>),
-            _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type1</span>(<span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type2</span>(<span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>, <span class='comment'>// links do not have names</span>
         }
     }
 
-    <span class='doccomment'>/// link proof</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>block_proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span>[<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Signature</span><span class='op'>&gt;</span>; ::<span class='ident'>GROUP_SIZE</span>]<span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>Proof</span>::<span class='ident'>Block</span>(<span class='kw-2'>ref</span> <span class='ident'>proof</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>proof</span>),
-            _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-        }
+    <span class='doccomment'>/// Create a new chain link</span>
+    <span class='doccomment'>/// All group members should do this on each churn event</span>
+    <span class='doccomment'>/// All group members should also agree on the exact same members</span>
+    <span class='doccomment'>/// In a kademlia network then the kademlia invariant should enforce this group agreement.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_link</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>group_ids</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>PublicKey</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>let</span> <span class='ident'>sorted</span> <span class='op'>=</span> <span class='ident'>group_ids</span>.<span class='ident'>sort</span>();
+        <span class='kw'>let</span> <span class='ident'>serialised</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>sorted</span>));
+        <span class='prelude-val'>Ok</span>(<span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='ident'>serialised</span>)))
     }
 }
 </pre>
@@ -208,7 +230,7 @@
 
     <script>
         window.rootPath = "../../../";
-        window.currentCrate = "data_blocks";
+        window.currentCrate = "data_chain";
         window.playgroundUrl = "";
     </script>
     <script src="../../../jquery.js"></script>
