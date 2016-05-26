@@ -24,11 +24,6 @@
 // relating to use of the SAFE Network Software.
 
 use sodiumoxide::crypto::hash::sha256::Digest;
-use sodiumoxide::crypto::hash::sha256;
-use sodiumoxide::crypto::sign::PublicKey;
-use maidsafe_utilities::serialisation;
-
-use error::Error;
 
 /// structured DAta name
 pub type SdName = Digest;
@@ -82,14 +77,35 @@ impl BlockIdentifier {
     pub fn is_block(&self) -> bool {
         !self.is_link()
     }
+}
 
-    /// Create a new chain link
-    /// All group members should do this on each churn event
-    /// All group members should also agree on the exact same members
-    /// In a kademlia network then the kademlia invariant should enforce this group agreement.
-    pub fn new_link(&mut self, group_ids: &mut [PublicKey]) -> Result<BlockIdentifier, Error> {
-        let sorted = group_ids.sort();
-        let serialised = try!(serialisation::serialise(&sorted));
-        Ok(BlockIdentifier::Link(sha256::hash(&serialised)))
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use sodiumoxide::crypto::hash::sha256;
+
+    #[test]
+    fn create_validate_link_identifier() {
+        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+
+        assert!(link.is_link());
+        assert!(!link.is_block());
     }
+
+    #[test]
+    fn create_validate_immutable_data_identifier() {
+        let id_block = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
+        assert!(!id_block.is_link());
+        assert!(id_block.is_block());
+    }
+
+    #[test]
+    fn create_validate_structured_data_identifier() {
+        let sd_block = BlockIdentifier::StructuredData(sha256::hash("hash".as_bytes()),
+                                                       sha256::hash("name".as_bytes()));
+
+        assert!(!sd_block.is_link());
+        assert!(sd_block.is_block());
+    }
+
 }
