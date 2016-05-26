@@ -55,6 +55,20 @@ impl BlockIdentifier {
         }
     }
 
+    /// Is this a link
+    pub fn is_link(&self) -> bool {
+        match *self {
+            BlockIdentifier::Type1(_) => false,
+            BlockIdentifier::Type2(_) => false,
+            BlockIdentifier::Link(_) => true,
+        }
+    }
+
+    /// Is this a block
+    pub fn is_block(&self) -> bool {
+        !self.is_link()
+    }
+
     /// Create a new chain link
     /// All group members should do this on each churn event
     /// All group members should also agree on the exact same members

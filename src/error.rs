@@ -40,6 +40,7 @@ pub enum Error {
     Signature,
     Majority,
     NoLink,
+    BadIdentifier,
 }
 
 impl fmt::Display for Error {
@@ -50,7 +51,8 @@ impl fmt::Display for Error {
             Error::Validation => write!(f, "Not enough signatures."),
             Error::Signature => write!(f, "Invalid signature."),
             Error::Majority => write!(f, "Not enough signatures for validation."),
-            Error::NoLink => write!(f, "Cold not get a valid link."),
+            Error::NoLink => write!(f, "Could not get a valid link."),
+            Error::BadIdentifier => write!(f, "Invalid identifier type."),
         }
     }
 }
@@ -64,6 +66,7 @@ impl error::Error for Error {
             Error::Signature => "Invalid signature.",
             Error::Majority => "Not enough signatures for validation.",
             Error::NoLink => "Cold not get a valid link.",
+            Error::BadIdentifier => "Invalid identifier type.",
         }
     }
 }

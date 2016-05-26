@@ -25,9 +25,11 @@
 
 
 use sodiumoxide::crypto::sign::PublicKey;
+use itertools::Itertools;
 
 use block_identifier::BlockIdentifier;
 use proof::Proof;
+use error::Error;
 
 /// Used to validate chain
 /// Block can be a data item or
@@ -40,25 +42,32 @@ pub struct Block {
 
 impl Block {
     /// construct a block
-    pub fn new_block(data_id: BlockIdentifier) -> Block {
-        Block {
+    pub fn new_block(data_id: BlockIdentifier) -> Result<Block, Error> {
+        if data_id.is_link() {
+            return Err(Error::BadIdentifier);
+        }
+        Ok(Block {
             identifier: data_id,
             proof: Proof::Block([None; super::GROUP_SIZE]),
-        }
+        })
 
     }
-    /// construct a link (requires group members signing keys are known)
-    pub fn new_link(data_id: BlockIdentifier, group_keys: &mut Vec<PublicKey>) -> Block {
-        group_keys.sort();
-        // FIXME
-        let sorted_proof = group_keys.iter()
-            .map(|x| (x.clone(), None))
-            .collect();
 
-        Block {
+    /// construct a link (requires group members signing keys are known)
+    pub fn new_link(data_id: BlockIdentifier, group_keys: &Vec<PublicKey>) -> Result<Block, Error> {
+        if data_id.is_block() {
+            return Err(Error::BadIdentifier);
+        }
+        let mut sorted_unique_keys = group_keys.iter().unique().collect_vec();
+        sorted_unique_keys.sort();
+        let sorted_proof = sorted_unique_keys.iter()
+            .map(|x| (*x.clone(), None))
+            .collect_vec();
+
+        Ok(Block {
             identifier: data_id,
             proof: Proof::Link(sorted_proof),
-        }
+        })
 
     }
 
@@ -67,6 +76,14 @@ impl Block {
         match self.proof {
             Proof::Link(_) => true,
             Proof::Block(_) => false,
+        }
+    }
+
+    /// is this a block
+    pub fn is_block(&self) -> bool {
+        match self.proof {
+            Proof::Link(_) => false,
+            Proof::Block(_) => true,
         }
     }
 
@@ -83,5 +100,36 @@ impl Block {
     /// Get the identifier
     pub fn identifier(&self) -> &BlockIdentifier {
         &self.identifier
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use block_identifier::BlockIdentifier;
+    use sodiumoxide::crypto::hash::sha256;
+    use sodiumoxide::crypto;
+
+
+    #[test]
+    fn link_new() {
+        ::sodiumoxide::init();
+        let mut keys = Vec::new();
+        for _ in 0..::GROUP_SIZE {
+            keys.push(crypto::sign::gen_keypair().0);
+        }
+        let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+        let link = Block::new_link(data_id, &keys);
+        assert!(link.is_ok());
+        assert!(link.expect("new link").is_link());
+
+    }
+    #[test]
+    fn block_new() {
+        ::sodiumoxide::init();
+        let data_id = BlockIdentifier::Type1(1u64);
+        let block = Block::new_block(data_id);
+        assert!(block.is_ok());
+        assert!(block.expect("no block").is_block());
     }
 }

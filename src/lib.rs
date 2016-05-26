@@ -91,8 +91,7 @@ extern crate sodiumoxide;
 extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
-// #[cfg(test)]
-// extern crate itertools;
+extern crate itertools;
 // extern crate rayon;
 
 /// Required for consensus agreements. We should work this out though, Magic numbers :-(
@@ -118,6 +117,6 @@ mod block_identifier;
 /// 1. (array) of signed elements for a data item
 /// 2. For links a vector of tuples, a `PublicKey` and `Signature` of the `Block`. This is used
 ///    to identify the corresponding array item in `1.` to verify a signature in a `Block`.
-///    Links are self verifying but require the top (fastest) link to contain current group members
+///    Links are self verifying but require the fastest link to contain current group members
 ///    of any verification group on the network.
 mod proof;
