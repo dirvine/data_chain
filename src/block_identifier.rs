@@ -30,6 +30,9 @@ use maidsafe_utilities::serialisation;
 
 use error::Error;
 
+/// structured DAta name
+pub type SdName = Digest;
+
 /// Dummy data identifiers for this crate
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
@@ -37,7 +40,7 @@ pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
     ImmutableData(Digest),
     ///           hash     name (identity + tag) (stored localy as name in data store)
-    StructuredData(Digest, Digest),
+    StructuredData(Digest, SdName),
     /// This digest represents **this nodes** current close group
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
@@ -58,7 +61,7 @@ impl BlockIdentifier {
     }
 
     /// structured data name != hash of the data or block
-    pub fn structured_data_name(&self) -> Option<Digest> {
+    pub fn structured_data_name(&self) -> Option<SdName> {
         match *self {
             BlockIdentifier::ImmutableData(_hash) => None,
             BlockIdentifier::StructuredData(_hash, name) => Some(name),
