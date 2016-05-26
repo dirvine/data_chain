@@ -108,6 +108,20 @@
 <span id="65">65</span>
 <span id="66">66</span>
 <span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -164,6 +178,20 @@
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type2</span>(<span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(_) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>, <span class='comment'>// links do not have names</span>
         }
+    }
+
+    <span class='doccomment'>/// Is this a link</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_link</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type1</span>(_) <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type2</span>(_) <span class='op'>=&gt;</span> <span class='boolval'>false</span>,
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(_) <span class='op'>=&gt;</span> <span class='boolval'>true</span>,
+        }
+    }
+
+    <span class='doccomment'>/// Is this a block</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_link</span>()
     }
 
     <span class='doccomment'>/// Create a new chain link</span>

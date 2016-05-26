@@ -46,18 +46,20 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-56' class='srclink' href='../../src/data_chain/src/block.rs.html#36-39' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-62' class='srclink' href='../../src/data_chain/src/block.rs.html#38-41' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Block {
     // some fields omitted
 }</pre><div class='docblock'><p>Used to validate chain
 Block can be a data item or
 a chain link.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a></code></h3><div class='impl-items'><h4 id='method.new_block' class='method'><code>fn <a href='#method.new_block' class='fnname'>new_block</a>(data_id: BlockIdentifier) -&gt; <a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a></code></h3><div class='impl-items'><h4 id='method.new_block' class='method'><code>fn <a href='#method.new_block' class='fnname'>new_block</a>(data_id: BlockIdentifier) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>construct a block</p>
-</div><h4 id='method.new_link' class='method'><code>fn <a href='#method.new_link' class='fnname'>new_link</a>(data_id: BlockIdentifier, group_keys: &amp;mut <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>&gt;) -&gt; <a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a></code></h4>
+</div><h4 id='method.new_link' class='method'><code>fn <a href='#method.new_link' class='fnname'>new_link</a>(data_id: BlockIdentifier, group_keys: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>&gt;) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>construct a link (requires group members signing keys are known)</p>
 </div><h4 id='method.is_link' class='method'><code>fn <a href='#method.is_link' class='fnname'>is_link</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>is this a link</p>
+</div><h4 id='method.is_block' class='method'><code>fn <a href='#method.is_block' class='fnname'>is_block</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>is this a block</p>
 </div><h4 id='method.proof' class='method'><code>fn <a href='#method.proof' class='fnname'>proof</a>(&amp;self) -&gt; &amp;Proof</code></h4>
 <div class='docblock'><p>access proof</p>
 </div><h4 id='method.name' class='method'><code>fn <a href='#method.name' class='fnname'>name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>&gt;</code></h4>

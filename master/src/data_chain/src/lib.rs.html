@@ -163,7 +163,6 @@
 <span id="120">120</span>
 <span id="121">121</span>
 <span id="122">122</span>
-<span id="123">123</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -258,8 +257,7 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rustc_serialize</span>;
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>maidsafe_utilities</span>;
-<span class='comment'>// #[cfg(test)]</span>
-<span class='comment'>// extern crate itertools;</span>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 <span class='comment'>// extern crate rayon;</span>
 
 <span class='doccomment'>/// Required for consensus agreements. We should work this out though, Magic numbers :-(</span>
@@ -285,7 +283,7 @@
 <span class='doccomment'>/// 1. (array) of signed elements for a data item</span>
 <span class='doccomment'>/// 2. For links a vector of tuples, a `PublicKey` and `Signature` of the `Block`. This is used</span>
 <span class='doccomment'>///    to identify the corresponding array item in `1.` to verify a signature in a `Block`.</span>
-<span class='doccomment'>///    Links are self verifying but require the top (fastest) link to contain current group members</span>
+<span class='doccomment'>///    Links are self verifying but require the fastest link to contain current group members</span>
 <span class='doccomment'>///    of any verification group on the network.</span>
 <span class='kw'>mod</span> <span class='ident'>proof</span>;
 </pre>
