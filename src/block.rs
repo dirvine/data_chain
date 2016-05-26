@@ -74,18 +74,12 @@ impl Block {
 
     /// is this a link
     pub fn is_link(&self) -> bool {
-        match self.proof {
-            Proof::Link(_) => true,
-            Proof::Block(_) => false,
-        }
+        self.identifier.is_link() && self.proof.link_proof().is_some()
     }
 
     /// is this a block
     pub fn is_block(&self) -> bool {
-        match self.proof {
-            Proof::Link(_) => false,
-            Proof::Block(_) => true,
-        }
+        self.identifier.is_block() && self.proof.block_proof().is_some()
     }
 
     /// access proof
