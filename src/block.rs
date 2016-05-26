@@ -116,7 +116,12 @@ mod tests {
         let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
         let link = Block::new_link(data_id, &keys);
         assert!(link.is_ok());
-        assert!(link.expect("new link").is_link());
+        let unwrapped_link = match link {
+            Ok(link) => link,
+            Err(_) => panic!("not a link"),
+        };
+        assert!(unwrapped_link.clone().is_link());
+        assert!(unwrapped_link.proof().link_proof().is_some());
 
     }
     #[test]
@@ -125,6 +130,11 @@ mod tests {
         let data_id = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         let block = Block::new_block(data_id);
         assert!(block.is_ok());
-        assert!(block.expect("no block").is_block());
+        let unwrapped_block = match block {
+            Ok(block) => block,
+            Err(_) => panic!("not a block"),
+        };
+        assert!(unwrapped_block.clone().is_block());
+        assert!(unwrapped_block.proof().block_proof().is_some());
     }
 }
