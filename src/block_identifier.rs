@@ -90,6 +90,8 @@ mod tests {
 
         assert!(link.is_link());
         assert!(!link.is_block());
+        assert_eq!(link.hash(), sha256::hash("1".as_bytes()));
+        assert!(link.structured_data_name().is_none());
     }
 
     #[test]
@@ -97,6 +99,8 @@ mod tests {
         let id_block = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
+        assert_eq!(id_block.hash(), sha256::hash("1".as_bytes()));
+        assert!(id_block.structured_data_name().is_none());
     }
 
     #[test]
@@ -106,6 +110,10 @@ mod tests {
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
+        assert_eq!(sd_block.hash(), sha256::hash("hash".as_bytes()));
+        assert!(sd_block.structured_data_name().is_some());
+        assert_eq!(sd_block.structured_data_name().expect("sd name"),
+                   sha256::hash("name".as_bytes()))
     }
 
 }
