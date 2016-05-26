@@ -25,6 +25,7 @@
 
 
 use sodiumoxide::crypto::sign::PublicKey;
+use sodiumoxide::crypto::hash::sha256::Digest;
 use itertools::Itertools;
 
 use block_identifier::BlockIdentifier;
@@ -93,8 +94,8 @@ impl Block {
     }
 
     /// name of block is name of identifier
-    pub fn name(&self) -> Option<u64> {
-        self.identifier.name()
+    pub fn hash(&self) -> Digest {
+        self.identifier.hash()
     }
 
     /// Get the identifier
@@ -127,7 +128,7 @@ mod tests {
     #[test]
     fn block_new() {
         ::sodiumoxide::init();
-        let data_id = BlockIdentifier::Type1(1u64);
+        let data_id = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         let block = Block::new_block(data_id);
         assert!(block.is_ok());
         assert!(block.expect("no block").is_block());

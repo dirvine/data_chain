@@ -29,6 +29,7 @@ use proof::Proof;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use sodiumoxide::crypto;
+use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
@@ -87,17 +88,9 @@ impl DataChain {
         }
     }
 
-    /// Delete a block referred to by name
-    /// Will either remove a block as long as consensus would remain intact
-    /// Otherwise mark as deleted.
-    /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete_name(&mut self, name: u64) {
-
-        self.chain.retain(|x| if let Some(y) = x.name() {
-            y != name
-        } else {
-            false
-        });
+    /// Delete a block referred to by hash
+    pub fn delete_block(&mut self, hash: Digest) {
+        self.chain.retain(|x| x.hash() != hash);
     }
 
     /// Should equal the current common_close_group

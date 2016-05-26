@@ -34,8 +34,10 @@ use error::Error;
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub enum BlockIdentifier {
-    Type1(u64),
-    Type2(u64),
+    ///           hash is also name of data stored locally
+    ImmutableData(Digest),
+    ///           hash     name (identity + tag) (stored localy as name in data store)
+    StructuredData(Digest, Digest),
     /// This digest represents **this nodes** current close group
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
@@ -47,19 +49,28 @@ impl BlockIdentifier {
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn name(&self) -> Option<u64> {
+    pub fn hash(&self) -> Digest {
         match *self {
-            BlockIdentifier::Type1(name) => Some(name),
-            BlockIdentifier::Type2(name) => Some(name),
-            BlockIdentifier::Link(_) => None, // links do not have names
+            BlockIdentifier::ImmutableData(hash) => hash,
+            BlockIdentifier::StructuredData(hash, _name) => hash,
+            BlockIdentifier::Link(hash) => hash,
+        }
+    }
+
+    /// structured data name != hash of the data or block
+    pub fn structured_data_name(&self) -> Option<Digest> {
+        match *self {
+            BlockIdentifier::ImmutableData(_hash) => None,
+            BlockIdentifier::StructuredData(_hash, name) => Some(name),
+            BlockIdentifier::Link(_hash) => None,
         }
     }
 
     /// Is this a link
     pub fn is_link(&self) -> bool {
         match *self {
-            BlockIdentifier::Type1(_) => false,
-            BlockIdentifier::Type2(_) => false,
+            BlockIdentifier::ImmutableData(_) => false,
+            BlockIdentifier::StructuredData(_, _) => false,
             BlockIdentifier::Link(_) => true,
         }
     }

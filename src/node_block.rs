@@ -63,13 +63,15 @@ mod tests {
     use super::*;
     use block_identifier::BlockIdentifier;
     use sodiumoxide::crypto;
+    use sodiumoxide::crypto::hash::sha256;
 
     #[test]
     fn node_block_comparisons() {
+        ::sodiumoxide::init();
         let keys = crypto::sign::gen_keypair();
-        let test_data1 = BlockIdentifier::Type1(1u64);
-        let test_data2 = BlockIdentifier::Type1(1u64);
-        let test_data3 = BlockIdentifier::Type2(1u64);
+        let test_data1 = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+        let test_data2 = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+        let test_data3 = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
         let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
         let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
