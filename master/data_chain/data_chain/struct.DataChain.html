@@ -46,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-138' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#45-47' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-140' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#46-48' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct DataChain {
     // some fields omitted
 }</pre><div class='docblock'><p>Created by holder of chain, can be passed to others as proof of data held.
@@ -71,11 +71,8 @@ as a new id. This allows cleanup of old data_cache directories.</p>
 <div class='docblock'><p>Contains no blocks that are not deleted</p>
 </div><h4 id='method.delete' class='method'><code>fn <a href='#method.delete' class='fnname'>delete</a>(&amp;mut self, data_id: BlockIdentifier)</code></h4>
 <div class='docblock'><p>Delete a block (will not delete a link)</p>
-</div><h4 id='method.delete_name' class='method'><code>fn <a href='#method.delete_name' class='fnname'>delete_name</a>(&amp;mut self, name: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>)</code></h4>
-<div class='docblock'><p>Delete a block referred to by name
-Will either remove a block as long as consensus would remain intact
-Otherwise mark as deleted.
-If block is in front of container (<code>.fisrt()</code>) then we delete that.</p>
+</div><h4 id='method.delete_block' class='method'><code>fn <a href='#method.delete_block' class='fnname'>delete_block</a>(&amp;mut self, hash: <a class='struct' href='../../sodiumoxide/crypto/hash/sha256/struct.Digest.html' title='sodiumoxide::crypto::hash::sha256::Digest'>Digest</a>)</code></h4>
+<div class='docblock'><p>Delete a block referred to by hash</p>
 </div><h4 id='method.get_last_link' class='method'><code>fn <a href='#method.get_last_link' class='fnname'>get_last_link</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>&gt;</code></h4>
 <div class='docblock'><p>Should equal the current common_close_group</p>
 </div><h4 id='method.validate_block' class='method'><code>fn <a href='#method.validate_block' class='fnname'>validate_block</a>(&amp;self, block: &amp;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>

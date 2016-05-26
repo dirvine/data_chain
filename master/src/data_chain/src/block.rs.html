@@ -176,6 +176,7 @@
 <span id="133">133</span>
 <span id="134">134</span>
 <span id="135">135</span>
+<span id="136">136</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -204,6 +205,7 @@
 
 
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>::<span class='ident'>Digest</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
@@ -272,8 +274,8 @@
     }
 
     <span class='doccomment'>/// name of block is name of identifier</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>identifier</span>.<span class='ident'>name</span>()
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Digest</span> {
+        <span class='self'>self</span>.<span class='ident'>identifier</span>.<span class='ident'>hash</span>()
     }
 
     <span class='doccomment'>/// Get the identifier</span>
@@ -306,7 +308,7 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>block_new</span>() {
         ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
-        <span class='kw'>let</span> <span class='ident'>data_id</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type1</span>(<span class='number'>1u64</span>);
+        <span class='kw'>let</span> <span class='ident'>data_id</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>&quot;1&quot;</span>.<span class='ident'>as_bytes</span>()));
         <span class='kw'>let</span> <span class='ident'>block</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new_block</span>(<span class='ident'>data_id</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>is_ok</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>block</span>.<span class='ident'>expect</span>(<span class='string'>&quot;no block&quot;</span>).<span class='ident'>is_block</span>());

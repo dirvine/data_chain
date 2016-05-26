@@ -122,6 +122,8 @@
 <span id="79">79</span>
 <span id="80">80</span>
 <span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -188,13 +190,15 @@
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
+    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>node_block_comparisons</span>() {
+        ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>();
-        <span class='kw'>let</span> <span class='ident'>test_data1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type1</span>(<span class='number'>1u64</span>);
-        <span class='kw'>let</span> <span class='ident'>test_data2</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type1</span>(<span class='number'>1u64</span>);
-        <span class='kw'>let</span> <span class='ident'>test_data3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Type2</span>(<span class='number'>1u64</span>);
+        <span class='kw'>let</span> <span class='ident'>test_data1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>&quot;1&quot;</span>.<span class='ident'>as_bytes</span>()));
+        <span class='kw'>let</span> <span class='ident'>test_data2</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>&quot;1&quot;</span>.<span class='ident'>as_bytes</span>()));
+        <span class='kw'>let</span> <span class='ident'>test_data3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>&quot;1&quot;</span>.<span class='ident'>as_bytes</span>()));
         <span class='kw'>let</span> <span class='ident'>test_node_data_block1</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>1</span>, <span class='ident'>test_data1</span>).<span class='ident'>expect</span>(<span class='string'>&quot;fail1&quot;</span>);
         <span class='kw'>let</span> <span class='ident'>test_node_data_block2</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>1</span>, <span class='ident'>test_data2</span>).<span class='ident'>expect</span>(<span class='string'>&quot;fail2&quot;</span>);
         <span class='kw'>let</span> <span class='ident'>test_node_data_block3</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>.<span class='number'>1</span>, <span class='ident'>test_data3</span>).<span class='ident'>expect</span>(<span class='string'>&quot;fail3&quot;</span>);

@@ -356,13 +356,6 @@
 <span id="313">313</span>
 <span id="314">314</span>
 <span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -395,6 +388,7 @@
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>::<span class='ident'>Digest</span>;
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 
 <span class='doccomment'>/// Created by holder of chain, can be passed to others as proof of data held.</span>
@@ -453,17 +447,9 @@
         }
     }
 
-    <span class='doccomment'>/// Delete a block referred to by name</span>
-    <span class='doccomment'>/// Will either remove a block as long as consensus would remain intact</span>
-    <span class='doccomment'>/// Otherwise mark as deleted.</span>
-    <span class='doccomment'>/// If block is in front of container (`.fisrt()`) then we delete that.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete_name</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>name</span>: <span class='ident'>u64</span>) {
-
-        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>y</span>) <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>name</span>() {
-            <span class='ident'>y</span> <span class='op'>!=</span> <span class='ident'>name</span>
-        } <span class='kw'>else</span> {
-            <span class='boolval'>false</span>
-        });
+    <span class='doccomment'>/// Delete a block referred to by hash</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>hash</span>: <span class='ident'>Digest</span>) {
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>hash</span>() <span class='op'>!=</span> <span class='ident'>hash</span>);
     }
 
     <span class='doccomment'>/// Should equal the current common_close_group</span>
