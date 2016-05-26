@@ -133,6 +133,9 @@
 <span id="90">90</span>
 <span id="91">91</span>
 <span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -166,6 +169,9 @@
 
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 
+<span class='doccomment'>/// structured DAta name</span>
+<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>SdName</span> <span class='op'>=</span> <span class='ident'>Digest</span>;
+
 <span class='doccomment'>/// Dummy data identifiers for this crate</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>, <span class='ident'>Clone</span>)]</span>
@@ -173,7 +179,7 @@
     <span class='doccomment'>///           hash is also name of data stored locally</span>
     <span class='ident'>ImmutableData</span>(<span class='ident'>Digest</span>),
     <span class='doccomment'>///           hash     name (identity + tag) (stored localy as name in data store)</span>
-    <span class='ident'>StructuredData</span>(<span class='ident'>Digest</span>, <span class='ident'>Digest</span>),
+    <span class='ident'>StructuredData</span>(<span class='ident'>Digest</span>, <span class='ident'>SdName</span>),
     <span class='doccomment'>/// This digest represents **this nodes** current close group</span>
     <span class='doccomment'>/// This is unique to this node, but known by all nodes connected to it</span>
     <span class='doccomment'>/// in this group.</span>
@@ -194,7 +200,7 @@
     }
 
     <span class='doccomment'>/// structured data name != hash of the data or block</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>structured_data_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Digest</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>structured_data_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>SdName</span><span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>_hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>_hash</span>, <span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
