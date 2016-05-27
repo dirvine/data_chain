@@ -25,6 +25,7 @@
 
 
 use maidsafe_utilities::serialisation;
+use itertools::Itertools;
 use proof::Proof;
 use block::Block;
 use block_identifier::BlockIdentifier;
@@ -106,25 +107,48 @@ impl DataChain {
             .find((|&x| x.is_link()))
     }
 
-    #[allow(unused)]
-    fn validate_links(&self) -> Result<(), Error> {
+    /// Validate all links in chain
+    pub fn validate_all_links(&self) -> bool {
 
-        // if Some(item) = self.chain.iter().find(|&x| x.is_link()) {
-        // 	let data = try!(serialisation::serialise(&item.identifier));
-        // 	if item.proof.iter().filter(|x| x.1.is_some() &&
-        //           crypto::sign::verify_detached(x.1, &data[..], x.0) ).count() * 2 > GROUP_SIZE {
-        //
-        // 	}
-        // }
-
-        if self.chain
+        self.chain
             .iter()
-            .zip(self.chain.iter().skip(1))
-            .all(|block| self.has_majority(block.0, block.1)) {
-            Ok(())
-        } else {
-            Err(Error::Majority)
+            .filter_map(|x| x.proof().link_proof())
+            .zip(self.chain
+                .iter()
+                .filter_map(|x| {
+                    x.proof()
+                        .link_proof()
+                })
+                .skip(1))
+            .all(|link| {
+                link.0
+                    .iter()
+                    .filter_map(|x| x.1)
+                    .collect_vec()
+                    .iter()
+                    .filter_map(|&x| link.1.iter().filter_map(|x| x.1).find(|&y| y == x))
+                    .count() * 2 > ::GROUP_SIZE
+            })
+    }
+
+    // Confirm a link contains majority members and they all signed digest
+    #[allow(unused)]
+    fn validate_link_signatories(&self, link: &Block) -> Result<(), Error> {
+        let id = try!(serialisation::serialise(link.identifier()));
+        if let Some(link_proof) = link.proof().link_proof() {
+            let mut good = 0;
+            for &(key, sig) in link_proof.iter() {
+                if let Some(signature) = sig {
+                    if crypto::sign::verify_detached(&signature, &id[..], &key) {
+                        good += 1;
+                    }
+                }
+            }
+            if good * 2 > ::GROUP_SIZE {
+                return Ok(());
+            }
         }
+        return Err(Error::Majority);
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures
@@ -155,34 +179,6 @@ impl DataChain {
             }
         }
         return Err(Error::Majority);
-    }
-
-    // Confirm a link contains majority members and they all signed digest
-    #[allow(unused)]
-    fn validate_link_signatories(&self, link: &Block) -> Result<(), Error> {
-        let id = try!(serialisation::serialise(link.identifier()));
-        if let Some(link_proof) = link.proof().link_proof() {
-            let mut good = 0;
-            for &(key, sig) in link_proof.iter() {
-                if let Some(signature) = sig {
-                    if crypto::sign::verify_detached(&signature, &id[..], &key) {
-                        good += 1;
-                    }
-                }
-            }
-            if good * 2 > ::GROUP_SIZE {
-                return Ok(());
-            }
-        }
-        return Err(Error::Majority);
-    }
-
-
-    #[allow(unused)]
-    fn has_majority(&self, _block0: &Block, _block1: &Block) -> bool {
-        // block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
-        // self.group_size
-        false
     }
 }
 

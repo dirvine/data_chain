@@ -91,7 +91,7 @@ mod tests {
         assert!(link.is_link());
         assert!(!link.is_block());
         assert_eq!(link.hash(), sha256::hash("1".as_bytes()));
-        assert!(link.structured_data_name().is_none());
+        assert!(link.structured_data_na;me().is_none());
     }
 
     #[test]

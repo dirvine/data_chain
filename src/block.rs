@@ -125,9 +125,23 @@ mod tests {
 
     }
     #[test]
-    fn block_new() {
+    fn id_block_new() {
         ::sodiumoxide::init();
         let data_id = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
+        let block = Block::new_block(data_id);
+        assert!(block.is_ok());
+        let unwrapped_block = match block {
+            Ok(block) => block,
+            Err(_) => panic!("not a block"),
+        };
+        assert!(unwrapped_block.clone().is_block());
+        assert!(unwrapped_block.proof().block_proof().is_some());
+    }
+    #[test]
+    fn sd_block_new() {
+        ::sodiumoxide::init();
+        let data_id = BlockIdentifier::StructuredData(sha256::hash("hash".as_bytes()),
+                                                      sha256::hash("name".as_bytes()));
         let block = Block::new_block(data_id);
         assert!(block.is_ok());
         let unwrapped_block = match block {
