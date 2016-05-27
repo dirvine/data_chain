@@ -99,6 +99,7 @@ impl DataChain {
         self.chain.iter().rev().find((|&x| x.is_link()))
     }
 
+    /// Find block from top and get next link
     fn get_recent_link(&self, block: &Block) -> Option<&Block> {
         self.chain
             .iter()
@@ -112,6 +113,7 @@ impl DataChain {
 
         self.chain
             .iter()
+            .filter(|&x| self.validate_link_signatories(&x).is_ok())
             .filter_map(|x| x.proof().link_proof())
             .zip(self.chain
                 .iter()
@@ -132,7 +134,6 @@ impl DataChain {
     }
 
     // Confirm a link contains majority members and they all signed digest
-    #[allow(unused)]
     fn validate_link_signatories(&self, link: &Block) -> Result<(), Error> {
         let id = try!(serialisation::serialise(link.identifier()));
         if let Some(link_proof) = link.proof().link_proof() {
