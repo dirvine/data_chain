@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='index.html'>thread_local</a>::<wbr><a class='struct' href=''>CachedThreadLocal</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-123' class='srclink' href='../src/thread_local/lib.rs.html#301-305' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-123' class='srclink' href='../src/thread_local/lib.rs.html#301-305' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct CachedThreadLocal&lt;T: ?<a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p>Wrapper around <code>ThreadLocal</code> which adds a fast path for a single thread.</p>
@@ -64,7 +65,7 @@ exist.</p>
 </div></div><h3 class='impl'><code>impl&lt;T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a>&gt; <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.get_default' class='method'><code>fn <a href='#method.get_default' class='fnname'>get_default</a>(&amp;self) -&gt; &amp;T</code></h4>
 <div class='docblock'><p>Returns the element for the current thread, or creates a default one if
 it doesn&#39;t exist.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;T: ?<a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> for <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h3><div class='impl-items'></div><h3 class='impl'><code>impl&lt;T: ?<a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#method.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl&lt;T: ?<a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> for <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h3><div class='impl-items'></div><h3 class='impl'><code>impl&lt;T: ?<a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html' title='core::default::Default'>Default</a> for <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h3><div class='impl-items'><h4 id='method.default' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/default/trait.Default.html#tymethod.default' class='fnname'>default</a>() -&gt; <a class='struct' href='../thread_local/struct.CachedThreadLocal.html' title='thread_local::CachedThreadLocal'>CachedThreadLocal</a>&lt;T&gt;</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 

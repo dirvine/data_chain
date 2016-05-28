@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Crate <a class='mod' href=''>thread_local</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-0' class='srclink' href='../src/thread_local/lib.rs.html#8-471' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-0' class='srclink' href='../src/thread_local/lib.rs.html#8-471' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Per-object thread-local storage</p>
 
 <p>This library provides the <code>ThreadLocal</code> type which allows a separate copy of
@@ -75,22 +76,20 @@ occur after a thread has exited this does not lead to any race conditions.</p>
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>tls</span>.<span class='ident'>get</span>(), <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='number'>5</span>));</pre>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.CachedThreadLocal.html'
-                               title='thread_local::CachedThreadLocal'>CachedThreadLocal</a></td>
-                        <td class='docblock short'>
-                             <p>Wrapper around <code>ThreadLocal</code> which adds a fast path for a single thread.</p>
-                        </td>
-                    </tr>
-                
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.ThreadLocal.html'
-                               title='thread_local::ThreadLocal'>ThreadLocal</a></td>
-                        <td class='docblock short'>
-                             <p>Thread-local variable wrapper</p>
-                        </td>
-                    </tr>
-                </table></section>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.CachedThreadLocal.html'
+                                  title='thread_local::CachedThreadLocal'>CachedThreadLocal</a></td>
+                           <td class='docblock short'>
+                                <p>Wrapper around <code>ThreadLocal</code> which adds a fast path for a single thread.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.ThreadLocal.html'
+                                  title='thread_local::ThreadLocal'>ThreadLocal</a></td>
+                           <td class='docblock short'>
+                                <p>Thread-local variable wrapper</p>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

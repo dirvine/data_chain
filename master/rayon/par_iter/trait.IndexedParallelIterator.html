@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>rayon</a>::<wbr><a href='index.html'>par_iter</a>::<wbr><a class='trait' href=''>IndexedParallelIterator</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2620' class='srclink' href='../../src/rayon/par_iter/mod.rs.html#399-421' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2615' class='srclink' href='../../src/rayon/par_iter/mod.rs.html#399-421' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait IndexedParallelIterator: <a class='trait' href='../../rayon/par_iter/trait.ExactParallelIterator.html' title='rayon::par_iter::ExactParallelIterator'>ExactParallelIterator</a> {
     fn <a href='#method.zip' class='fnname'>zip</a>&lt;ZIP_OP&gt;(self, zip_op: ZIP_OP) -&gt; <a class='struct' href='../../rayon/par_iter/zip/struct.ZipIter.html' title='rayon::par_iter::zip::ZipIter'>ZipIter</a>&lt;Self, ZIP_OP::Iter&gt; <span class='where'>where ZIP_OP: <a class='trait' href='../../rayon/par_iter/trait.IntoParallelIterator.html' title='rayon::par_iter::IntoParallelIterator'>IntoParallelIterator</a>, ZIP_OP::Iter: <a class='trait' href='../../rayon/par_iter/trait.IndexedParallelIterator.html' title='rayon::par_iter::IndexedParallelIterator'>IndexedParallelIterator</a></span> { ... }
     fn <a href='#method.enumerate' class='fnname'>enumerate</a>(self) -&gt; <a class='struct' href='../../rayon/par_iter/enumerate/struct.Enumerate.html' title='rayon::par_iter::enumerate::Enumerate'>Enumerate</a>&lt;Self&gt; { ... }
@@ -83,8 +84,8 @@ have in common.</p>
 <li><code>impl <a class='trait' href='../../rayon/par_iter/trait.IndexedParallelIterator.html' title='rayon::par_iter::IndexedParallelIterator'>IndexedParallelIterator</a> for <a class='struct' href='../../rayon/par_iter/range/struct.RangeIter.html' title='rayon::par_iter::range::RangeIter'>RangeIter</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>&gt;</code></li>
 <li><code>impl&lt;T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='../../rayon/par_iter/trait.IndexedParallelIterator.html' title='rayon::par_iter::IndexedParallelIterator'>IndexedParallelIterator</a> for <a class='struct' href='../../rayon/par_iter/vec/struct.VecIter.html' title='rayon::par_iter::vec::VecIter'>VecIter</a>&lt;T&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../../implementors/rayon/par_iter/trait.IndexedParallelIterator.js">
-                      </script></section>
+                         src="../../implementors/rayon/par_iter/trait.IndexedParallelIterator.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

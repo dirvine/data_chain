@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
+    
 
     
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='../../index.html'>rayon</a>::<wbr><a href='../index.html'>par_iter</a>::<wbr><a href='index.html'>internal</a>::<wbr><a class='trait' href=''>Producer</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-738' class='srclink' href='../../../src/rayon/par_iter/internal.rs.html#19-26' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-733' class='srclink' href='../../../src/rayon/par_iter/internal.rs.html#19-26' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Producer: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/trait.IntoIterator.html' title='core::iter::IntoIterator'>IntoIterator</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a> {
     fn <a href='#tymethod.cost' class='fnname'>cost</a>(&amp;mut self, len: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.f64.html'>f64</a>;
     fn <a href='#tymethod.split_at' class='fnname'>split_at</a>(self, index: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a>Self, Self<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a>;
@@ -80,8 +81,8 @@ other <code>index..N</code>. Index must be less than <code>N</code>.</p>
 <li><code>impl <a class='trait' href='../../../rayon/par_iter/internal/trait.Producer.html' title='rayon::par_iter::internal::Producer'>Producer</a> for <a class='struct' href='../../../rayon/par_iter/range/struct.RangeIter.html' title='rayon::par_iter::range::RangeIter'>RangeIter</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a>&gt;</code></li>
 <li><code>impl&lt;'data, T: 'data + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a>&gt; <a class='trait' href='../../../rayon/par_iter/internal/trait.Producer.html' title='rayon::par_iter::internal::Producer'>Producer</a> for <a class='struct' href='../../../rayon/par_iter/vec/struct.VecProducer.html' title='rayon::par_iter::vec::VecProducer'>VecProducer</a>&lt;'data, T&gt;</code></li>
 </ul><script type="text/javascript" async
-                              src="../../../implementors/rayon/par_iter/internal/trait.Producer.js">
-                      </script></section>
+                         src="../../../implementors/rayon/par_iter/internal/trait.Producer.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

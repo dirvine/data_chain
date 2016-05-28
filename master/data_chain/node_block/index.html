@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
     
@@ -43,24 +44,23 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_chain</a>::<wbr><a class='mod' href=''>node_block</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-237' class='srclink' href='../../src/data_chain/src/node_block.rs.html#26-83' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-250' class='srclink' href='../../src/data_chain/src/node_block.rs.html#26-83' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A node block is a partial block, sent by group members to each other to create a <code>Block</code></p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.NodeBlock.html'
-                               title='data_chain::node_block::NodeBlock'>NodeBlock</a></td>
-                        <td class='docblock short'>
-                             <p>If data block then this is sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code>.
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.NodeBlock.html'
+                                  title='data_chain::node_block::NodeBlock'>NodeBlock</a></td>
+                           <td class='docblock short'>
+                                <p>If data block then this is sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code>.
 If this is a link then it is sent with a <code>churn</code> event.
 A <code>Link</code> is a nodeblock that each member must send each other in times of churn.
 These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode</code> messages in the routing layer</p>
-                        </td>
-                    </tr>
-                </table></section>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

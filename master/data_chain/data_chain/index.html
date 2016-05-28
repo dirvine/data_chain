@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
     
@@ -43,18 +44,18 @@
 
     <section id='main' class="content mod">
 <h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_chain</a>::<wbr><a class='mod' href=''>data_chain</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-131' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#27-187' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-131' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#27-186' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A container of <code>links</code> (validated group membership blocks) and normal <code>blocks</code> (data elements)</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
-                    <tr class=' module-item'>
-                        <td><a class='struct' href='struct.DataChain.html'
-                               title='data_chain::data_chain::DataChain'>DataChain</a></td>
-                        <td class='docblock short'>
-                             <p>Created by holder of chain, can be passed to others as proof of data held.
+                       <tr class=' module-item'>
+                           <td><a class='struct' href='struct.DataChain.html'
+                                  title='data_chain::data_chain::DataChain'>DataChain</a></td>
+                           <td class='docblock short'>
+                                <p>Created by holder of chain, can be passed to others as proof of data held.
 This object is verifiable if :
 The last validation contains the majority of current close group
 OR on network restart the nodes all must try and restart on
@@ -64,9 +65,8 @@ at vault level.
 If there was a restart then the nodes should validate and continue.
 N:B this means all nodes can use a named directory for data_store and clear if they restart
 as a new id. This allows cleanup of old data_cache directories.</p>
-                        </td>
-                    </tr>
-                </table></section>
+                           </td>
+                       </tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

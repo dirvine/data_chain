@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
     
@@ -43,10 +44,10 @@
 
     <section id='main' class="content struct">
 <h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>data_chain</a>::<wbr><a class='struct' href=''>DataChain</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-140' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#46-48' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-141' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#47-49' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct DataChain {
     // some fields omitted
 }</pre><div class='docblock'><p>Created by holder of chain, can be passed to others as proof of data held.
@@ -75,11 +76,13 @@ as a new id. This allows cleanup of old data_cache directories.</p>
 <div class='docblock'><p>Delete a block referred to by hash</p>
 </div><h4 id='method.get_last_link' class='method'><code>fn <a href='#method.get_last_link' class='fnname'>get_last_link</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>&gt;</code></h4>
 <div class='docblock'><p>Should equal the current common_close_group</p>
+</div><h4 id='method.validate_all_links' class='method'><code>fn <a href='#method.validate_all_links' class='fnname'>validate_all_links</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Validate all links in chain</p>
 </div><h4 id='method.validate_block' class='method'><code>fn <a href='#method.validate_block' class='fnname'>validate_block</a>(&amp;self, block: &amp;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Validate an individual block. Will get latest link and confirm all signatures
 were from last known group. Majority of sigs is confirmed.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> for <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><code>fn <a href='../../rustc_serialize/serialize/trait.Decodable.html#method.decode' class='fnname'>decode</a>&lt;__D: <a class='trait' href='../../rustc_serialize/serialize/trait.Decoder.html' title='rustc_serialize::serialize::Decoder'>Decoder</a>&gt;(__arg_0: &amp;mut __D) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a>, __D::Error&gt;</code></h4>
-</div><h3 class='impl'><code>impl <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a> for <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.encode' class='method'><code>fn <a href='../../rustc_serialize/serialize/trait.Encodable.html#method.encode' class='fnname'>encode</a>&lt;__S: <a class='trait' href='../../rustc_serialize/serialize/trait.Encoder.html' title='rustc_serialize::serialize::Encoder'>Encoder</a>&gt;(&amp;self, __arg_0: &amp;mut __S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, __S::Error&gt;</code></h4>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 id='derived_implementations'>Derived Implementations </h3><h3 class='impl'><code>impl <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> for <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.decode' class='method'><code>fn <a href='../../rustc_serialize/serialize/trait.Decodable.html#tymethod.decode' class='fnname'>decode</a>&lt;__D: <a class='trait' href='../../rustc_serialize/serialize/trait.Decoder.html' title='rustc_serialize::serialize::Decoder'>Decoder</a>&gt;(__arg_0: &amp;mut __D) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a>, __D::Error&gt;</code></h4>
+</div><h3 class='impl'><code>impl <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a> for <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.encode' class='method'><code>fn <a href='../../rustc_serialize/serialize/trait.Encodable.html#tymethod.encode' class='fnname'>encode</a>&lt;__S: <a class='trait' href='../../rustc_serialize/serialize/trait.Encoder.html' title='rustc_serialize::serialize::Encoder'>Encoder</a>&gt;(&amp;self, __arg_0: &amp;mut __S) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, __S::Error&gt;</code></h4>
 </div></section>
     <section id='search' class="content hidden"></section>
 

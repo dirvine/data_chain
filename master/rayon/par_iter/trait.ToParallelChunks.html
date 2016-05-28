@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
+    
 
     
     
@@ -43,18 +44,18 @@
 
     <section id='main' class="content trait">
 <h1 class='fqn'><span class='in-band'>Trait <a href='../index.html'>rayon</a>::<wbr><a href='index.html'>par_iter</a>::<wbr><a class='trait' href=''>ToParallelChunks</a></span><span class='out-of-band'><span id='render-detail'>
-            <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
-                [<span class='inner'>&#x2212;</span>]
-            </a>
-        </span><a id='src-2523' class='srclink' href='../../src/rayon/par_iter/mod.rs.html#71-84' title='goto source code'>[src]</a></span></h1>
+                   <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
+                       [<span class='inner'>&#x2212;</span>]
+                   </a>
+               </span><a id='src-2518' class='srclink' href='../../src/rayon/par_iter/mod.rs.html#71-84' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait ToParallelChunks&lt;'data&gt; {
-    type Iter: <a class='trait' href='../../rayon/par_iter/trait.ParallelIterator.html' title='rayon::par_iter::ParallelIterator'>ParallelIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'data [</a>Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Item</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>&gt;;
-    type Item: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'data;
+    type <a href='#associatedtype.Iter' class='type'>Iter</a>: <a class='trait' href='../../rayon/par_iter/trait.ParallelIterator.html' title='rayon::par_iter::ParallelIterator'>ParallelIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'data [</a>Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Item</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>&gt;;
+    type <a href='#associatedtype.Item' class='type'>Item</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'data;
     fn <a href='#tymethod.par_chunks' class='fnname'>par_chunks</a>(&amp;'data self, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Iter</a>;
 }</pre>
             <h2 id='associated-types'>Associated Types</h2>
             <div class='methods'>
-        <h3 id='associatedtype.Iter' class='method stab '><code>type Iter: <a class='trait' href='../../rayon/par_iter/trait.ParallelIterator.html' title='rayon::par_iter::ParallelIterator'>ParallelIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'data [</a>Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Item</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>&gt;</code></h3><h3 id='associatedtype.Item' class='method stab '><code>type Item: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'data</code></h3></div>
+        <h3 id='associatedtype.Iter' class='method stab '><code>type <a href='#associatedtype.Iter' class='type'>Iter</a>: <a class='trait' href='../../rayon/par_iter/trait.ParallelIterator.html' title='rayon::par_iter::ParallelIterator'>ParallelIterator</a>&lt;Item=<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;'data [</a>Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Item</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>&gt;</code></h3><h3 id='associatedtype.Item' class='method stab '><code>type <a href='#associatedtype.Item' class='type'>Item</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'data</code></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.par_chunks' class='method stab '><code>fn <a href='#tymethod.par_chunks' class='fnname'>par_chunks</a>(&amp;'data self, size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; Self::<a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>Iter</a></code></h3><div class='docblock'><p>Returns a parallel iterator over at most <code>size</code> elements of
@@ -70,8 +71,8 @@ possible.</p>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl&lt;'data, T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sync.html' title='core::marker::Sync'>Sync</a> + 'data&gt; <a class='trait' href='../../rayon/par_iter/trait.ToParallelChunks.html' title='rayon::par_iter::ToParallelChunks'>ToParallelChunks</a>&lt;'data&gt; for <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>[</a>T<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></li>
 </ul><script type="text/javascript" async
-                              src="../../implementors/rayon/par_iter/trait.ToParallelChunks.js">
-                      </script></section>
+                         src="../../implementors/rayon/par_iter/trait.ToParallelChunks.js">
+                 </script></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
