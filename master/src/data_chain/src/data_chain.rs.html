@@ -356,6 +356,14 @@
 <span id="312">312</span>
 <span id="313">313</span>
 <span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -388,6 +396,7 @@
 <span class='kw'>use</span> <span class='ident'>proof</span>::<span class='ident'>Proof</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
+<span class='comment'>// use node_block::NodeBlock;</span>
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>::<span class='ident'>Digest</span>;
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
@@ -424,11 +433,20 @@
         <span class='prelude-val'>Ok</span>(())
     }
 
+    <span class='comment'>// /// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event</span>
+    <span class='comment'>// pub fn add_node_block(&amp;mut self, node_block: NodeBlock) -&gt; Result&lt;(), Error&gt; {</span>
+    <span class='comment'>//     if let Some(block) = self.chain.iter().rev().find(|x| x.identifier() == node_block.identifier()) {</span>
+    <span class='comment'>//</span>
+    <span class='comment'>//     }</span>
+    <span class='comment'>//     let block = match node_block.identifier() {</span>
+    <span class='comment'>//         StructuredData(_,_) =&gt; Block::new_block(node_block),</span>
+    <span class='comment'>//         ImmutableData(_) =&gt; Block::new_block(node_block),</span>
+    <span class='comment'>//         Link(_) =&gt;</span>
+    <span class='comment'>//     };</span>
+    <span class='comment'>//     self.chain.push(node_block.identifier);</span>
+    <span class='comment'>//     Ok(())</span>
+    <span class='comment'>// }</span>
 
-    <span class='doccomment'>/// Add a Block to the chain</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>data_block</span>: <span class='ident'>Block</span>) {
-        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>push</span>(<span class='ident'>data_block</span>);
-    }
 
     <span class='doccomment'>/// number of non-deleted blocks</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
@@ -443,7 +461,7 @@
     <span class='doccomment'>/// Delete a block (will not delete a link)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>data_id</span>: <span class='ident'>BlockIdentifier</span>) {
         <span class='kw'>match</span> <span class='ident'>data_id</span> {
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(_) <span class='op'>=&gt;</span> {}
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(_,_) <span class='op'>=&gt;</span> {}
             _ <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>data_id</span>),
         }
     }
@@ -545,15 +563,13 @@
 }
 
 
-
 <span class='comment'>// #[cfg(test)]</span>
 <span class='comment'>//</span>
 <span class='comment'>// mod tests {</span>
 <span class='comment'>//     use super::*;</span>
 <span class='comment'>//     use sodiumoxide::crypto;</span>
-<span class='comment'>//     use itertools::Itertools;</span>
 <span class='comment'>//     use maidsafe_utilities::serialisation;</span>
-<span class='comment'>//     use std::time;</span>
+<span class='comment'>//     // use std::time;</span>
 <span class='comment'>//</span>
 <span class='comment'>//     #[test]</span>
 <span class='comment'>//     fn simple_node_data_block_comparisons() {</span>
@@ -569,7 +585,7 @@
 <span class='comment'>//         assert!(test_node_data_block2 != test_node_data_block3);</span>
 <span class='comment'>//</span>
 <span class='comment'>//     }</span>
-<span class='comment'>//</span>
+<span class='comment'>// }</span>
 <span class='comment'>//     fn create_data_chain(count: u64) -&gt; DataChain {</span>
 <span class='comment'>//         let group_size = 8;</span>
 <span class='comment'>//         let mut chain = DataChain::new(group_size);</span>
