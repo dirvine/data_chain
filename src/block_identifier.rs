@@ -24,6 +24,7 @@
 // relating to use of the SAFE Network Software.
 
 use sodiumoxide::crypto::hash::sha256::Digest;
+use sodiumoxide::crypto::sign::PublicKey;
 
 /// structured DAta name
 pub type SdName = Digest;
@@ -39,7 +40,7 @@ pub enum BlockIdentifier {
     /// This digest represents **this nodes** current close group
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
-    Link(Digest), // hash of group (all current close group id's)
+    Link(Digest, Vec<PublicKey>), // hash of group (all current close group id's)
 }
 
 impl BlockIdentifier {
@@ -51,7 +52,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(hash) => hash,
             BlockIdentifier::StructuredData(hash, _name) => hash,
-            BlockIdentifier::Link(hash) => hash,
+            BlockIdentifier::Link(hash, _) => hash,
         }
     }
 
@@ -60,7 +61,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(_hash) => None,
             BlockIdentifier::StructuredData(_hash, name) => Some(name),
-            BlockIdentifier::Link(_hash) => None,
+            BlockIdentifier::Link(_hash, _) => None,
         }
     }
 
@@ -69,7 +70,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(_) => false,
             BlockIdentifier::StructuredData(_, _) => false,
-            BlockIdentifier::Link(_) => true,
+            BlockIdentifier::Link(_, _) => true,
         }
     }
 
@@ -83,14 +84,16 @@ impl BlockIdentifier {
 mod tests {
     use super::*;
     use sodiumoxide::crypto::hash::sha256;
+    use sodiumoxide::crypto;
 
     #[test]
     fn create_validate_link_identifier() {
-        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+        ::sodiumoxide::init();
+        let keys = crypto::sign::gen_keypair();
+        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
 
         assert!(link.is_link());
         assert!(!link.is_block());
-        assert_eq!(link.hash(), sha256::hash("1".as_bytes()));
         assert!(link.structured_data_name().is_none());
     }
 

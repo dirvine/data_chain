@@ -29,6 +29,7 @@ use itertools::Itertools;
 use proof::Proof;
 use block::Block;
 use block_identifier::BlockIdentifier;
+// use node_block::NodeBlock;
 use sodiumoxide::crypto;
 use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
@@ -65,11 +66,20 @@ impl DataChain {
         Ok(())
     }
 
+    // /// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event
+    // pub fn add_node_block(&mut self, node_block: NodeBlock) -> Result<(), Error> {
+    //     if let Some(block) = self.chain.iter().rev().find(|x| x.identifier() == node_block.identifier()) {
+    //
+    //     }
+    //     let block = match node_block.identifier() {
+    //         StructuredData(_,_) => Block::new_block(node_block),
+    //         ImmutableData(_) => Block::new_block(node_block),
+    //         Link(_) =>
+    //     };
+    //     self.chain.push(node_block.identifier);
+    //     Ok(())
+    // }
 
-    /// Add a Block to the chain
-    pub fn add_block(&mut self, data_block: Block) {
-        self.chain.push(data_block);
-    }
 
     /// number of non-deleted blocks
     pub fn len(&self) -> usize {
@@ -84,7 +94,7 @@ impl DataChain {
     /// Delete a block (will not delete a link)
     pub fn delete(&mut self, data_id: BlockIdentifier) {
         match data_id {
-            BlockIdentifier::Link(_) => {}
+            BlockIdentifier::Link(_,_) => {}
             _ => self.chain.retain(|x| *x.identifier() != data_id),
         }
     }
@@ -186,15 +196,13 @@ impl DataChain {
 }
 
 
-
 // #[cfg(test)]
 //
 // mod tests {
 //     use super::*;
 //     use sodiumoxide::crypto;
-//     use itertools::Itertools;
 //     use maidsafe_utilities::serialisation;
-//     use std::time;
+//     // use std::time;
 //
 //     #[test]
 //     fn simple_node_data_block_comparisons() {
@@ -210,7 +218,7 @@ impl DataChain {
 //         assert!(test_node_data_block2 != test_node_data_block3);
 //
 //     }
-//
+// }
 //     fn create_data_chain(count: u64) -> DataChain {
 //         let group_size = 8;
 //         let mut chain = DataChain::new(group_size);

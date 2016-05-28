@@ -55,6 +55,15 @@ impl NodeBlock {
         })
 
     }
+
+    /// Getter
+    pub fn identifier(&self) -> &BlockIdentifier {
+        &self.identifier
+    }
+    /// Getter
+    pub fn proof(&self) -> &(PublicKey, Signature) {
+        &self.proof
+    }
 }
 
 #[cfg(test)]
@@ -69,8 +78,8 @@ mod tests {
     fn node_block_comparisons() {
         ::sodiumoxide::init();
         let keys = crypto::sign::gen_keypair();
-        let test_data1 = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
-        let test_data2 = BlockIdentifier::Link(sha256::hash("1".as_bytes()));
+        let test_data1 = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
+        let test_data2 = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
         let test_data3 = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
         let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
