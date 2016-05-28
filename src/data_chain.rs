@@ -110,6 +110,7 @@ impl DataChain {
 
     /// Validate all links in chain
     pub fn validate_all_links(&self) -> bool {
+        // TODO split into 2 iterators and not run filters on each like this
 
         self.chain
             .iter()
@@ -117,6 +118,7 @@ impl DataChain {
             .filter_map(|x| x.proof().link_proof())
             .zip(self.chain
                 .iter()
+                .filter(|&x| self.validate_link_signatories(&x).is_ok())
                 .filter_map(|x| {
                     x.proof()
                         .link_proof()

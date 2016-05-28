@@ -1,6 +1,9 @@
 # data_chain
-Data blocks can be chained to provide verifiable assuredness  that they contain network valid data and not injected.
 
+Data blocks that are chained to provide cryptographically verifiable assuredness  that they contain
+network valid data that a secured network has previously accepted. .
+
+![Chain](https://github.com/dirvine/data_chain/docs/chain.jpg)
 
 
 [API Documentation] (https://dirvine.github.io/data_chain/master/data_chain/)
