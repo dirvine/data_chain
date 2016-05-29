@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-247' class='srclink' href='../../src/data_chain/src/node_block.rs.html#26-92' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-247' class='srclink' href='../../src/data_chain/src/node_block.rs.html#26-104' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A node block is a partial block, sent by group members to each other to create a <code>Block</code></p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -59,6 +59,16 @@
 If this is a link then it is sent with a <code>churn</code> event.
 A <code>Link</code> is a nodeblock that each member must send each other in times of churn.
 These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode</code> messages in the routing layer</p>
+                           </td>
+                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
+<table>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.create_link_descriptor.html'
+                                  title='data_chain::node_block::create_link_descriptor'>create_link_descriptor</a></td>
+                           <td class='docblock short'>
+                                <p>Descriptor is the xored group members starting with base of 0000..:32
+This process is faster than hash and means group can be unordered
+which is beneficial under heavy churn and out of order links being sent.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

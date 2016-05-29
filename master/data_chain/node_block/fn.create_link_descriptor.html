@@ -4,16 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `Difference` struct in crate `bitflags`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, Difference">
+    <meta name="description" content="API documentation for the Rust `create_link_descriptor` fn in crate `data_chain`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, create_link_descriptor">
 
-    <title>bitflags::__core::collections::hash_set::Difference - Rust</title>
+    <title>data_chain::node_block::create_link_descriptor - Rust</title>
 
-    <link rel="stylesheet" type="text/css" href="../../../../rustdoc.css">
-    <link rel="stylesheet" type="text/css" href="../../../../main.css">
+    <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
+    <link rel="stylesheet" type="text/css" href="../../main.css">
     
 
-    
+    <link rel="shortcut icon" href="http://maidsafe.net/img/favicon.ico">
     
 </head>
 <body class="rustdoc">
@@ -27,8 +27,8 @@
     
 
     <nav class="sidebar">
-        
-        <p class='location'><a href='../../../index.html'>bitflags</a>::<wbr><a href='../../index.html'>__core</a>::<wbr><a href='../index.html'>collections</a>::<wbr><a href='index.html'>hash_set</a></p><script>window.sidebarCurrent = {name: 'Difference', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
+        <a href='../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
+        <p class='location'><a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>node_block</a></p><script>window.sidebarCurrent = {name: 'create_link_descriptor', ty: 'fn', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,15 +42,15 @@
         </form>
     </nav>
 
-    <section id='main' class="content struct">
-<h1 class='fqn'><span class='in-band'>Struct <a href='../../../index.html'>bitflags</a>::<wbr><a href='../../index.html'>__core</a>::<wbr><a href='../index.html'>collections</a>::<wbr><a href='index.html'>hash_set</a>::<wbr><a class='struct' href=''>Difference</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content fn">
+<h1 class='fqn'><span class='in-band'>Function <a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>node_block</a>::<wbr><a class='fn' href=''>create_link_descriptor</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2606' class='srclink' href='https://doc.rust-lang.org/nightly/std/collections/hash/set/struct.Difference.html?gotosrc=2606' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Difference&lt;'a, T, S&gt; <span class='where'>where T: 'a, S: 'a</span> {
-    // some fields omitted
-}</pre><span class="since">1.0.0</span><div class='docblock'><p>Difference iterator</p>
+               </span><a id='src-254' class='srclink' href='../../src/data_chain/src/node_block.rs.html#35-43' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn create_link_descriptor(group: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>&gt;) -&gt; LinkDescriptor</pre><div class='docblock'><p>Descriptor is the xored group members starting with base of 0000..:32
+This process is faster than hash and means group can be unordered
+which is beneficial under heavy churn and out of order links being sent.</p>
 </div></section>
     <section id='search' class="content hidden"></section>
 
@@ -103,13 +103,13 @@
     
 
     <script>
-        window.rootPath = "../../../../";
-        window.currentCrate = "bitflags";
+        window.rootPath = "../../";
+        window.currentCrate = "data_chain";
         window.playgroundUrl = "";
     </script>
-    <script src="../../../../jquery.js"></script>
-    <script src="../../../../main.js"></script>
+    <script src="../../jquery.js"></script>
+    <script src="../../main.js"></script>
     
-    <script defer src="../../../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>
