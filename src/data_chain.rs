@@ -66,21 +66,8 @@ impl DataChain {
         Ok(())
     }
 
-    // /// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event
-    // pub fn add_node_block(&mut self, node_block: NodeBlock) -> Result<(), Error> {
-    //     if let Some(block) = self.chain.iter().rev().find(|x| x.identifier() == node_block.identifier()) {
-    //
-    //     }
-    //     let block = match node_block.identifier() {
-    //         StructuredData(_,_) => Block::new_block(node_block),
-    //         ImmutableData(_) => Block::new_block(node_block),
-    //         Link(_) =>
-    //     };
-    //     self.chain.push(node_block.identifier);
-    //     Ok(())
-    // }
 
-    /// Add a block sent from a clone node
+    /// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event
     pub fn add_node_block(&mut self, node_block: &mut NodeBlock) -> Result<(), Error> {
         if let Some(mut _entry) = self.chain.iter_mut().find(|x| x.identifier() == node_block.identifier()) {
               // self.add_to_identifier(entry, node_block.proof())

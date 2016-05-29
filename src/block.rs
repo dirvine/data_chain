@@ -24,9 +24,7 @@
 // relating to use of the SAFE Network Software.
 
 
-use sodiumoxide::crypto::sign::PublicKey;
 use sodiumoxide::crypto::hash::sha256::Digest;
-use itertools::Itertools;
 
 use block_identifier::BlockIdentifier;
 use proof::Proof;
@@ -55,19 +53,16 @@ impl Block {
     }
 
     /// construct a link (requires group members signing keys are known)
-    pub fn new_link(data_id: BlockIdentifier, group_keys: &Vec<PublicKey>) -> Result<Block, Error> {
+    pub fn new_link(data_id: BlockIdentifier) -> Result<Block, Error> {
         if data_id.is_block() {
             return Err(Error::BadIdentifier);
         }
-        let mut sorted_unique_keys = group_keys.iter().unique().collect_vec();
-        sorted_unique_keys.sort();
-        let sorted_proof = sorted_unique_keys.iter()
-            .map(|x| (*x.clone(), None))
-            .collect_vec();
+        // [TODO]: Should we confirm here that our close group xors to the
+        // provided link identifier xored version ??? - 2016-05-30 12:48am
 
         Ok(Block {
             identifier: data_id,
-            proof: Proof::Link(sorted_proof),
+            proof: Proof::Link(vec![]),
         })
 
     }
@@ -103,18 +98,13 @@ mod tests {
     use super::*;
     use block_identifier::BlockIdentifier;
     use sodiumoxide::crypto::hash::sha256;
-    use sodiumoxide::crypto;
 
 
     #[test]
     fn link_new() {
         ::sodiumoxide::init();
-        let mut keys = Vec::new();
-        for _ in 0..::GROUP_SIZE {
-            keys.push(crypto::sign::gen_keypair().0);
-        }
         let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
-        let link = Block::new_link(data_id, &keys);
+        let link = Block::new_link(data_id);
         assert!(link.is_ok());
         let unwrapped_link = match link {
             Ok(link) => link,
