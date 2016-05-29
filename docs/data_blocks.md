@@ -8,7 +8,7 @@ onto a decentralised network.
 - Decentralised network, A peer to peer network in xor space, using Kadmelia type addressing.
 - Hash, a cryptographic one way function that produces a fixed length representation of any input.
 - Immutable data, a data type that has a name == hash of it's contents (it is immutable as changing
-  the contents creates a new peice of immutable data).
+  the contents creates a new piece of immutable data).
 - Structured data, a data type that has a fixed name, but mutable contents.
 - GROUP_SIZE, the number of nodes surrounding a network address.
 - QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
@@ -214,7 +214,7 @@ In a decentralised network, a large improvement in stability and ability for fai
 improved by a few simple steps :
 
 1. Each node should store the nodes it has been connected to (can be limited if required, as very
-old node addreses are unlikely to reappear).
+old node addresses are unlikely to reappear).
 
 2. A node should store its public and secret keys on disk along with its data and associated
 `DataChain`.
@@ -229,7 +229,7 @@ allocated a new address.
 
 4. As nodes will attempt to hold persistent data, all local data can be held in named directories.
 On startup this data will be useful if the node can rejoin a group.  If a node is rejected and
-forced to rejoin the network with a new ID then a new named directory can be created. this allows
+forced to rejoin the network with a new ID then a new named directory can be created. This allows
 nodes to clean up unused directories effectively.
 
 ## Network restart
@@ -247,7 +247,7 @@ node. The remainder of the old group will have to form again to provide full val
 
 ## Archive nodes
 
-Nodes that hold the longest `DataChains` may be considered to be archive nodes. such nodes will be
+Nodes that hold the longest `DataChains` may be considered to be archive nodes. Such nodes will be
 responsible for maintaining all network data for specific areas of the network address range. There
 will be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group
 and it would therefore require a minimum of 3 groups of archive nodes to collude against the
@@ -279,7 +279,7 @@ lower level consensus at the routing level.
 
 A non archive node can request old data from existing archive nodes in a group, but the rate should
 be limited in cases where there are already three such nodes in a group. These messages will be the
-lowest priority messages in the group. Tehreby any attacker will require to become an archive node
+lowest priority messages in the group. Thereby any attacker will require to become an archive node
 and this will take time, unless the group falls below three archive nodes in which case the priority
 is increased on such relocation messages.
 
@@ -310,7 +310,7 @@ currency) can be further validated.
 The possibility for a group to not have an ability, even with Archive nodes to store all data may
 still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
 known larger nodes outwith their group, by passing data and also passing a `DtaChain` to prove
-validity. This can introduce an addition ot the `DataChain` object to provide pointers to data. In
+validity. This can introduce an addition to the `DataChain` object to provide pointers to data. In
 such cases the larger nodes should receive a proportion of any reward for doing so. It is, however,
 doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed
 across groups as described above.

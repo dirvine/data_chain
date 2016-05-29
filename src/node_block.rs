@@ -41,6 +41,11 @@ pub fn create_link_descriptor(group: &Vec<PublicKey>) -> LinkDescriptor {
     }
     base
 }
+
+
+/// Proof as provided by a close group member
+pub type NodeBlockProof = (PublicKey, Signature);
+
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
 /// A `Link` is a nodeblock that each member must send each other in times of churn.
@@ -48,7 +53,7 @@ pub fn create_link_descriptor(group: &Vec<PublicKey>) -> LinkDescriptor {
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeBlock {
     identifier: BlockIdentifier,
-    proof: (PublicKey, Signature),
+    proof: NodeBlockProof,
 }
 
 impl NodeBlock {

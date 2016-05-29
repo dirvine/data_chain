@@ -29,7 +29,7 @@ use itertools::Itertools;
 use proof::Proof;
 use block::Block;
 use block_identifier::BlockIdentifier;
-// use node_block::NodeBlock;
+use node_block::{NodeBlock, NodeBlockProof};
 use sodiumoxide::crypto;
 use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
@@ -80,6 +80,37 @@ impl DataChain {
     //     Ok(())
     // }
 
+    /// Add a block sent from a clone node
+    pub fn add_node_block(&mut self, node_block: &mut NodeBlock) -> Result<(), Error> {
+        if let Some(mut _entry) = self.chain.iter_mut().find(|x| x.identifier() == node_block.identifier()) {
+              // self.add_to_identifier(entry, node_block.proof())
+       unimplemented!()
+        } else {
+             // let block = Block::new_link
+             //  self.chain.push()
+       unimplemented!()
+        }
+    }
+#[allow(unused)]
+    fn add_to_identifier(&mut self, block: &mut Block, key_sig: &NodeBlockProof) -> Result<(), Error> {
+        if block.is_link() {
+            self.add_to_link(block, key_sig)
+        } else {
+            self.add_to_block(block, key_sig)
+        }
+    }
+
+#[allow(unused)]
+    fn add_to_block(&mut self, block: &mut Block, key_sig: &NodeBlockProof) -> Result<(), Error> {
+       unimplemented!()
+
+    }
+
+#[allow(unused)]
+    fn add_to_link(&mut self, block: &mut Block, key_sig: &NodeBlockProof) -> Result<(), Error> {
+       unimplemented!()
+
+    }
 
     /// number of non-deleted blocks
     pub fn len(&self) -> usize {
