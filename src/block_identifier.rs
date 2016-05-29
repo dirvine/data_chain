@@ -24,10 +24,14 @@
 // relating to use of the SAFE Network Software.
 
 use sodiumoxide::crypto::hash::sha256::Digest;
-use sodiumoxide::crypto::sign::PublicKey;
 
 /// structured DAta name
 pub type SdName = Digest;
+
+/// Represents the xored close group for the new grou on churn etc.
+/// This is signed by each group member when a NodeBlock is trasferred that is a link
+pub type LinkDescriptor = [u8; 32];
+
 
 /// Dummy data identifiers for this crate
 #[allow(missing_docs)]
@@ -37,10 +41,11 @@ pub enum BlockIdentifier {
     ImmutableData(Digest),
     ///           hash     name (identity + tag) (stored localy as name in data store)
     StructuredData(Digest, SdName),
-    /// This digest represents **this nodes** current close group
+    /// This array represents **this nodes** current close roup
+    /// The array is all nodes xored together
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
-    Link(Digest, Vec<PublicKey>), // hash of group (all current close group id's)
+    Link(LinkDescriptor), // hash of group (all current close group id's)
 }
 
 impl BlockIdentifier {
@@ -52,7 +57,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(hash) => hash,
             BlockIdentifier::StructuredData(hash, _name) => hash,
-            BlockIdentifier::Link(hash, _) => hash,
+            BlockIdentifier::Link(hash) => Digest(hash),
         }
     }
 
@@ -61,7 +66,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(_hash) => None,
             BlockIdentifier::StructuredData(_hash, name) => Some(name),
-            BlockIdentifier::Link(_hash, _) => None,
+            BlockIdentifier::Link(_hash) => None,
         }
     }
 
@@ -70,7 +75,7 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::ImmutableData(_) => false,
             BlockIdentifier::StructuredData(_, _) => false,
-            BlockIdentifier::Link(_, _) => true,
+            BlockIdentifier::Link(_) => true,
         }
     }
 
@@ -84,13 +89,11 @@ impl BlockIdentifier {
 mod tests {
     use super::*;
     use sodiumoxide::crypto::hash::sha256;
-    use sodiumoxide::crypto;
 
     #[test]
     fn create_validate_link_identifier() {
         ::sodiumoxide::init();
-        let keys = crypto::sign::gen_keypair();
-        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
+        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
 
         assert!(link.is_link());
         assert!(!link.is_block());

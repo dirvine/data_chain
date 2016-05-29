@@ -94,7 +94,7 @@ impl DataChain {
     /// Delete a block (will not delete a link)
     pub fn delete(&mut self, data_id: BlockIdentifier) {
         match data_id {
-            BlockIdentifier::Link(_,_) => {}
+            BlockIdentifier::Link(_) => {}
             _ => self.chain.retain(|x| *x.identifier() != data_id),
         }
     }

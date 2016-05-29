@@ -113,7 +113,7 @@ mod tests {
         for _ in 0..::GROUP_SIZE {
             keys.push(crypto::sign::gen_keypair().0);
         }
-        let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys[0]]);
+        let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
         let link = Block::new_link(data_id, &keys);
         assert!(link.is_ok());
         let unwrapped_link = match link {

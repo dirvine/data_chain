@@ -26,9 +26,21 @@
 use maidsafe_utilities::serialisation;
 use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
 use sodiumoxide::crypto;
-use block_identifier::BlockIdentifier;
+use block_identifier::{BlockIdentifier, LinkDescriptor};
 use error::Error;
 
+/// Descriptor is the xored group members starting with base of 0000..:32
+/// This process is faster than hash and means group can be unordered
+/// which is beneficial under heavy churn and out of order links being sent.
+pub fn create_link_descriptor(group: &Vec<PublicKey>) -> LinkDescriptor {
+    let mut base = [0u8; 32];
+    for key in group.iter(){
+		for item in key.0.iter().cloned().enumerate() {
+        base[item.0] ^= item.1
+		}
+    }
+    base
+}
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
 /// A `Link` is a nodeblock that each member must send each other in times of churn.
@@ -78,8 +90,8 @@ mod tests {
     fn node_block_comparisons() {
         ::sodiumoxide::init();
         let keys = crypto::sign::gen_keypair();
-        let test_data1 = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
-        let test_data2 = BlockIdentifier::Link(sha256::hash("1".as_bytes()), vec![keys.0]);
+        let test_data1 = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
+        let test_data2 = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
         let test_data3 = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
         let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
         let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
