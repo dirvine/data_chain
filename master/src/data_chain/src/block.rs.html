@@ -186,16 +186,6 @@
 <span id="142">142</span>
 <span id="143">143</span>
 <span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -223,9 +213,7 @@
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
 
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>::<span class='ident'>Digest</span>;
-<span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
 <span class='kw'>use</span> <span class='ident'>proof</span>::<span class='ident'>Proof</span>;
@@ -254,19 +242,16 @@
     }
 
     <span class='doccomment'>/// construct a link (requires group members signing keys are known)</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_link</span>(<span class='ident'>data_id</span>: <span class='ident'>BlockIdentifier</span>, <span class='ident'>group_keys</span>: <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>PublicKey</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new_link</span>(<span class='ident'>data_id</span>: <span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='ident'>data_id</span>.<span class='ident'>is_block</span>() {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>BadIdentifier</span>);
         }
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sorted_unique_keys</span> <span class='op'>=</span> <span class='ident'>group_keys</span>.<span class='ident'>iter</span>().<span class='ident'>unique</span>().<span class='ident'>collect_vec</span>();
-        <span class='ident'>sorted_unique_keys</span>.<span class='ident'>sort</span>();
-        <span class='kw'>let</span> <span class='ident'>sorted_proof</span> <span class='op'>=</span> <span class='ident'>sorted_unique_keys</span>.<span class='ident'>iter</span>()
-            .<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> (<span class='op'>*</span><span class='ident'>x</span>.<span class='ident'>clone</span>(), <span class='prelude-val'>None</span>))
-            .<span class='ident'>collect_vec</span>();
+        <span class='comment'>// [TODO]: Should we confirm here that our close group xors to the</span>
+        <span class='comment'>// provided link identifier xored version ??? - 2016-05-30 12:48am</span>
 
         <span class='prelude-val'>Ok</span>(<span class='ident'>Block</span> {
             <span class='ident'>identifier</span>: <span class='ident'>data_id</span>,
-            <span class='ident'>proof</span>: <span class='ident'>Proof</span>::<span class='ident'>Link</span>(<span class='ident'>sorted_proof</span>),
+            <span class='ident'>proof</span>: <span class='ident'>Proof</span>::<span class='ident'>Link</span>(<span class='macro'>vec</span><span class='macro'>!</span>[]),
         })
 
     }
@@ -302,18 +287,13 @@
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
-    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
 
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>link_new</span>() {
         ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-        <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..::<span class='ident'>GROUP_SIZE</span> {
-            <span class='ident'>keys</span>.<span class='ident'>push</span>(<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>().<span class='number'>0</span>);
-        }
         <span class='kw'>let</span> <span class='ident'>data_id</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>&quot;1&quot;</span>.<span class='ident'>as_bytes</span>()).<span class='number'>0</span>);
-        <span class='kw'>let</span> <span class='ident'>link</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new_link</span>(<span class='ident'>data_id</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>);
+        <span class='kw'>let</span> <span class='ident'>link</span> <span class='op'>=</span> <span class='ident'>Block</span>::<span class='ident'>new_link</span>(<span class='ident'>data_id</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>link</span>.<span class='ident'>is_ok</span>());
         <span class='kw'>let</span> <span class='ident'>unwrapped_link</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>link</span> {
             <span class='prelude-val'>Ok</span>(<span class='ident'>link</span>) <span class='op'>=&gt;</span> <span class='ident'>link</span>,

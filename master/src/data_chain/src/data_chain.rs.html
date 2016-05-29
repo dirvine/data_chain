@@ -382,19 +382,6 @@
 <span id="338">338</span>
 <span id="339">339</span>
 <span id="340">340</span>
-<span id="341">341</span>
-<span id="342">342</span>
-<span id="343">343</span>
-<span id="344">344</span>
-<span id="345">345</span>
-<span id="346">346</span>
-<span id="347">347</span>
-<span id="348">348</span>
-<span id="349">349</span>
-<span id="350">350</span>
-<span id="351">351</span>
-<span id="352">352</span>
-<span id="353">353</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -464,21 +451,8 @@
         <span class='prelude-val'>Ok</span>(())
     }
 
-    <span class='comment'>// /// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event</span>
-    <span class='comment'>// pub fn add_node_block(&amp;mut self, node_block: NodeBlock) -&gt; Result&lt;(), Error&gt; {</span>
-    <span class='comment'>//     if let Some(block) = self.chain.iter().rev().find(|x| x.identifier() == node_block.identifier()) {</span>
-    <span class='comment'>//</span>
-    <span class='comment'>//     }</span>
-    <span class='comment'>//     let block = match node_block.identifier() {</span>
-    <span class='comment'>//         StructuredData(_,_) =&gt; Block::new_block(node_block),</span>
-    <span class='comment'>//         ImmutableData(_) =&gt; Block::new_block(node_block),</span>
-    <span class='comment'>//         Link(_) =&gt;</span>
-    <span class='comment'>//     };</span>
-    <span class='comment'>//     self.chain.push(node_block.identifier);</span>
-    <span class='comment'>//     Ok(())</span>
-    <span class='comment'>// }</span>
 
-    <span class='doccomment'>/// Add a block sent from a clone node</span>
+    <span class='doccomment'>/// Each node in group will send a `NodeBlock` on each `churn` `put `post` or `delete` event</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_node_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>node_block</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>NodeBlock</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>mut</span> <span class='ident'>_entry</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>node_block</span>.<span class='ident'>identifier</span>()) {
               <span class='comment'>// self.add_to_identifier(entry, node_block.proof())</span>
