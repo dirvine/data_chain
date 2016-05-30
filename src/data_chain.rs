@@ -71,6 +71,9 @@ impl DataChain {
     pub fn add_node_block(&mut self, node_block: &mut NodeBlock) -> Result<(), Error> {
         if let Some(mut _entry) = self.chain.iter_mut().find(|x| x.identifier() == node_block.identifier()) {
               // self.add_to_identifier(entry, node_block.proof())
+              // if link just push to proof,
+              //     else
+              // get position from last link and push to correct array point
        unimplemented!()
         } else {
              // let block = Block::new_link
