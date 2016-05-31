@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/serde-0.7.5/src/de/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/serde-0.7.6/src/de/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -922,10 +922,30 @@
 <span id="878">878</span>
 <span id="879">879</span>
 <span id="880">880</span>
+<span id="881">881</span>
+<span id="882">882</span>
+<span id="883">883</span>
+<span id="884">884</span>
+<span id="885">885</span>
+<span id="886">886</span>
+<span id="887">887</span>
+<span id="888">888</span>
+<span id="889">889</span>
+<span id="890">890</span>
+<span id="891">891</span>
+<span id="892">892</span>
+<span id="893">893</span>
+<span id="894">894</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Generic deserialization framework.</span>
 
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>)]</span>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>))]</span>
+<span class='kw'>use</span> <span class='ident'>error</span>;
+
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>), <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;collections&quot;</span>))]</span>
+<span class='kw'>use</span> <span class='ident'>collections</span>::{<span class='ident'>String</span>, <span class='ident'>Vec</span>};
 
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>impls</span>;
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>value</span>;
@@ -937,7 +957,12 @@
 <span class='doccomment'>/// `Deserializer` error.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Error</span>: <span class='ident'>Sized</span> <span class='op'>+</span> <span class='ident'>error</span>::<span class='ident'>Error</span> {
     <span class='doccomment'>/// Raised when there is general error when deserializing a type.</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;collections&quot;</span>))]</span>
     <span class='kw'>fn</span> <span class='ident'>custom</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;&gt;</span>(<span class='ident'>msg</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+
+    <span class='doccomment'>/// Raised when there is general error when deserializing a type.</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>all</span>(<span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>), <span class='ident'>not</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;collections&quot;</span>)))]</span>
+    <span class='kw'>fn</span> <span class='ident'>custom</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Into</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span><span class='op'>&gt;&gt;</span>(<span class='ident'>msg</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
 
     <span class='doccomment'>/// Raised when a `Deserialize` type unexpectedly hit the end of the stream.</span>
     <span class='kw'>fn</span> <span class='ident'>end_of_stream</span>() <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
@@ -953,6 +978,9 @@
     }
 
     <span class='doccomment'>/// Raised when a fixed sized sequence or map was passed in the wrong amount of arguments.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// The parameter `len` is the number of arguments found in the serialization. The sequence</span>
+    <span class='doccomment'>/// may either expect more arguments or less arguments.</span>
     <span class='kw'>fn</span> <span class='ident'>invalid_length</span>(<span class='ident'>len</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
         <span class='ident'>Error</span>::<span class='ident'>custom</span>(<span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;Invalid length: {}&quot;</span>, <span class='ident'>len</span>))
     }
@@ -1489,9 +1517,7 @@
     <span class='kw'>fn</span> <span class='ident'>visit_char</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>v</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Value</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>Error</span>,
     {
-        <span class='comment'>// FIXME: this allocation is required in order to be compatible with stable rust, which</span>
-        <span class='comment'>// doesn&#39;t support encoding a `char` into a stack buffer.</span>
-        <span class='self'>self</span>.<span class='ident'>visit_string</span>(<span class='ident'>v</span>.<span class='ident'>to_string</span>())
+        <span class='self'>self</span>.<span class='ident'>visit_str</span>(::<span class='ident'>core</span>::<span class='ident'>str</span>::<span class='ident'>from_utf8</span>(::<span class='ident'>utils</span>::<span class='ident'>encode_utf8</span>(<span class='ident'>v</span>).<span class='ident'>as_slice</span>()).<span class='ident'>unwrap</span>())
     }
 
     <span class='doccomment'>/// `visit_str` deserializes a `&amp;str` into a `Value`.</span>
@@ -1505,6 +1531,7 @@
     <span class='doccomment'>/// a copy if it is deserializing a string from a `String` type.  By default it passes a `&amp;str`</span>
     <span class='doccomment'>/// to the `visit_str` method.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;collections&quot;</span>))]</span>
     <span class='kw'>fn</span> <span class='ident'>visit_string</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>v</span>: <span class='ident'>String</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Value</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>Error</span>,
     {
@@ -1569,6 +1596,7 @@
     }
 
     <span class='doccomment'>/// `visit_byte_buf` deserializes a `Vec&lt;u8&gt;` into a `Value`.</span>
+    <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>any</span>(<span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;std&quot;</span>, <span class='ident'>feature</span> <span class='op'>=</span> <span class='string'>&quot;collections&quot;</span>))]</span>
     <span class='kw'>fn</span> <span class='ident'>visit_byte_buf</span><span class='op'>&lt;</span><span class='ident'>E</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>v</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Value</span>, <span class='ident'>E</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>E</span>: <span class='ident'>Error</span>,
     {
