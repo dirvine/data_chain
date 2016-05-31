@@ -24,121 +24,65 @@
 // relating to use of the SAFE Network Software.
 
 
-use sodiumoxide::crypto::hash::sha256::Digest;
+use sodiumoxide::crypto::sign::{PublicKey, Signature};
 
 use block_identifier::BlockIdentifier;
-use proof::Proof;
-use error::Error;
 
 /// Used to validate chain
 /// Block can be a data item or
 /// a chain link.
+#[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
-pub struct Block {
-    identifier: BlockIdentifier,
-    proof: Proof,
+pub enum Block {
+    Link(BlockIdentifier, Vec<(PublicKey, Option<Signature>)>),
+    Block(BlockIdentifier, [Option<Signature>; ::GROUP_SIZE]),
 }
 
 impl Block {
-    /// construct a block
-    pub fn new_block(data_id: BlockIdentifier) -> Result<Block, Error> {
-        if data_id.is_link() {
-            return Err(Error::BadIdentifier);
-        }
-        Ok(Block {
-            identifier: data_id,
-            proof: Proof::Block([None; super::GROUP_SIZE]),
-        })
 
-    }
-
-    /// construct a link (requires group members signing keys are known)
-    pub fn new_link(data_id: BlockIdentifier) -> Result<Block, Error> {
-        if data_id.is_block() {
-            return Err(Error::BadIdentifier);
-        }
-        // [TODO]: Should we confirm here that our close group xors to the
-        // provided link identifier xored version ??? - 2016-05-30 12:48am
-
-        Ok(Block {
-            identifier: data_id,
-            proof: Proof::Link(vec![]),
-        })
-
-    }
-
-    /// is this a link
-    pub fn is_link(&self) -> bool {
-        self.identifier.is_link() && self.proof.link_proof().is_some()
-    }
-
-    /// is this a block
-    pub fn is_block(&self) -> bool {
-        self.identifier.is_block() && self.proof.block_proof().is_some()
-    }
-
-    /// access proof
-    pub fn proof(&self) -> &Proof {
-        &self.proof
-    }
-
-    /// name of block is name of identifier
-    pub fn hash(&self) -> Digest {
-        self.identifier.hash()
-    }
-
-    /// Get the identifier
-    pub fn identifier(&self) -> &BlockIdentifier {
-        &self.identifier
+/// is this a link
+pub fn is_link(&self) -> bool {
+    match *self {
+        Block::Link(_,_) => true,
+        Block::Block(_,_) => false,
     }
 }
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use block_identifier::BlockIdentifier;
-    use sodiumoxide::crypto::hash::sha256;
+/// is block
+pub fn is_block(&self) -> bool {
+    !self.is_link()
+}
 
+/// getter
+pub fn identifier(&self) -> &BlockIdentifier {
+    match *self {
+        Block::Link(ref id,_) => id,
+        Block::Block(ref id,_) => id,
+    }
+}
 
-    #[test]
-    fn link_new() {
-        ::sodiumoxide::init();
-        let data_id = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
-        let link = Block::new_link(data_id);
-        assert!(link.is_ok());
-        let unwrapped_link = match link {
-            Ok(link) => link,
-            Err(_) => panic!("not a link"),
-        };
-        assert!(unwrapped_link.clone().is_link());
-        assert!(unwrapped_link.proof().link_proof().is_some());
+/// getter
+pub fn link_keys(&self) -> Option<Vec<PublicKey>> {
+    match *self {
+        Block::Link(_, ref vec) => Some(vec.iter().map(|&x| x.0).collect()),
+        Block::Block(_,_) => None,
+    }
+}
 
+/// getter
+pub fn link_vec(&self) -> Option<&Vec<(PublicKey, Option<Signature>)>> {
+    match *self {
+        Block::Link(_, ref vec) => Some(vec),
+        Block::Block(_,_) => None,
     }
-    #[test]
-    fn id_block_new() {
-        ::sodiumoxide::init();
-        let data_id = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
-        let block = Block::new_block(data_id);
-        assert!(block.is_ok());
-        let unwrapped_block = match block {
-            Ok(block) => block,
-            Err(_) => panic!("not a block"),
-        };
-        assert!(unwrapped_block.clone().is_block());
-        assert!(unwrapped_block.proof().block_proof().is_some());
+}
+
+/// getter
+pub fn block_array(&self) -> Option<&[Option<Signature>]> {
+    match *self {
+        Block::Link(_, _) => None,
+        Block::Block(_,ref arr) => Some(arr),
     }
-    #[test]
-    fn sd_block_new() {
-        ::sodiumoxide::init();
-        let data_id = BlockIdentifier::StructuredData(sha256::hash("hash".as_bytes()),
-                                                      sha256::hash("name".as_bytes()));
-        let block = Block::new_block(data_id);
-        assert!(block.is_ok());
-        let unwrapped_block = match block {
-            Ok(block) => block,
-            Err(_) => panic!("not a block"),
-        };
-        assert!(unwrapped_block.clone().is_block());
-        assert!(unwrapped_block.proof().block_proof().is_some());
-    }
+}
+
 }
