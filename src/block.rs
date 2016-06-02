@@ -25,64 +25,75 @@
 
 
 use sodiumoxide::crypto::sign::{PublicKey, Signature};
-
+use sodiumoxide::crypto;
+use std::collections::HashMap;
+use maidsafe_utilities::serialisation;
 use block_identifier::BlockIdentifier;
+use node_block::{NodeBlock, NodeBlockProof};
+use error::Error;
 
 /// Used to validate chain
 /// Block can be a data item or
 /// a chain link.
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
-pub enum Block {
-    Link(BlockIdentifier, Vec<(PublicKey, Option<Signature>)>),
-    Block(BlockIdentifier, [Option<Signature>; ::GROUP_SIZE]),
+pub struct Block {
+    identifier: BlockIdentifier,
+    proof: HashMap<PublicKey, Signature>,
 }
 
 impl Block {
-
-/// is this a link
-pub fn is_link(&self) -> bool {
-    match *self {
-        Block::Link(_,_) => true,
-        Block::Block(_,_) => false,
+/// new block
+pub fn new(node_block: NodeBlock) -> Result<Block, Error> {
+    if !node_block.validate() { return Err(Error::Signature); }
+    let mut map = HashMap::new();
+    if map.insert(node_block.proof().key().clone(), node_block.proof().sig().clone()).is_some() {
+    Ok(Block {
+    identifier: node_block.identifier().clone(),
+    proof: map,
+    })
+    } else {
+    Err(Error::Validation)
     }
 }
 
-/// is block
-pub fn is_block(&self) -> bool {
-    !self.is_link()
+/// Add a proof from a peer
+pub fn add_proof(&mut self, proof: NodeBlockProof) -> Result<(), Error> {
+    if !self.validate_proof(&proof) || self.proof.insert(proof.key().clone(), proof.sig().clone()).is_none() { Err(Error::Signature) } else {
+    Ok(())
+    }
+    }
+
+    /// validate signed correctly
+    pub fn validate_proof(&self, proof: &NodeBlockProof) -> bool {
+        let data = match serialisation::serialise(&self.identifier) {
+            Ok(data) => data,
+            Err(_) => { return false; },
+        };
+       crypto::sign::verify_detached(proof.sig(), &data[..], &proof.key())
+    }
+
+    /// validate signed correctly
+    pub fn validate_block_signatures(&self) -> bool {
+        let data = match serialisation::serialise(&self.identifier) {
+            Ok(data) => data,
+            Err(_) => { return false; },
+        };
+        self.proof().iter().all(|x| crypto::sign::verify_detached(x.1, &data[..], x.0))
+    }
+
+/// getter
+pub fn proof(&self) -> &HashMap<PublicKey, Signature> {
+    &self.proof
+}
+/// getter
+pub fn proof_mut(&mut self) -> &HashMap<PublicKey, Signature> {
+    &self.proof
 }
 
 /// getter
 pub fn identifier(&self) -> &BlockIdentifier {
-    match *self {
-        Block::Link(ref id,_) => id,
-        Block::Block(ref id,_) => id,
-    }
-}
-
-/// getter
-pub fn link_keys(&self) -> Option<Vec<PublicKey>> {
-    match *self {
-        Block::Link(_, ref vec) => Some(vec.iter().map(|&x| x.0).collect()),
-        Block::Block(_,_) => None,
-    }
-}
-
-/// getter
-pub fn link_vec(&self) -> Option<&Vec<(PublicKey, Option<Signature>)>> {
-    match *self {
-        Block::Link(_, ref vec) => Some(vec),
-        Block::Block(_,_) => None,
-    }
-}
-
-/// getter
-pub fn block_array(&self) -> Option<&[Option<Signature>]> {
-    match *self {
-        Block::Link(_, _) => None,
-        Block::Block(_,ref arr) => Some(arr),
-    }
+    &self.identifier
 }
 
 }

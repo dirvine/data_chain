@@ -44,7 +44,31 @@ pub fn create_link_descriptor(group: &Vec<PublicKey>) -> LinkDescriptor {
 
 
 /// Proof as provided by a close group member
-pub type NodeBlockProof = (PublicKey, Signature);
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
+pub struct NodeBlockProof {
+    key: PublicKey,
+    sig: Signature,
+}
+
+impl NodeBlockProof {
+/// cstr
+pub fn new(key: PublicKey, sig: Signature) -> NodeBlockProof {
+    NodeBlockProof {
+        key: key,
+        sig: sig,
+    }
+}
+
+/// getter
+pub fn key(&self) -> &PublicKey {
+    &self.key
+}
+
+/// getter
+pub fn sig(&self) -> &Signature {
+    &self.sig
+}
+}
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
@@ -68,7 +92,7 @@ impl NodeBlock {
 
         Ok(NodeBlock {
             identifier: data_identifier,
-            proof: (pub_key.clone(), signature),
+            proof: NodeBlockProof::new(pub_key.clone(), signature),
         })
 
     }
@@ -78,7 +102,7 @@ impl NodeBlock {
         &self.identifier
     }
     /// Getter
-    pub fn proof(&self) -> &(PublicKey, Signature) {
+    pub fn proof(&self) -> &NodeBlockProof {
         &self.proof
     }
 
@@ -88,7 +112,16 @@ impl NodeBlock {
             Ok(data) => data,
             Err(_) => { return false; },
         };
-       crypto::sign::verify_detached(&self.proof.1, &data[..], &self.proof.0)
+       crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
+    }
+
+    /// validate signed correctly
+    pub fn validate_detached(&self, identifier: BlockIdentifier) -> bool {
+        let data = match serialisation::serialise(&identifier) {
+            Ok(data) => data,
+            Err(_) => { return false; },
+        };
+       crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
     }
 }
 

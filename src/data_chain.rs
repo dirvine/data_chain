@@ -28,8 +28,8 @@ use maidsafe_utilities::serialisation;
 use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
-// use node_block::{NodeBlock, NodeBlockProof};
-use sodiumoxide::crypto;
+use node_block::NodeBlock;
+// use sodiumoxide::crypto;
 // use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
 
@@ -66,10 +66,32 @@ impl DataChain {
     }
 
 
+    /// Add a nodeblock recived from a peer
+    pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
+        if !block.validate() {
+            return Err(Error::Validation);
+        }
+        if self.chain.iter_mut().find(|x| x.identifier() == block.identifier()).map(|x| x.add_proof(block.proof().clone())).is_some() {
+            return Ok(());
+        }
+            let blk = try!(Block::new(block));
+            self.chain.push(blk);
+        Ok(())
 
-    /// number of non-deleted blocks
+    }
+
+
+    /// number of  blocks
     pub fn len(&self) -> usize {
         self.chain.len()
+    }
+    /// number of  blocks
+    pub fn blocks_len(&self) -> usize {
+        self.chain.iter().filter(|x| x.identifier().is_block()).count()
+    }
+    /// number of  blocks
+    pub fn links_len(&self) -> usize {
+        self.chain.iter().filter(|x| x.identifier().is_link()).count()
     }
 
     /// Contains no blocks that are not deleted
@@ -79,53 +101,41 @@ impl DataChain {
 
     /// Delete a block (will not delete a link)
     pub fn delete(&mut self, data_id: BlockIdentifier) {
-            self.chain.retain(|x| {
-                match *x {
-                    Block::Link(_,_) => true,
-                    Block::Block(ref id,_) if *id == data_id => false,
-                    _ => true,
-                } });
+        self.chain.retain(|x| {
+            x.identifier() != &data_id || x.identifier().is_link()
+        });
+
     }
 
 
     /// Should equal the current common_close_group
     pub fn get_last_link(&self) -> Option<&Block> {
-        self.chain.iter().rev().find((|&x| x.is_link()))
+        self.chain.iter().rev().find((|&x| x.identifier().is_link()))
     }
 
     /// Find block from top and get next link
-#[allow(unused)]
     fn get_recent_link(&self, block: &Block) -> Option<&Block> {
         self.chain
             .iter()
             .rev()
             .skip_while(|x| x.identifier() != block.identifier())
-            .find((|&x| x.is_link()))
+            .find((|&x| x.identifier().is_link()))
     }
 
     /// nsValidate all links in chain
     fn validate_all_links(&self) -> bool {
-        let one = self.chain.iter().filter(|&x| x.is_link() && self.validate_link_signatories(&x).is_ok()).rev().into_rc();
-        one.clone().zip(one.clone()).all(|x| x.1.link_keys().expect("link keys").iter().filter(|k| x.0.link_keys().expect("link keys").contains(k)).count() * 2 > ::GROUP_SIZE)
-    }
+        let one = self.chain
+            .iter()
+            .filter(|&x| x.identifier().is_link() && x.validate_block_signatures())
+            .rev()
+            .into_rc();
 
-    // Confirm a link contains majority members and they all signed digest
-    fn validate_link_signatories(&self, link: &Block) -> Result<(), Error> {
-        let id = try!(serialisation::serialise(&link.identifier()));
-        if let Some(key_sig) = link.link_vec() {
-            let mut good = 0;
-            for &(key, sig) in key_sig.iter() {
-                if let Some(signature) = sig {
-                    if crypto::sign::verify_detached(&signature, &id[..], &key) {
-                        good += 1;
-                    }
-                }
-            }
-            if good * 2 > ::GROUP_SIZE {
-                return Ok(());
-            }
-        }
-        return Err(Error::Majority);
+        one.clone().zip(one.clone()).all(|x| {
+            x.0.proof()
+                .iter()
+                .filter(|k| x.1.proof().contains_key(k.0))
+                .count() * 2 > ::GROUP_SIZE
+        })
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures
@@ -138,24 +148,12 @@ impl DataChain {
     }
 
     fn validate_block_with_proof(&self, block: &Block, proof: &Block) -> Result<(), Error> {
-        let id = try!(serialisation::serialise(block.identifier()));
-        if let Some(link_proof) = proof.link_vec() {
-            let mut good = 0;
-            for (count, &(key, _)) in link_proof.iter().enumerate() {
-                if let Some(ref item) = block.block_array()
-                    .and_then(|x| x.iter().nth(count))
-                    .and_then(|&x| x) {
-                    if crypto::sign::verify_detached(item, &id[..], &key) {
-                        good += 1;
-                    }
-                }
-            }
-            if good * 2 > ::GROUP_SIZE {
-                return Ok(());
-            }
-        }
+        let _id = try!(serialisation::serialise(block.identifier()));
+        if !proof.identifier().is_link() {
         return Err(Error::Majority);
     }
+    Ok(())
+        }
 }
 
 
