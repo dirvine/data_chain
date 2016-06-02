@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/serde-0.7.6/src/ser/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/serde-0.7.7/src/ser/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -550,11 +550,11 @@
     <span class='doccomment'>/// Serializes a `f64` value.</span>
     <span class='kw'>fn</span> <span class='ident'>serialize_f64</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>v</span>: <span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Self</span>::<span class='ident'>Error</span><span class='op'>&gt;</span>;
 
-    <span class='doccomment'>/// Serializes a character. By default it serializes as bytes containing the UTF-8 encoding</span>
-    <span class='doccomment'>/// of the character.</span>
+    <span class='doccomment'>/// Serializes a character. By default it serializes it as a `&amp;str` containing a</span>
+    <span class='doccomment'>/// single character.</span>
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>serialize_char</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>v</span>: <span class='ident'>char</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Self</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>serialize_bytes</span>(::<span class='ident'>utils</span>::<span class='ident'>encode_utf8</span>(<span class='ident'>v</span>).<span class='ident'>as_slice</span>())
+        <span class='self'>self</span>.<span class='ident'>serialize_str</span>(::<span class='ident'>utils</span>::<span class='ident'>encode_utf8</span>(<span class='ident'>v</span>).<span class='ident'>as_str</span>())
     }
 
     <span class='doccomment'>/// Serializes a `&amp;str`.</span>
