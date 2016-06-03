@@ -44,7 +44,7 @@
 //!          (usually n - 1 actually) members of previous link
 //! ```
 //!
-//!  The chain, when presented to the current close_group (the group identified in last link)
+//!  The chain, when presented to the current close group (the group identified in last link)
 //!  can be validated as holding data that has been agreed by the network over time to exist,
 //!  A chain provides cryptographic proofs of data and group memberships over time.
 //!
@@ -109,4 +109,3 @@ pub mod node_block;
 
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
 mod block_identifier;
-

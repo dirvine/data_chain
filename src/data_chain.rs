@@ -41,8 +41,8 @@ use error::Error;
 /// This requires nodes to always restart as last ID and if there was no restart they are rejected
 /// at vault level.
 /// If there was a restart then the nodes should validate and continue.
-/// N:B this means all nodes can use a named directory for data_store and clear if they restart
-/// as a new id. This allows clean-up of old data_cache directories.
+/// N:B this means all nodes can use a named directory for data store and clear if they restart
+/// as a new id. This allows clean-up of old data cache directories.
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,

@@ -34,10 +34,10 @@ use error::Error;
 /// which is beneficial under heavy churn and out of order links being sent.
 pub fn create_link_descriptor(group: &Vec<PublicKey>) -> LinkDescriptor {
     let mut base = [0u8; 32];
-    for key in group.iter(){
-		for item in key.0.iter().cloned().enumerate() {
-        base[item.0] ^= item.1
-		}
+    for key in group.iter() {
+        for item in key.0.iter().cloned().enumerate() {
+            base[item.0] ^= item.1
+        }
     }
     base
 }
@@ -51,23 +51,23 @@ pub struct NodeBlockProof {
 }
 
 impl NodeBlockProof {
-/// cstr
-pub fn new(key: PublicKey, sig: Signature) -> NodeBlockProof {
-    NodeBlockProof {
-        key: key,
-        sig: sig,
+    /// cstr
+    pub fn new(key: PublicKey, sig: Signature) -> NodeBlockProof {
+        NodeBlockProof {
+            key: key,
+            sig: sig,
+        }
     }
-}
 
-/// getter
-pub fn key(&self) -> &PublicKey {
-    &self.key
-}
+    /// getter
+    pub fn key(&self) -> &PublicKey {
+        &self.key
+    }
 
-/// getter
-pub fn sig(&self) -> &Signature {
-    &self.sig
-}
+    /// getter
+    pub fn sig(&self) -> &Signature {
+        &self.sig
+    }
 }
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
@@ -110,18 +110,22 @@ impl NodeBlock {
     pub fn validate(&self) -> bool {
         let data = match serialisation::serialise(&self.identifier) {
             Ok(data) => data,
-            Err(_) => { return false; },
+            Err(_) => {
+                return false;
+            }
         };
-       crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
+        crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
     }
 
     /// validate signed correctly
     pub fn validate_detached(&self, identifier: BlockIdentifier) -> bool {
         let data = match serialisation::serialise(&identifier) {
             Ok(data) => data,
-            Err(_) => { return false; },
+            Err(_) => {
+                return false;
+            }
         };
-       crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
+        crypto::sign::verify_detached(self.proof.sig(), &data[..], &self.proof.key())
     }
 }
 

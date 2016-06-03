@@ -25,11 +25,11 @@
 
 use sodiumoxide::crypto::hash::sha256::Digest;
 
-/// structured DAta name
+/// structured Data name
 pub type SdName = Digest;
 
 /// Represents the xored close group for the new grou on churn etc.
-/// This is signed by each group member when a NodeBlock is trasferred that is a link
+/// This is signed by each group member.
 pub type LinkDescriptor = [u8; 32];
 
 
