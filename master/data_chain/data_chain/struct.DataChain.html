@@ -58,8 +58,8 @@ previous names. They can continue any validation of the holder of a chain.
 This requires nodes to always restart as last ID and if there was no restart they are rejected
 at vault level.
 If there was a restart then the nodes should validate and continue.
-N:B this means all nodes can use a named directory for data_store and clear if they restart
-as a new id. This allows clean-up of old data_cache directories.</p>
+N:B this means all nodes can use a named directory for data store and clear if they restart
+as a new id. This allows clean-up of old data cache directories.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
 <div class='docblock'><p>Create a new chain with no elements yet.</p>
 </div><h4 id='method.validate' class='method'><code>fn <a href='#method.validate' class='fnname'>validate</a>(&amp;mut self, my_group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>

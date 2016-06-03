@@ -414,8 +414,8 @@
 <span class='doccomment'>/// This requires nodes to always restart as last ID and if there was no restart they are rejected</span>
 <span class='doccomment'>/// at vault level.</span>
 <span class='doccomment'>/// If there was a restart then the nodes should validate and continue.</span>
-<span class='doccomment'>/// N:B this means all nodes can use a named directory for data_store and clear if they restart</span>
-<span class='doccomment'>/// as a new id. This allows clean-up of old data_cache directories.</span>
+<span class='doccomment'>/// N:B this means all nodes can use a named directory for data store and clear if they restart</span>
+<span class='doccomment'>/// as a new id. This allows clean-up of old data cache directories.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>DataChain</span> {
     <span class='ident'>chain</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>,
