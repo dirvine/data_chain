@@ -361,8 +361,6 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -419,7 +417,7 @@
     <span class='doccomment'>/// Validation takes place from start of chain to now.</span>
     <span class='doccomment'>/// Also confirm we can accept this chain, by comparing</span>
     <span class='doccomment'>/// our current group with the majority of the last known link</span>
-    <span class='doccomment'>/// This method will purge all note yet valid blocks</span>
+    <span class='doccomment'>/// This method will purge all not yet valid blocks</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>my_group</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>PublicKey</span>]) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='comment'>// ensure all links are good</span>
         <span class='self'>self</span>.<span class='ident'>prune</span>();
@@ -434,7 +432,6 @@
         <span class='boolval'>false</span>
 
     }
-
 
     <span class='doccomment'>/// Add a nodeblock received from a peer</span>
     <span class='doccomment'>/// We do not validate the block, it may be out of order</span>
@@ -488,7 +485,6 @@
 
         }
     }
-
 
     <span class='doccomment'>/// Total length of chain</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>len</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
