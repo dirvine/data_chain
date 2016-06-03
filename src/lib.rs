@@ -94,9 +94,6 @@ extern crate maidsafe_utilities;
 extern crate itertools;
 // extern crate rayon;
 
-/// Required for consensus agreements. We should work this out though, Magic numbers :-(
-pub const GROUP_SIZE: usize = 8;
-
 /// Error types for this crate
 pub mod error;
 

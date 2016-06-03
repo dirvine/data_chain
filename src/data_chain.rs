@@ -29,7 +29,7 @@ use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
-// use sodiumoxide::crypto;
+use sodiumoxide::crypto::sign::PublicKey;
 // use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
 
@@ -53,35 +53,84 @@ impl DataChain {
     pub fn new() -> DataChain {
         DataChain { chain: Vec::new() }
     }
+
     /// Nodes always validate a chain before accepting it
-    pub fn validate(&mut self) -> Result<(), Error> {
-        if self.chain.is_empty() {
-            return Ok(());
+    /// Validation takes place form start of chain to now.
+    /// Also confirm we can accept this chain, by comparing
+    /// our current group wiht the magority of the last known link
+    pub fn validate(&mut self, my_group: &[PublicKey]) -> bool {
+        // ensure all links are good
+        self.prune();
+        // ensure last link contains magority of current group
+        if let Some(last_link) = self.get_last_link() {
+            if my_group.iter()
+                .filter(|k| {
+                    last_link.proof().iter().find(|&&z| PublicKey(k.0) == z.0).is_some()
+                })
+                .count() * 2 >= my_group.len() {
+                return true;
+            }
         }
-        if !self.validate_all_links() {
-            return Err(Error::Validation);
-        }
-        // [TODO]: Validate all blocks - 2016-05-31 01:18am
-        Ok(())
+        false
+
     }
 
 
     /// Add a nodeblock recived from a peer
+    /// We do not validate teh block, it may be out of order
+    /// This is a case of `lazy accumulation`
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
         if !block.validate() {
             return Err(Error::Validation);
         }
-        if self.chain.iter_mut().find(|x| x.identifier() == block.identifier()).map(|x| x.add_proof(block.proof().clone())).is_some() {
+        if self.chain
+            .iter_mut()
+            .find(|x| x.identifier() == block.identifier())
+            .map(|x| x.add_proof(block.proof().clone()))
+            .is_some() {
             return Ok(());
         }
-            let blk = try!(Block::new(block));
-            self.chain.push(blk);
+        let blk = try!(Block::new(block));
+        self.chain.push(blk);
         Ok(())
 
     }
 
+    /// Remove invalid blocks and links from chain
+    pub fn prune(&mut self) {
+        self.validate_all();
+        // finaly remove all blocks marked valid
+        self.chain.retain(|x| !x.valid)
+    }
 
-    /// number of  blocks
+    /// utility method to validate the chain is in fact valid and mark any invalid
+    /// blocks as such
+    fn validate_all(&mut self) {
+        let mut last_link: Option<Block> = None;
+
+        for block in self.chain.iter_mut() {
+            block.remove_invalid_signatures();
+            if let Some(ref valid_link) = last_link {
+
+                if block.proof()
+                    .iter()
+                    .filter(|k| valid_link.proof().iter().find(|&&z| k.0 == z.0).is_some())
+                    .count() * 2 < valid_link.proof().len() {
+                    block.valid = true;
+                }
+                block.valid = false;
+
+
+            }
+            if block.identifier().is_link() && !block.valid {
+                last_link = Some(block.clone());
+            }
+
+        }
+    }
+
+
+    /// Total length of chain
     pub fn len(&self) -> usize {
         self.chain.len()
     }
@@ -89,24 +138,21 @@ impl DataChain {
     pub fn blocks_len(&self) -> usize {
         self.chain.iter().filter(|x| x.identifier().is_block()).count()
     }
-    /// number of  blocks
+    /// number of links
     pub fn links_len(&self) -> usize {
         self.chain.iter().filter(|x| x.identifier().is_link()).count()
     }
 
-    /// Contains no blocks that are not deleted
+    /// Contains no blocks that are not validd
     pub fn is_empty(&self) -> bool {
         self.chain.is_empty()
     }
 
-    /// Delete a block (will not delete a link)
-    pub fn delete(&mut self, data_id: BlockIdentifier) {
-        self.chain.retain(|x| {
-            x.identifier() != &data_id || x.identifier().is_link()
-        });
+    /// valid a block (will not valid a link)
+    pub fn valid(&mut self, data_id: BlockIdentifier) {
+        self.chain.retain(|x| x.identifier() != &data_id || x.identifier().is_link());
 
     }
-
 
     /// Should equal the current common_close_group
     pub fn get_last_link(&self) -> Option<&Block> {
@@ -119,23 +165,21 @@ impl DataChain {
             .iter()
             .rev()
             .skip_while(|x| x.identifier() != block.identifier())
-            .find((|&x| x.identifier().is_link()))
+            .find(|&x| x.identifier().is_link() && !x.valid)
     }
 
-    /// nsValidate all links in chain
-    fn validate_all_links(&self) -> bool {
-        let one = self.chain
-            .iter()
-            .filter(|&x| x.identifier().is_link() && x.validate_block_signatures())
-            .rev()
-            .into_rc();
+    /// Validate and return all links in chain
+    /// Does not perform validation on links
+    pub fn get_all_links(&self) -> DataChain {
 
-        one.clone().zip(one.clone()).all(|x| {
-            x.0.proof()
+        DataChain {
+            chain: self.chain
                 .iter()
-                .filter(|k| x.1.proof().contains_key(k.0))
-                .count() * 2 > ::GROUP_SIZE
-        })
+                .cloned()
+                .filter(|x| x.identifier().is_link() && x.valid)
+                .collect_vec(),
+        }
+
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures
@@ -150,10 +194,10 @@ impl DataChain {
     fn validate_block_with_proof(&self, block: &Block, proof: &Block) -> Result<(), Error> {
         let _id = try!(serialisation::serialise(block.identifier()));
         if !proof.identifier().is_link() {
-        return Err(Error::Majority);
-    }
-    Ok(())
+            return Err(Error::Majority);
         }
+        Ok(())
+    }
 }
 
 
@@ -238,39 +282,39 @@ impl DataChain {
 //
 //
 //     #[test]
-//     fn delete_all_and_validate() {
+//     fn valid_all_and_validate() {
 //         let count = 100i64;
 //         let mut chain = create_data_chain(count as u64);
 //
 //         assert_eq!(chain.len(), count as usize);
-//         assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
+//         assert_eq!(chain.chain.iter().map(|x| !x.validd).count(),
 //                    count as usize);
 //
 //         for i in 0..count {
-//             let _ = chain.delete(i as u64);
+//             let _ = chain.valid(i as u64);
 //         }
 //
-//         // internally all entries there, but marked deleted (entry 0 removed)
-//         assert_eq!(chain.chain.iter().map(|x| x.deleted).count(), 0);
+//         // internally all entries there, but marked validd (entry 0 removed)
+//         assert_eq!(chain.chain.iter().map(|x| x.validd).count(), 0);
 //         assert_eq!(chain.len(), 0);
 //         assert!(chain.empty());
 //     }
 //
 //     #[test]
-//     fn delete_rev_and_validate() {
+//     fn valid_rev_and_validate() {
 //         let count = 100i64;
 //         let mut chain = create_data_chain(count as u64);
 //
 //         assert_eq!(chain.len(), count as usize);
-//         assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
+//         assert_eq!(chain.chain.iter().map(|x| !x.validd).count(),
 //                    count as usize);
 //
 //         for i in count..0 {
-//             let _ = chain.delete(i as u64);
+//             let _ = chain.valid(i as u64);
 //         }
-//         let _ = chain.delete(0);
-//         // internally all entries there, but marked deleted (entry 0 removed)
-//         assert_eq!(chain.chain.iter().map(|x| x.deleted).count() + 1,
+//         let _ = chain.valid(0);
+//         // internally all entries there, but marked validd (entry 0 removed)
+//         assert_eq!(chain.chain.iter().map(|x| x.validd).count() + 1,
 //                    count as usize);
 //         assert_eq!(chain.len() + 1, count as usize);
 //         assert!(!chain.empty());
