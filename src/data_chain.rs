@@ -53,7 +53,7 @@ impl DataChain {
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
-    /// This method will purge all note yet valid blocks
+    /// This method will purge all not yet valid blocks
     pub fn validate(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.prune();
@@ -68,7 +68,6 @@ impl DataChain {
         false
 
     }
-
 
     /// Add a nodeblock received from a peer
     /// We do not validate the block, it may be out of order
@@ -122,7 +121,6 @@ impl DataChain {
 
         }
     }
-
 
     /// Total length of chain
     pub fn len(&self) -> usize {
