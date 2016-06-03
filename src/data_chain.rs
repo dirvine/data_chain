@@ -42,7 +42,7 @@ use error::Error;
 /// at vault level.
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data_store and clear if they restart
-/// as a new id. This allows cleanup of old data_cache directories.
+/// as a new id. This allows clean-up of old data_cache directories.
 #[derive(RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
@@ -55,13 +55,14 @@ impl DataChain {
     }
 
     /// Nodes always validate a chain before accepting it
-    /// Validation takes place form start of chain to now.
+    /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
-    /// our current group wiht the magority of the last known link
+    /// our current group with the majority of the last known link
+    /// This method will purge all note yet valid blocks
     pub fn validate(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.prune();
-        // ensure last link contains magority of current group
+        // ensure last link contains majority of current group
         if let Some(last_link) = self.get_last_link() {
             if my_group.iter()
                 .filter(|k| {
@@ -76,8 +77,8 @@ impl DataChain {
     }
 
 
-    /// Add a nodeblock recived from a peer
-    /// We do not validate teh block, it may be out of order
+    /// Add a nodeblock received from a peer
+    /// We do not validate the block, it may be out of order
     /// This is a case of `lazy accumulation`
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
         if !block.validate() {
@@ -99,7 +100,7 @@ impl DataChain {
     /// Remove invalid blocks and links from chain
     pub fn prune(&mut self) {
         self.validate_all();
-        // finaly remove all blocks marked valid
+        // finally remove all blocks marked valid
         self.chain.retain(|x| !x.valid)
     }
 
@@ -143,7 +144,7 @@ impl DataChain {
         self.chain.iter().filter(|x| x.identifier().is_link()).count()
     }
 
-    /// Contains no blocks that are not validd
+    /// Contains no blocks that are not valid
     pub fn is_empty(&self) -> bool {
         self.chain.is_empty()
     }
@@ -183,7 +184,7 @@ impl DataChain {
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures
-    /// were from last known group. Majority of sigs is confirmed.
+    /// were from last known group. Majority of signatures is confirmed.
     pub fn validate_block(&self, block: &Block) -> Result<(), Error> {
         if let Some(ref link) = self.get_recent_link(block) {
             try!(self.validate_block_with_proof(block, &link))
