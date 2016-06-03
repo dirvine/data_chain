@@ -43,17 +43,12 @@ use error::Error;
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(Default, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
 }
 
 impl DataChain {
-    /// Create a new chain with no elements yet.
-    pub fn new() -> DataChain {
-        DataChain { chain: Vec::new() }
-    }
-
     /// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
@@ -65,9 +60,7 @@ impl DataChain {
         // ensure last link contains majority of current group
         if let Some(last_link) = self.get_last_link() {
             if my_group.iter()
-                .filter(|k| {
-                    last_link.proof().iter().find(|&&z| PublicKey(k.0) == z.0).is_some()
-                })
+                .filter(|k| last_link.proof().iter().any(|&z| PublicKey(k.0) == z.0))
                 .count() * 2 >= my_group.len() {
                 return true;
             }
@@ -109,13 +102,13 @@ impl DataChain {
     fn validate_all(&mut self) {
         let mut last_link: Option<Block> = None;
 
-        for block in self.chain.iter_mut() {
+        for block in &mut self.chain {
             block.remove_invalid_signatures();
             if let Some(ref valid_link) = last_link {
 
                 if block.proof()
                     .iter()
-                    .filter(|k| valid_link.proof().iter().find(|&&z| k.0 == z.0).is_some())
+                    .filter(|k| valid_link.proof().iter().any(|&z| k.0 == z.0))
                     .count() * 2 < valid_link.proof().len() {
                     block.valid = true;
                 }
@@ -189,7 +182,7 @@ impl DataChain {
         if let Some(ref link) = self.get_recent_link(block) {
             try!(self.validate_block_with_proof(block, &link))
         }
-        return Err(Error::NoLink);
+        Err(Error::NoLink)
     }
 
     fn validate_block_with_proof(&self, block: &Block, proof: &Block) -> Result<(), Error> {

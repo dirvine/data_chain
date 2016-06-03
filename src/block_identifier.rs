@@ -73,7 +73,7 @@ impl BlockIdentifier {
     /// Is this a link
     pub fn is_link(&self) -> bool {
         match *self {
-            BlockIdentifier::ImmutableData(_) => false,
+            BlockIdentifier::ImmutableData(_) |
             BlockIdentifier::StructuredData(_, _) => false,
             BlockIdentifier::Link(_) => true,
         }
@@ -93,7 +93,7 @@ mod tests {
     #[test]
     fn create_validate_link_identifier() {
         ::sodiumoxide::init();
-        let link = BlockIdentifier::Link(sha256::hash("1".as_bytes()).0);
+        let link = BlockIdentifier::Link(sha256::hash(b"1").0);
 
         assert!(link.is_link());
         assert!(!link.is_block());
@@ -102,7 +102,7 @@ mod tests {
 
     #[test]
     fn create_validate_immutable_data_identifier() {
-        let id_block = BlockIdentifier::ImmutableData(sha256::hash("1".as_bytes()));
+        let id_block = BlockIdentifier::ImmutableData(sha256::hash(b"1"));
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
         assert_eq!(id_block.hash(), sha256::hash("1".as_bytes()));
@@ -111,8 +111,8 @@ mod tests {
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(sha256::hash("hash".as_bytes()),
-                                                       sha256::hash("name".as_bytes()));
+        let sd_block = BlockIdentifier::StructuredData(sha256::hash(b"hash"),
+                                                       sha256::hash(b"name"));
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());

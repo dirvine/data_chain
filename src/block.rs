@@ -49,7 +49,7 @@ impl Block {
             return Err(Error::Signature);
         }
         let mut vec = Vec::new();
-        vec.push((node_block.proof().key().clone(), node_block.proof().sig().clone()));
+        vec.push((*node_block.proof().key(), *node_block.proof().sig()));
         Ok(Block {
             identifier: node_block.identifier().clone(),
             proof: vec,
@@ -62,7 +62,7 @@ impl Block {
         if !self.validate_proof(&proof) {
             return Err(Error::Signature);
         }
-        self.proof.push((proof.key().clone(), proof.sig().clone()));
+        self.proof.push((*proof.key(), *proof.sig()));
         self.proof.sort();
         self.proof.dedup();
         Ok(())
@@ -70,34 +70,31 @@ impl Block {
 
     /// validate signed correctly
     pub fn validate_proof(&self, proof: &NodeBlockProof) -> bool {
-        let data = match serialisation::serialise(&self.identifier) {
-            Ok(data) => data,
-            Err(_) => {
-                return false;
-            }
+        let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
+            data
+        } else {
+            return false;
         };
-        crypto::sign::verify_detached(proof.sig(), &data[..], &proof.key())
+        crypto::sign::verify_detached(proof.sig(), &data[..], proof.key())
     }
 
     /// validate signed correctly
     pub fn validate_block_signatures(&self) -> bool {
-        let data = match serialisation::serialise(&self.identifier) {
-            Ok(data) => data,
-            Err(_) => {
-                return false;
-            }
+        let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
+            data
+        } else {
+            return false;
         };
         self.proof().iter().all(|x| crypto::sign::verify_detached(&x.1, &data[..], &x.0))
     }
 
     /// Prune any bad signatures.
     pub fn remove_invalid_signatures(&mut self) {
-        let data = match serialisation::serialise(&self.identifier) {
-            Ok(data) => data,
-            Err(_) => {
-                self.valid = false;
-                return;
-            }
+        let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
+            data
+        } else {
+            self.valid = false;
+            return;
         };
         self.proof.retain(|x| !crypto::sign::verify_detached(&x.1, &data[..], &x.0));
     }
