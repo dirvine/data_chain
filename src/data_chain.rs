@@ -222,6 +222,7 @@ mod tests {
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
         let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link2_1_again = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
         let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
         let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
@@ -239,12 +240,21 @@ mod tests {
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
         assert!(chain.add_node_block(link1_1.unwrap()).is_ok());
+        assert!(chain.prune_and_validate(&pub1)); // 1 link - all OK
+        assert_eq!(chain.len(), 1);
         assert!(chain.add_node_block(link1_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link1_3.unwrap()).is_ok());
         assert!(chain.prune_and_validate(&pub1));
+        assert!(!chain.prune_and_validate(&pub3));
+        assert_eq!(chain.len(), 1);
+        assert_eq!(chain.blocks_len(), 0);
+        assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(link2_1.unwrap()).is_ok());
-        assert!(chain.add_node_block(link2_2.unwrap()).is_ok());
         assert!(chain.prune_and_validate(&pub2));
+        assert_eq!(chain.links_len(), 1); //  we pruned link2_1 in prune_and_validate call above
+        assert!(chain.add_node_block(link2_1_again.unwrap()).is_ok()); // re-add 2.1
+        assert!(chain.add_node_block(link2_2.unwrap()).is_ok());
+        assert!(chain.prune_and_validate(&pub2)); // Ok as now 2 is majority
         assert!(chain.add_node_block(link2_3.unwrap()).is_ok());
         assert!(chain.prune_and_validate(&pub2));
         assert!(chain.add_node_block(link3_1.unwrap()).is_ok());
