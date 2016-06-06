@@ -93,7 +93,6 @@ impl Block {
         let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
             data
         } else {
-            println!("cannot deserialise");
             self.proof.clear();
             return;
         };

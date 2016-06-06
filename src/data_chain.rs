@@ -29,7 +29,6 @@ use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
 use sodiumoxide::crypto::sign::PublicKey;
-// use sodiumoxide::crypto::hash::sha256::Digest;
 use error::Error;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
@@ -56,10 +55,8 @@ impl DataChain {
     pub fn prune_and_validate(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.prune();
-        println!("after prune length = {}", self.chain.len());
         // ensure last link contains majority of current group
         if let Some(last_link) = self.get_last_link() {
-            println!("got last link in prune_and validate last_link length =  {} group length = {} identifier {:?}", last_link.proof().len(), my_group.len(), last_link.identifier());
             return (last_link.proof().iter()
                 .filter(|k| my_group.iter().any(|&z| PublicKey(z.0) == k.0))
                 .count() * 2) > last_link.proof().len();
@@ -90,10 +87,9 @@ impl DataChain {
     }
 
 
-    /// Utility method to blocks as valid or not.
+    /// Remove all invalid blocks, does nto confirm chain is valid to this group.
     pub fn prune(&mut self) {
         self.validate_all();
-        // TODO improve efficiency
         self.chain.retain(|x| x.valid);
     }
 
@@ -117,7 +113,7 @@ impl DataChain {
         self.chain.is_empty()
     }
 
-    /// Mark first found link valid.
+    /// Remove a block, will ignore Links
     pub fn remove(&mut self, data_id: BlockIdentifier) {
         self.chain.retain(|x| x.identifier() != &data_id || x.identifier().is_link());
 
@@ -125,8 +121,6 @@ impl DataChain {
 
     /// Should contain majority of the current common_close_group
     fn get_last_link(&mut self) -> Option<&Block> {
-        self.validate_all();
-        println!("chain is {:?}", self.chain.clone());
         self.chain.iter().rev().find((|&x| x.identifier().is_link() && x.valid))
     }
 
@@ -162,16 +156,13 @@ impl DataChain {
             .iter()
             .cloned()
             .find(|x| x.identifier().is_link()) {
-                println!("got first");
             for block in self.chain.iter_mut() {
                 if Self::validate_block_with_proof(block, &mut first_link) {
                     block.valid = true;
-                    println!("true");
                     if block.identifier().is_link() {
                         first_link = block.clone();
                     }
                 } else {
-                    println!("false");
                     block.valid = false;
                 }
             }
