@@ -123,20 +123,12 @@ impl DataChain {
 
     }
 
-    /// Should equal the current common_close_group
+    /// Should contain majority of the current common_close_group
     fn get_last_link(&mut self) -> Option<&Block> {
         self.validate_all();
         println!("chain is {:?}", self.chain.clone());
         self.chain.iter().rev().find((|&x| x.identifier().is_link() && x.valid))
     }
-
-    /// Should equal the current common_close_group
-    pub fn get_first_link(&mut self) -> Option<&Block> {
-        self.validate_all();
-        self.chain.iter().find((|&x| x.identifier().is_link() && x.valid))
-    }
-
-
 
     /// Return all links in chain
     /// Does not perform validation on links
@@ -254,14 +246,16 @@ mod tests {
         assert!(link3_2.is_ok());
         assert!(link3_3.is_ok());
         let mut chain = DataChain::default();
+        assert!(chain.is_empty());
         assert!(chain.add_node_block(link1_1.unwrap()).is_ok());
         assert!(chain.add_node_block(link1_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link1_3.unwrap()).is_ok());
-        // assert!(chain.prune_and_validate(&pub1));
+        assert!(chain.prune_and_validate(&pub1));
         assert!(chain.add_node_block(link2_1.unwrap()).is_ok());
         assert!(chain.add_node_block(link2_2.unwrap()).is_ok());
+        assert!(chain.prune_and_validate(&pub2));
         assert!(chain.add_node_block(link2_3.unwrap()).is_ok());
-        // assert!(chain.prune_and_validate(&pub2));
+        assert!(chain.prune_and_validate(&pub2));
         assert!(chain.add_node_block(link3_1.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_3.unwrap()).is_ok());
@@ -272,6 +266,7 @@ mod tests {
         let chain_valid_links = chain.get_all_valid_links();
         assert_eq!(chain, chain_valid_links);
         assert_eq!(chain.len(), 3);
+        assert!(!chain.is_empty());
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 3);
         chain.prune();
