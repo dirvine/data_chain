@@ -158,7 +158,6 @@
 <span id="114">114</span>
 <span id="115">115</span>
 <span id="116">116</span>
-<span id="117">117</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -255,7 +254,6 @@
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>) {
             <span class='ident'>data</span>
         } <span class='kw'>else</span> {
-            <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;cannot deserialise&quot;</span>);
             <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>clear</span>();
             <span class='kw'>return</span>;
         };
