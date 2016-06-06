@@ -24,7 +24,6 @@
 // relating to use of the SAFE Network Software.
 
 
-use maidsafe_utilities::serialisation;
 use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
@@ -43,7 +42,7 @@ use error::Error;
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
-#[derive(Default, RustcEncodable, RustcDecodable)]
+#[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
 }
@@ -54,19 +53,20 @@ impl DataChain {
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
     /// This method will purge all not yet valid blocks
-    pub fn validate(&mut self, my_group: &[PublicKey]) -> bool {
+    pub fn prune_and_validate(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.prune();
+        println!("after prune length = {}", self.chain.len());
         // ensure last link contains majority of current group
         if let Some(last_link) = self.get_last_link() {
-            if my_group.iter()
-                .filter(|k| last_link.proof().iter().any(|&z| PublicKey(k.0) == z.0))
-                .count() * 2 >= my_group.len() {
-                return true;
-            }
-        }
-        false
+            println!("got last link in prune_and validate last_link length =  {} group length = {} identifier {:?}", last_link.proof().len(), my_group.len(), last_link.identifier());
+            return (last_link.proof().iter()
+                .filter(|k| my_group.iter().any(|&z| PublicKey(z.0) == k.0))
+                .count() * 2) > last_link.proof().len();
 
+        } else {
+            false
+        }
     }
 
     /// Add a nodeblock received from a peer
@@ -89,38 +89,15 @@ impl DataChain {
 
     }
 
-    /// Remove invalid blocks and links from chain
+
+    /// Utility method to blocks as valid or not.
     pub fn prune(&mut self) {
         self.validate_all();
-        // finally remove all blocks marked valid
-        self.chain.retain(|x| !x.valid)
+        // TODO improve efficiency
+        self.chain.retain(|x| x.valid);
     }
 
-    /// utility method to validate the chain is in fact valid and mark any invalid
-    /// blocks as such
-    fn validate_all(&mut self) {
-        let mut last_link: Option<Block> = None;
 
-        for block in &mut self.chain {
-            block.remove_invalid_signatures();
-            if let Some(ref valid_link) = last_link {
-
-                if block.proof()
-                    .iter()
-                    .filter(|k| valid_link.proof().iter().any(|&z| k.0 == z.0))
-                    .count() * 2 < valid_link.proof().len() {
-                    block.valid = true;
-                }
-                block.valid = false;
-
-
-            }
-            if block.identifier().is_link() && !block.valid {
-                last_link = Some(block.clone());
-            }
-
-        }
-    }
 
     /// Total length of chain
     pub fn len(&self) -> usize {
@@ -140,30 +117,43 @@ impl DataChain {
         self.chain.is_empty()
     }
 
-    /// valid a block (will not valid a link)
-    pub fn valid(&mut self, data_id: BlockIdentifier) {
+    /// Mark first found link valid.
+    pub fn remove(&mut self, data_id: BlockIdentifier) {
         self.chain.retain(|x| x.identifier() != &data_id || x.identifier().is_link());
 
     }
 
     /// Should equal the current common_close_group
-    pub fn get_last_link(&self) -> Option<&Block> {
-        self.chain.iter().rev().find((|&x| x.identifier().is_link()))
+    fn get_last_link(&mut self) -> Option<&Block> {
+        self.validate_all();
+        println!("chain is {:?}", self.chain.clone());
+        self.chain.iter().rev().find((|&x| x.identifier().is_link() && x.valid))
     }
 
-    /// Find block from top and get next link
-    fn get_recent_link(&self, block: &Block) -> Option<&Block> {
-        self.chain
-            .iter()
-            .rev()
-            .skip_while(|x| x.identifier() != block.identifier())
-            .find(|&x| x.identifier().is_link() && !x.valid)
+    /// Should equal the current common_close_group
+    pub fn get_first_link(&mut self) -> Option<&Block> {
+        self.validate_all();
+        self.chain.iter().find((|&x| x.identifier().is_link() && x.valid))
+    }
+
+
+
+    /// Return all links in chain
+    /// Does not perform validation on links
+    pub fn get_all_links(&self) -> DataChain {
+        DataChain {
+            chain: self.chain
+                .iter()
+                .cloned()
+                .filter(|x| x.identifier().is_link())
+                .collect_vec(),
+        }
+
     }
 
     /// Validate and return all links in chain
-    /// Does not perform validation on links
-    pub fn get_all_links(&self) -> DataChain {
-
+    pub fn get_all_valid_links(&mut self) -> DataChain {
+        self.validate_all();
         DataChain {
             chain: self.chain
                 .iter()
@@ -174,146 +164,120 @@ impl DataChain {
 
     }
 
-    /// Validate an individual block. Will get latest link and confirm all signatures
-    /// were from last known group. Majority of signatures is confirmed.
-    pub fn validate_block(&self, block: &Block) -> Result<(), Error> {
-        if let Some(ref link) = self.get_recent_link(block) {
-            try!(self.validate_block_with_proof(block, &link))
+
+    fn validate_all(&mut self) {
+        if let Some(mut first_link) = self.chain
+            .iter()
+            .cloned()
+            .find(|x| x.identifier().is_link()) {
+                println!("got first");
+            for block in self.chain.iter_mut() {
+                if Self::validate_block_with_proof(block, &mut first_link) {
+                    block.valid = true;
+                    println!("true");
+                    if block.identifier().is_link() {
+                        first_link = block.clone();
+                    }
+                } else {
+                    println!("false");
+                    block.valid = false;
+                }
+            }
+        } else {
+            self.chain.clear();
         }
-        Err(Error::NoLink)
     }
 
-    fn validate_block_with_proof(&self, block: &Block, proof: &Block) -> Result<(), Error> {
-        let _id = try!(serialisation::serialise(block.identifier()));
-        if !proof.identifier().is_link() {
-            return Err(Error::Majority);
-        }
-        Ok(())
+    fn validate_block_with_proof(block: &mut Block, proof: &mut Block) -> bool {
+        block.remove_invalid_signatures();
+        proof.remove_invalid_signatures();
+        proof.proof()
+            .iter()
+            .map(|x| x.0)
+            .filter(|&y| block.proof().iter().map(|z| z.0).any(|p| p == y))
+            .count() * 2 > proof.proof().len()
     }
 }
 
 
-// #[cfg(test)]
-//
-// mod tests {
-//     use super::*;
-//     use sodiumoxide::crypto;
-//     use maidsafe_utilities::serialisation;
-//     // use std::time;
-//
-//     #[test]
-//     fn simple_node_data_block_comparisons() {
-//         let keys = crypto::sign::gen_keypair();
-//         let test_data1 = BlockIdentifier::Type1(1u64);
-//         let test_data2 = BlockIdentifier::Type1(1u64);
-//         let test_data3 = BlockIdentifier::Type2(1u64);
-//         let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
-//         let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
-//         let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
-//         assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
-//         assert!(test_node_data_block1 != test_node_data_block3.clone());
-//         assert!(test_node_data_block2 != test_node_data_block3);
-//
-//     }
-// }
-//     fn create_data_chain(count: u64) -> DataChain {
-//         let group_size = 8;
-//         let mut chain = DataChain::new(group_size);
-//
-//         let keys = (0..count + group_size)
-//             .map(|_| crypto::sign::gen_keypair())
-//             .collect_vec();
-//
-//
-//
-//
-//         let data_blocks = (0..count)
-//             .map(|x| {
-//                 let mut block = if x % 2 == 0 {
-//                     Block::new(BlockIdentifier::Type1(x))
-//                 } else {
-//                     Block::new(BlockIdentifier::Type2(x))
-//                 };
-//                 let data = serialisation::serialise(&block.identifier).expect("serialise fail");
-//                 for y in 0..group_size {
-//                     let _ = block.add_node(keys[x as usize + y as usize].0,
-//                                            crypto::sign::sign_detached(&data[..],
-//                                                                        &keys[x as usize +
-//                                                                              y as usize]
-//                                                                            .1));
-//                 }
-//                 block
-//             })
-//             .collect_vec();
-//
-//         let now = time::Instant::now();
-//
-//         for i in data_blocks.iter() {
-//             chain.add_block(i.clone()).expect("chain fill failed");
-//         }
-//         println!("Took {:?}.{:?} seconds to add {:?} blocks",
-//                  now.elapsed().as_secs(),
-//                  now.elapsed().subsec_nanos(),
-//                  chain.len());
-//         chain
-//     }
-//
-//     #[test]
-//     fn create_and_validate_chain() {
-//         let count = 1000;
-//         let mut chain = create_data_chain(count);
-//
-//         let now1 = time::Instant::now();
-//         let _ = chain.validate().expect("validate failed");
-//         println!("Took {:?}.{:?} seconds to validate  {:?} blocks",
-//                  now1.elapsed().as_secs(),
-//                  now1.elapsed().subsec_nanos(),
-//                  count);
-//
-//     }
-//
-//
-//     #[test]
-//     fn valid_all_and_validate() {
-//         let count = 100i64;
-//         let mut chain = create_data_chain(count as u64);
-//
-//         assert_eq!(chain.len(), count as usize);
-//         assert_eq!(chain.chain.iter().map(|x| !x.validd).count(),
-//                    count as usize);
-//
-//         for i in 0..count {
-//             let _ = chain.valid(i as u64);
-//         }
-//
-//         // internally all entries there, but marked validd (entry 0 removed)
-//         assert_eq!(chain.chain.iter().map(|x| x.validd).count(), 0);
-//         assert_eq!(chain.len(), 0);
-//         assert!(chain.empty());
-//     }
-//
-//     #[test]
-//     fn valid_rev_and_validate() {
-//         let count = 100i64;
-//         let mut chain = create_data_chain(count as u64);
-//
-//         assert_eq!(chain.len(), count as usize);
-//         assert_eq!(chain.chain.iter().map(|x| !x.validd).count(),
-//                    count as usize);
-//
-//         for i in count..0 {
-//             let _ = chain.valid(i as u64);
-//         }
-//         let _ = chain.valid(0);
-//         // internally all entries there, but marked validd (entry 0 removed)
-//         assert_eq!(chain.chain.iter().map(|x| x.validd).count() + 1,
-//                    count as usize);
-//         assert_eq!(chain.len() + 1, count as usize);
-//         assert!(!chain.empty());
-//         let _ = chain.validate().expect("validate failed");
-//
-//     }
-//
-//
-//
-// }
+#[cfg(test)]
+
+mod tests {
+    use super::*;
+    use sodiumoxide::crypto;
+    use itertools::Itertools;
+    use node_block;
+    use node_block::NodeBlock;
+    use block_identifier::BlockIdentifier;
+
+    // use std::time;
+
+    #[test]
+    fn link_only_chain() {
+        ::sodiumoxide::init();
+        let keys = (0..100)
+            .map(|_| crypto::sign::gen_keypair())
+            .collect_vec();
+        let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
+        let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
+        let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
+        assert!(pub1 != pub2);
+        assert!(pub1 != pub3);
+        assert!(pub1.len() == 3);
+        assert!(pub2.len() == 3);
+        assert!(pub3.len() == 3);
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
+        let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
+        let link_desc3 = node_block::create_link_descriptor(&pub3[..]);
+        let identifier1 = BlockIdentifier::Link(link_desc1);
+        let identifier2 = BlockIdentifier::Link(link_desc2);
+        let identifier3 = BlockIdentifier::Link(link_desc3);
+        assert!(identifier1 != identifier2);
+        assert!(identifier1 != identifier3);
+        assert!(identifier2 != identifier3);
+        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
+        let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
+        let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
+        let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
+        let link3_2 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier3.clone());
+        let link3_3 = NodeBlock::new(&keys[4].0, &keys[4].1, identifier3);
+        assert!(link1_1.is_ok());
+        assert!(link1_2.is_ok());
+        assert!(link1_3.is_ok());
+        assert!(link2_1.is_ok());
+        assert!(link2_2.is_ok());
+        assert!(link2_3.is_ok());
+        assert!(link3_1.is_ok());
+        assert!(link3_2.is_ok());
+        assert!(link3_3.is_ok());
+        let mut chain = DataChain::default();
+        assert!(chain.add_node_block(link1_1.unwrap()).is_ok());
+        assert!(chain.add_node_block(link1_2.unwrap()).is_ok());
+        assert!(chain.add_node_block(link1_3.unwrap()).is_ok());
+        // assert!(chain.prune_and_validate(&pub1));
+        assert!(chain.add_node_block(link2_1.unwrap()).is_ok());
+        assert!(chain.add_node_block(link2_2.unwrap()).is_ok());
+        assert!(chain.add_node_block(link2_3.unwrap()).is_ok());
+        // assert!(chain.prune_and_validate(&pub2));
+        assert!(chain.add_node_block(link3_1.unwrap()).is_ok());
+        assert!(chain.add_node_block(link3_2.unwrap()).is_ok());
+        assert!(chain.add_node_block(link3_3.unwrap()).is_ok());
+        assert!(chain.prune_and_validate(&pub3));
+        assert!(!chain.prune_and_validate(&pub1));
+        let chain_links = chain.get_all_links();
+        assert_eq!(chain, chain_links);
+        let chain_valid_links = chain.get_all_valid_links();
+        assert_eq!(chain, chain_valid_links);
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain.blocks_len(), 0);
+        assert_eq!(chain.links_len(), 3);
+        chain.prune();
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain.blocks_len(), 0);
+        assert_eq!(chain.links_len(), 3);
+
+    }
+}

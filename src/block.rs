@@ -35,7 +35,7 @@ use error::Error;
 /// Block can be a data item or
 /// a chain link.
 #[allow(missing_docs)]
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
+#[derive(Debug, RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct Block {
     identifier: BlockIdentifier,
     proof: Vec<(PublicKey, Signature)>,
@@ -93,10 +93,11 @@ impl Block {
         let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
             data
         } else {
-            self.valid = false;
+            println!("cannot deserialise");
+            self.proof.clear();
             return;
         };
-        self.proof.retain(|x| !crypto::sign::verify_detached(&x.1, &data[..], &x.0));
+        self.proof.retain(|x| crypto::sign::verify_detached(&x.1, &data[..], &x.0));
     }
 
     /// getter
