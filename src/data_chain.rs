@@ -76,18 +76,27 @@ impl DataChain {
         if self.chain
             .iter_mut()
             .find(|x| x.identifier() == block.identifier())
-            .map(|x| x.add_proof(block.proof().clone()))
-            .is_some() {
+            .map(|x| x.add_proof(block.proof().clone())).is_some() //; if self.validate_block(x) { x.valid = true; }
+// x }).is_some()
+          {
             return Ok(());
-        }
+            }
         let blk = try!(Block::new(block));
         self.chain.push(blk);
         Ok(())
 
     }
 
+    /// Validate an individual block. Will get latest link and confirm all signatures
+    /// were from last known valid group.
+    pub fn validate_block(&mut self, block: &mut Block) -> bool {
+        if let Some(ref mut link) = self.last_valid_link() {
+            return Self::validate_block_with_proof(block, link);
+        }
+        false
+    }
 
-    /// Remove all invalid blocks, does nto confirm chain is valid to this group.
+    /// Remove all invalid blocks, does not confirm chain is valid to this group.
     pub fn prune(&mut self) {
         self.mark_blocks_valid();
         self.chain.retain(|x| x.valid);
@@ -122,8 +131,8 @@ impl DataChain {
     }
 
     /// Should contain majority of the current common_close_group
-    fn last_valid_link(&mut self) -> Option<&Block> {
-        self.chain.iter().rev().find((|&x| x.identifier().is_link() && x.valid))
+    fn last_valid_link(&mut self) -> Option<&mut Block> {
+        self.chain.iter_mut().rev().find((|x| x.identifier().is_link() && x.valid))
     }
 
     /// Return all links in chain
@@ -173,9 +182,8 @@ impl DataChain {
         }
     }
 
-    fn validate_block_with_proof(block: &mut Block, proof: &mut Block) -> bool {
+    fn validate_block_with_proof(block: &mut Block, proof: &Block) -> bool {
         block.remove_invalid_signatures();
-        proof.remove_invalid_signatures();
         proof.proof()
             .iter()
             .map(|x| x.0)
