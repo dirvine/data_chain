@@ -52,11 +52,11 @@ impl DataChain {
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
     /// This method will purge all not yet valid blocks
-    pub fn prune_and_validate(&mut self, my_group: &[PublicKey]) -> bool {
+    pub fn validate_ownership(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
-        self.prune();
-        // ensure last link contains majority of current group
-        if let Some(last_link) = self.get_last_link() {
+        self.mark_blocks_valid();
+        // ensure last good ink contains majority of current group
+        if let Some(last_link) = self.last_valid_link() {
             return (last_link.proof().iter()
                 .filter(|k| my_group.iter().any(|&z| PublicKey(z.0) == k.0))
                 .count() * 2) > last_link.proof().len();
@@ -89,23 +89,25 @@ impl DataChain {
 
     /// Remove all invalid blocks, does nto confirm chain is valid to this group.
     pub fn prune(&mut self) {
-        self.validate_all();
+        self.mark_blocks_valid();
         self.chain.retain(|x| x.valid);
     }
-
-
 
     /// Total length of chain
     pub fn len(&self) -> usize {
         self.chain.len()
     }
+    /// Total length of chain
+    pub fn valid_len(&self) -> usize {
+        self.blocks_len() + self.links_len()
+    }
     /// number of  blocks
     pub fn blocks_len(&self) -> usize {
-        self.chain.iter().filter(|x| x.identifier().is_block()).count()
+        self.chain.iter().filter(|x| x.identifier().is_block() && x.valid).count()
     }
     /// number of links
     pub fn links_len(&self) -> usize {
-        self.chain.iter().filter(|x| x.identifier().is_link()).count()
+        self.chain.iter().filter(|x| x.identifier().is_link() && x.valid).count()
     }
 
     /// Contains no blocks that are not valid
@@ -120,7 +122,7 @@ impl DataChain {
     }
 
     /// Should contain majority of the current common_close_group
-    fn get_last_link(&mut self) -> Option<&Block> {
+    fn last_valid_link(&mut self) -> Option<&Block> {
         self.chain.iter().rev().find((|&x| x.identifier().is_link() && x.valid))
     }
 
@@ -139,7 +141,7 @@ impl DataChain {
 
     /// Validate and return all links in chain
     pub fn get_all_valid_links(&mut self) -> DataChain {
-        self.validate_all();
+        self.mark_blocks_valid();
         DataChain {
             chain: self.chain
                 .iter()
@@ -150,8 +152,8 @@ impl DataChain {
 
     }
 
-
-    fn validate_all(&mut self) {
+    /// Mark all links that are valid as such.
+    pub fn mark_blocks_valid(&mut self) {
         if let Some(mut first_link) = self.chain
             .iter()
             .cloned()
@@ -201,6 +203,9 @@ mod tests {
         let keys = (0..100)
             .map(|_| crypto::sign::gen_keypair())
             .collect_vec();
+        // ########################################################################################
+        // create groups of keys to resemble close_groups
+        // ########################################################################################
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
         let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
@@ -209,20 +214,34 @@ mod tests {
         assert!(pub1.len() == 3);
         assert!(pub2.len() == 3);
         assert!(pub3.len() == 3);
+        // ########################################################################################
+        // create link descriptors, which form the Block identifier
+        // ########################################################################################
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
         let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
         let link_desc3 = node_block::create_link_descriptor(&pub3[..]);
+        // ########################################################################################
+        // The block  identifier is the part of a Block/NodeBlock that
+        // describes the block, here it is links, but could be StructuredData / ImmutableData
+        // ########################################################################################
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
         let identifier3 = BlockIdentifier::Link(link_desc3);
         assert!(identifier1 != identifier2);
         assert!(identifier1 != identifier3);
         assert!(identifier2 != identifier3);
+        // ########################################################################################
+        // Create NodeBlocks, these are what nodes send to each other
+        // Here they are all links only. For Put Delete Post
+        // these would be Identifiers for the data types that includes a hash of the serialised data
+        // ########################################################################################
         let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
         let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
-        let link2_1_again = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        // here we need to add 2_1 again as 2_1 will be purged as part of test later on
+        let link2_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link2_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
         let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
         let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
@@ -237,31 +256,56 @@ mod tests {
         assert!(link3_1.is_ok());
         assert!(link3_2.is_ok());
         assert!(link3_3.is_ok());
+        // #################### Create chain ########################
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
+        // ############# start adding blocks #####################
         assert!(chain.add_node_block(link1_1.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub1)); // 1 link - all OK
+        assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
         assert_eq!(chain.len(), 1);
         assert!(chain.add_node_block(link1_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link1_3.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub1));
-        assert!(!chain.prune_and_validate(&pub3));
+        // ########################################################################################
+        // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
+        // ########################################################################################
+        assert!(chain.validate_ownership(&pub1));
+        assert!(!chain.validate_ownership(&pub3));
         assert_eq!(chain.len(), 1);
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(link2_1.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub2));
-        assert_eq!(chain.links_len(), 1); //  we pruned link2_1 in prune_and_validate call above
-        assert!(chain.add_node_block(link2_1_again.unwrap()).is_ok()); // re-add 2.1
+        // ########################################################################################
+        // Ading a link block will not increase length of chain links as it's not yet valid
+        // ########################################################################################
+        assert_eq!(chain.links_len(), 1);
+        let chain_links1 = chain.get_all_links();
+        assert_eq!(chain, chain_links1); // includes invalid (yet) links
+        // ########################################################################################
+        // The call below will mark 2_1 as invalid as it is a new link without majority agreement
+        // ########################################################################################
+        let chain_valid_links1 = chain.get_all_valid_links();
+        assert_eq!(chain.links_len(), 1);
+        assert_eq!(chain.len(), 2); // contains an invalid link for now
+        assert_eq!(chain.valid_len(), 1);
+        assert!(chain != chain_valid_links1); // will see 2nd link as not yet valid and remove  it
+        assert!(chain.add_node_block(link2_1_again_1.unwrap()).is_ok()); // re-add 2.1
+        // ########################################################################################
+        // The call below will prune 2_1 as it is a new link without majority agreement
+        // ########################################################################################
+        assert!(chain.validate_ownership(&pub2));
+        assert_eq!(chain.links_len(), 1); //  we pruned link2_1_again in validate_ownership call
+        assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_ok()); // re-add 2.1
         assert!(chain.add_node_block(link2_2.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub2)); // Ok as now 2 is majority
+        assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
+        assert_eq!(chain.links_len(), 2);
+        assert_eq!(chain.len(), 2);
         assert!(chain.add_node_block(link2_3.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub2));
+        assert!(chain.validate_ownership(&pub2));
         assert!(chain.add_node_block(link3_1.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_3.unwrap()).is_ok());
-        assert!(chain.prune_and_validate(&pub3));
-        assert!(!chain.prune_and_validate(&pub1));
+        assert!(chain.validate_ownership(&pub3));
+        assert!(!chain.validate_ownership(&pub1));
         let chain_links = chain.get_all_links();
         assert_eq!(chain, chain_links);
         let chain_valid_links = chain.get_all_valid_links();
@@ -277,3 +321,4 @@ mod tests {
 
     }
 }
+
