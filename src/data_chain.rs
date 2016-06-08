@@ -70,22 +70,31 @@ impl DataChain {
     /// We do not validate the block, it may be out of order
     /// This is a case of `lazy accumulation`
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
-        if !block.validate() {
-            return Err(Error::Validation);
-        }
-        if self.chain
-            .iter_mut()
-            .find(|x| x.identifier() == block.identifier())
-            .map(|x| x.add_proof(block.proof().clone())).is_some() //; if self.validate_block(x) { x.valid = true; }
-// x }).is_some()
-          {
-            return Ok(());
-            }
-        let blk = try!(Block::new(block));
-        self.chain.push(blk);
-        Ok(())
+		if !block.validate() {
+			return Err(Error::Validation);
+		}
 
-    }
+		{
+		let mut iter = self.chain.iter_mut().multipeek();
+			while let Some(blk) = iter.next() {
+				// just get first
+				if blk.identifier() == 	block.identifier() {
+					let _ = blk.add_proof(block.proof().clone());
+					while let Some(link) = iter.peek() {
+						if link.identifier().is_link() && link.valid {
+							blk.valid = true;
+					break;
+						}
+					}
+							return Ok(());
+				}
+			}
+		}
+		let blk = try!(Block::new(block));
+		self.chain.push(blk);
+		Ok(())
+
+	}
 
     /// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
@@ -182,8 +191,7 @@ impl DataChain {
         }
     }
 
-    fn validate_block_with_proof(block: &mut Block, proof: &Block) -> bool {
-        block.remove_invalid_signatures();
+    fn validate_block_with_proof(block: &Block, proof: &Block) -> bool {
         proof.proof()
             .iter()
             .map(|x| x.0)
