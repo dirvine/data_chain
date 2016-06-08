@@ -75,7 +75,7 @@ impl DataChain {
 		}
 
 		{
-		let mut iter = self.chain.iter_mut().multipeek();
+			let mut iter = self.chain.iter_mut().rev().multipeek();
 			while let Some(blk) = iter.next() {
 				// just get first
 				if blk.identifier() == 	block.identifier() {
@@ -83,10 +83,10 @@ impl DataChain {
 					while let Some(link) = iter.peek() {
 						if link.identifier().is_link() && link.valid {
 							blk.valid = true;
-					break;
+							break;
 						}
 					}
-							return Ok(());
+					return Ok(());
 				}
 			}
 		}
@@ -320,6 +320,11 @@ mod tests {
         assert!(chain.add_node_block(link3_1.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_2.unwrap()).is_ok());
         assert!(chain.add_node_block(link3_3.unwrap()).is_ok());
+        // ########################################################################################
+        // Check blocks are validating as NodeBlocks are added, no need to call validate_all here,
+		// should be automatic.
+        // ########################################################################################
+        assert_eq!(chain.links_len(), 3);
         assert!(chain.validate_ownership(&pub3));
         assert!(!chain.validate_ownership(&pub1));
         let chain_links = chain.get_all_links();
