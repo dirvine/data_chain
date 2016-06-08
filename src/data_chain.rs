@@ -28,6 +28,7 @@ use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
+use node_block;
 use sodiumoxide::crypto::sign::PublicKey;
 use error::Error;
 
@@ -76,12 +77,17 @@ impl DataChain {
 
 		{
 			let mut iter = self.chain.iter_mut().rev().multipeek();
+			// let max_link_length;
 			while let Some(blk) = iter.next() {
 				// just get first
 				if blk.identifier() == 	block.identifier() {
+					if blk.identifier().is_link() && Self::link_locked(blk) { return Err(Error::Majority); }
 					let _ = blk.add_proof(block.proof().clone());
 					while let Some(link) = iter.peek() {
-						if link.identifier().is_link() && link.valid {
+						// TODO do not allow blocks to be longer than previous valid link if link is locked
+						// if link.identifier().is_link() && Self::link_locked(link) { max_link_length = link.proof().len() }
+						if link.identifier().is_link() && link.valid && Self::validate_block_with_proof(blk, link) {
+							// we have the last good link
 							blk.valid = true;
 							break;
 						}
@@ -96,7 +102,15 @@ impl DataChain {
 
 	}
 
-    /// Validate an individual block. Will get latest link and confirm all signatures
+    // is link descriptor equal to all public keys xored together
+    fn link_locked(link: &Block) -> bool {
+		if link.identifier().is_block() { return false; }
+
+        let keys = link.proof().iter().map(|x| x.0).collect_vec();
+		node_block::create_link_descriptor(&keys[..]) == link.identifier().hash().0
+	}
+
+	/// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
         if let Some(ref mut link) = self.last_valid_link() {
