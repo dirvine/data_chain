@@ -61,6 +61,9 @@
 //! Containers of Chain Links only may also be maintained in groups to prove historic memberships
 //! of a network. It is not well enough understoof the validity of this action, but it may prove
 //! valuable in the event of network restarts.
+//! Please also see [github repository](https://github.com/dirvine/data_chain/tree/master),
+//! [overview0](https://github.com/dirvine/data_chain/blob/master/docs/data_chain.md) and
+//! [RFC] (https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md) - to be added
 
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
