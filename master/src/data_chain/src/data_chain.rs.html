@@ -540,6 +540,7 @@
 <span id="496">496</span>
 <span id="497">497</span>
 <span id="498">498</span>
+<span id="499">499</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -764,6 +765,7 @@
             .<span class='ident'>cloned</span>()
             .<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>()) {
             <span class='kw'>for</span> <span class='ident'>block</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>() {
+				<span class='ident'>block</span>.<span class='ident'>remove_invalid_signatures</span>();
                 <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>first_link</span>) {
                     <span class='ident'>block</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
                     <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() {
