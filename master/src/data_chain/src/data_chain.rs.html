@@ -518,6 +518,28 @@
 <span id="474">474</span>
 <span id="475">475</span>
 <span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -573,13 +595,14 @@
     <span class='doccomment'>/// Validation takes place from start of chain to now.</span>
     <span class='doccomment'>/// Also confirm we can accept this chain, by comparing</span>
     <span class='doccomment'>/// our current group with the majority of the last known link</span>
-    <span class='doccomment'>/// This method will purge all not yet valid blocks</span>
+    <span class='doccomment'>/// This method will NOT purge</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_ownership</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>my_group</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>PublicKey</span>]) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='comment'>// ensure all links are good</span>
         <span class='self'>self</span>.<span class='ident'>mark_blocks_valid</span>();
         <span class='comment'>// ensure last good ink contains majority of current group</span>
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>last_link</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_valid_link</span>() {
-            <span class='kw'>return</span> (<span class='ident'>last_link</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>()
+            <span class='kw'>return</span> (<span class='ident'>last_link</span>.<span class='ident'>proof</span>()
+                .<span class='ident'>iter</span>()
                 .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>k</span><span class='op'>|</span> <span class='ident'>my_group</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span><span class='ident'>z</span><span class='op'>|</span> <span class='ident'>PublicKey</span>(<span class='ident'>z</span>.<span class='number'>0</span>) <span class='op'>==</span> <span class='ident'>k</span>.<span class='number'>0</span>))
                 .<span class='ident'>count</span>() <span class='op'>*</span> <span class='number'>2</span>) <span class='op'>&gt;</span> <span class='ident'>last_link</span>.<span class='ident'>proof</span>().<span class='ident'>len</span>();
 
@@ -591,56 +614,76 @@
     <span class='doccomment'>/// Add a nodeblock received from a peer</span>
     <span class='doccomment'>/// We do not validate the block, it may be out of order</span>
     <span class='doccomment'>/// This is a case of `lazy accumulation`</span>
-	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_node_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>NodeBlock</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
-		<span class='kw'>if</span> <span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>validate</span>() {
-			<span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Validation</span>);
-		}
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_node_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>NodeBlock</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>validate</span>() {
+            <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Validation</span>);
+        }
         <span class='kw'>let</span> <span class='ident'>len</span>; <span class='comment'>// first link in chain must be considered valid, we are creating this.</span>
-		{
-		<span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
-		}
-		{
-			<span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>().<span class='ident'>rev</span>().<span class='ident'>multipeek</span>();
-			<span class='lifetime'>&#39;outer</span>: <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>blk</span>) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>() {
-				<span class='comment'>// just get first</span>
-				<span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> 	<span class='ident'>block</span>.<span class='ident'>identifier</span>() {
-					<span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>==</span> <span class='number'>1</span>  { <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>()); <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(()); }
-					<span class='comment'>// in this case we have encountered a possible duplicate link (group) go for new link</span>
-					<span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>Self</span>::<span class='ident'>link_locked</span>(<span class='ident'>blk</span>) { <span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>; <span class='kw'>continue</span>; }
-					<span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>link</span>) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>peek</span>() {
+        {
+            <span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>len</span>();
+        }
+        {
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>().<span class='ident'>rev</span>().<span class='ident'>multipeek</span>();
+            <span class='lifetime'>&#39;outer</span>: <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>blk</span>) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>() {
+                <span class='comment'>// just get first</span>
+                <span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block</span>.<span class='ident'>identifier</span>() {
+                    <span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>==</span> <span class='number'>1</span> {
+                        <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>());
+                        <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
+                    }
+                    <span class='comment'>// in this case we have encountered a possible duplicate link</span>
+                    <span class='comment'>// (group) go for new link</span>
+                    <span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>Self</span>::<span class='ident'>link_locked</span>(<span class='ident'>blk</span>) {
+                        <span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+                        <span class='kw'>continue</span>;
+                    }
+                    <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>link</span>) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>peek</span>() {
 
-						<span class='kw'>if</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='comment'>/*&amp;&amp; link.valid*/</span> {
+                        <span class='kw'>if</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>()
+                        <span class='comment'>// &amp;&amp; link.valid</span>
+                        {
 
-							<span class='comment'>// Do not allow blocks to be longer than previous valid link if link is locked</span>
-							<span class='kw'>if</span>  <span class='ident'>blk</span>.<span class='ident'>proof</span>().<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='kw'>if</span>  <span class='ident'>Self</span>::<span class='ident'>link_locked</span>(<span class='ident'>link</span>) {<span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>len</span>() } <span class='kw'>else</span> { <span class='number'>0</span> }
-							{  <span class='kw'>continue</span> <span class='lifetime'>&#39;outer</span>; } <span class='comment'>// again a duplicate</span>
-							<span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>());
-							<span class='kw'>if</span>  <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>blk</span>, <span class='ident'>link</span>) {
-								<span class='comment'>// we have the last good link</span>
-								<span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
-								<span class='kw'>break</span>;
-							} <span class='kw'>else</span> { <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Validation</span>) }
-						}
-					}
-					<span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
-				}
-			}
-		}
-		<span class='kw'>let</span> <span class='ident'>blk</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>));
-		<span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>push</span>(<span class='ident'>blk</span>);
-		<span class='prelude-val'>Ok</span>(())
+                            <span class='comment'>// Do not allow blocks to be longer than previous valid link</span>
+                            <span class='comment'>// if link is locked</span>
+                            <span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>proof</span>().<span class='ident'>len</span>() <span class='op'>&gt;</span>
+                               <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>link_locked</span>(<span class='ident'>link</span>) {
+                                <span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>len</span>()
+                            } <span class='kw'>else</span> {
+                                <span class='number'>0</span>
+                            } {
+                                <span class='kw'>continue</span> <span class='lifetime'>&#39;outer</span>;
+                            } <span class='comment'>// again a duplicate</span>
+                            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>());
+                            <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>blk</span>, <span class='ident'>link</span>) {
+                                <span class='comment'>// we have the last good link</span>
+                                <span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+                                <span class='kw'>break</span>;
+                            } <span class='kw'>else</span> {
+                                <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Validation</span>);
+                            }
+                        }
+                    }
+                    <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
+                }
+            }
+        }
+        <span class='kw'>let</span> <span class='ident'>blk</span> <span class='op'>=</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>Block</span>::<span class='ident'>new</span>(<span class='ident'>block</span>));
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>push</span>(<span class='ident'>blk</span>);
+        <span class='prelude-val'>Ok</span>(())
 
-	}
+    }
 
     <span class='comment'>// is link descriptor equal to all public keys xored together</span>
     <span class='kw'>fn</span> <span class='ident'>link_locked</span>(<span class='ident'>link</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-		<span class='kw'>if</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>is_block</span>() { <span class='kw'>return</span> <span class='boolval'>false</span>; }
+        <span class='kw'>if</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>is_block</span>() {
+            <span class='kw'>return</span> <span class='boolval'>false</span>;
+        }
 
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>collect_vec</span>();
-		<span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[..]) <span class='op'>==</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>().<span class='number'>0</span>
-	}
+        <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[..]) <span class='op'>==</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>().<span class='number'>0</span>
+    }
 
-	<span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
+    <span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
     <span class='doccomment'>/// were from last known valid group.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>link</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_valid_link</span>() {
@@ -750,7 +793,7 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
+    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
     <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
     <span class='kw'>use</span> <span class='ident'>node_block</span>;
     <span class='kw'>use</span> <span class='ident'>node_block</span>::<span class='ident'>NodeBlock</span>;
@@ -864,7 +907,7 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>link3_3</span>.<span class='ident'>unwrap</span>()).<span class='ident'>is_ok</span>());
         <span class='comment'>// ########################################################################################</span>
         <span class='comment'>// Check blocks are validating as NodeBlocks are added, no need to call validate_all here,</span>
-		<span class='comment'>// should be automatic.</span>
+        <span class='comment'>// should be automatic.</span>
         <span class='comment'>// ########################################################################################</span>
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>links_len</span>(), <span class='number'>3</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>validate_ownership</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub3</span>));
@@ -884,7 +927,7 @@
 
     }
 
-	<span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>single_link_chain</span>() {
         ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>50</span>)
@@ -904,8 +947,10 @@
         <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
         <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>sd2_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;s21hash&quot;</span>), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd2name&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>),
+                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>sd2_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;s21hash&quot;</span>),
+                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd2name&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>identifier1</span> <span class='op'>!=</span> <span class='ident'>id_ident</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>identifier1</span> <span class='op'>!=</span> <span class='ident'>sd1_ident</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>id_ident</span> <span class='op'>!=</span> <span class='ident'>sd1_ident</span>);
@@ -972,15 +1017,15 @@
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>links_len</span>(), <span class='number'>1</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>blocks_len</span>(), <span class='number'>1</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
-		<span class='comment'>// the call below will not add any links</span>
-		<span class='kw'>let</span> <span class='ident'>id1</span> <span class='op'>=</span> <span class='ident'>id_1</span>.<span class='ident'>unwrap</span>();
+        <span class='comment'>// the call below will not add any links</span>
+        <span class='kw'>let</span> <span class='ident'>id1</span> <span class='op'>=</span> <span class='ident'>id_1</span>.<span class='ident'>unwrap</span>();
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>id1</span>.<span class='ident'>clone</span>()).<span class='ident'>is_ok</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>id_3</span>.<span class='ident'>unwrap</span>()).<span class='ident'>is_err</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>id_2</span>.<span class='ident'>unwrap</span>()).<span class='ident'>is_err</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>links_len</span>(), <span class='number'>1</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>blocks_len</span>(), <span class='number'>1</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>3</span>);
-		<span class='ident'>chain</span>.<span class='ident'>prune</span>();
+        <span class='ident'>chain</span>.<span class='ident'>prune</span>();
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>2</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>valid_len</span>(), <span class='number'>2</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>id1</span>.<span class='ident'>clone</span>()).<span class='ident'>is_ok</span>());
@@ -994,7 +1039,6 @@
 
     }
 }
-
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

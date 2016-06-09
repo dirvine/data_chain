@@ -65,7 +65,7 @@ as a new id. This allows clean-up of old data cache directories.</p>
 Validation takes place from start of chain to now.
 Also confirm we can accept this chain, by comparing
 our current group with the majority of the last known link
-This method will purge all not yet valid blocks</p>
+This method will NOT purge</p>
 </div><h4 id='method.add_node_block' class='method'><code>fn <a href='#method.add_node_block' class='fnname'>add_node_block</a>(&amp;mut self, block: <a class='struct' href='../../data_chain/node_block/struct.NodeBlock.html' title='data_chain::node_block::NodeBlock'>NodeBlock</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Add a nodeblock received from a peer
 We do not validate the block, it may be out of order
