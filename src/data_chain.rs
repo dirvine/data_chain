@@ -221,6 +221,7 @@ impl DataChain {
             .cloned()
             .find(|x| x.identifier().is_link()) {
             for block in self.chain.iter_mut() {
+				block.remove_invalid_signatures();
                 if Self::validate_block_with_proof(block, &mut first_link) {
                     block.valid = true;
                     if block.identifier().is_link() {
