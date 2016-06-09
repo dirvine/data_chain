@@ -635,6 +635,7 @@
 <span id="591">591</span>
 <span id="592">592</span>
 <span id="593">593</span>
+<span id="594">594</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -804,7 +805,8 @@
 		<span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>position</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block_identifier</span>)
 	}
 
-	<span class='doccomment'>/// Inserts an element at position index within the vector, shifting all elements after it to the right.</span>
+	<span class='doccomment'>/// Inserts an element at position index within the chain, shifting all elements</span>
+	<span class='doccomment'>/// after it to the right.</span>
 	<span class='doccomment'>/// Panics if index is greater than the chains&#39;s length.</span>
 	<span class='doccomment'>/// Will not validate this block!</span>
 	<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
