@@ -68,7 +68,6 @@ our current group with the majority of the last known link
 This method will NOT purge</p>
 </div><h4 id='method.add_node_block' class='method'><code>fn <a href='#method.add_node_block' class='fnname'>add_node_block</a>(&amp;mut self, block: <a class='struct' href='../../data_chain/node_block/struct.NodeBlock.html' title='data_chain::node_block::NodeBlock'>NodeBlock</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Add a nodeblock received from a peer
-We do not validate the block, it may be out of order
 This is a case of <code>lazy accumulation</code></p>
 </div><h4 id='method.validate_block' class='method'><code>fn <a href='#method.validate_block' class='fnname'>validate_block</a>(&amp;mut self, block: &amp;mut <a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Validate an individual block. Will get latest link and confirm all signatures
