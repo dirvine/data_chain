@@ -166,7 +166,8 @@ impl DataChain {
 		self.chain.iter().position(|x| x.identifier() == block_identifier)
 	}
 
-	/// Inserts an element at position index within the vector, shifting all elements after it to the right.
+	/// Inserts an element at position index within the chain, shifting all elements
+	/// after it to the right.
 	/// Panics if index is greater than the chains's length.
 	/// Will not validate this block!
 	pub fn insert(&mut self, index: usize, block: Block) {
