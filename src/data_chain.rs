@@ -70,6 +70,7 @@ impl DataChain {
 
     /// Add a nodeblock received from a peer
     /// Uses  `lazy accumulation`
+	/// If block becomes or is valid, then it is returned
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
         if !block.validate() {
             return Err(Error::Validation);
@@ -128,6 +129,13 @@ impl DataChain {
         Ok(())
 
     }
+
+	/// find a block (user required to test for validity)
+    pub fn find(&self, block_identifier: &BlockIdentifier) -> Option<&Block> {
+		self.chain.iter().find(|x| x.identifier() == block_identifier)
+	}
+
+
 
     // is link descriptor equal to all public keys xored together
     fn link_locked(link: &Block) -> bool {
