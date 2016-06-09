@@ -52,13 +52,14 @@ impl DataChain {
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
-    /// This method will purge all not yet valid blocks
+    /// This method will NOT purge
     pub fn validate_ownership(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.mark_blocks_valid();
         // ensure last good ink contains majority of current group
         if let Some(last_link) = self.last_valid_link() {
-            return (last_link.proof().iter()
+            return (last_link.proof()
+                .iter()
                 .filter(|k| my_group.iter().any(|&z| PublicKey(z.0) == k.0))
                 .count() * 2) > last_link.proof().len();
 
@@ -70,56 +71,76 @@ impl DataChain {
     /// Add a nodeblock received from a peer
     /// We do not validate the block, it may be out of order
     /// This is a case of `lazy accumulation`
-	pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
-		if !block.validate() {
-			return Err(Error::Validation);
-		}
+    pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
+        if !block.validate() {
+            return Err(Error::Validation);
+        }
         let len; // first link in chain must be considered valid, we are creating this.
-		{
-		len = self.len();
-		}
-		{
-			let mut iter = self.chain.iter_mut().rev().multipeek();
-			'outer: while let Some(blk) = iter.next() {
-				// just get first
-				if blk.identifier() == 	block.identifier() {
-					if len == 1  { let _ = blk.add_proof(block.proof().clone()); return Ok(()); }
-					// in this case we have encountered a possible duplicate link (group) go for new link
-					if blk.identifier().is_link() && Self::link_locked(blk) { blk.valid = true; continue; }
-					while let Some(link) = iter.peek() {
+        {
+            len = self.len();
+        }
+        {
+            let mut iter = self.chain.iter_mut().rev().multipeek();
+            'outer: while let Some(blk) = iter.next() {
+                // just get first
+                if blk.identifier() == block.identifier() {
+                    if len == 1 {
+                        let _ = blk.add_proof(block.proof().clone());
+                        return Ok(());
+                    }
+                    // in this case we have encountered a possible duplicate link
+                    // (group) go for new link
+                    if blk.identifier().is_link() && Self::link_locked(blk) {
+                        blk.valid = true;
+                        continue;
+                    }
+                    while let Some(link) = iter.peek() {
 
-						if link.identifier().is_link() /*&& link.valid*/ {
+                        if link.identifier().is_link()
+                        // && link.valid
+                        {
 
-							// Do not allow blocks to be longer than previous valid link if link is locked
-							if  blk.proof().len() > if  Self::link_locked(link) {link.proof().len() } else { 0 }
-							{  continue 'outer; } // again a duplicate
-							let _ = blk.add_proof(block.proof().clone());
-							if  Self::validate_block_with_proof(blk, link) {
-								// we have the last good link
-								blk.valid = true;
-								break;
-							} else { return Err(Error::Validation) }
-						}
-					}
-					return Ok(());
-				}
-			}
-		}
-		let blk = try!(Block::new(block));
-		self.chain.push(blk);
-		Ok(())
+                            // Do not allow blocks to be longer than previous valid link
+                            // if link is locked
+                            if blk.proof().len() >
+                               if Self::link_locked(link) {
+                                link.proof().len()
+                            } else {
+                                0
+                            } {
+                                continue 'outer;
+                            } // again a duplicate
+                            let _ = blk.add_proof(block.proof().clone());
+                            if Self::validate_block_with_proof(blk, link) {
+                                // we have the last good link
+                                blk.valid = true;
+                                break;
+                            } else {
+                                return Err(Error::Validation);
+                            }
+                        }
+                    }
+                    return Ok(());
+                }
+            }
+        }
+        let blk = try!(Block::new(block));
+        self.chain.push(blk);
+        Ok(())
 
-	}
+    }
 
     // is link descriptor equal to all public keys xored together
     fn link_locked(link: &Block) -> bool {
-		if link.identifier().is_block() { return false; }
+        if link.identifier().is_block() {
+            return false;
+        }
 
         let keys = link.proof().iter().map(|x| x.0).collect_vec();
-		node_block::create_link_descriptor(&keys[..]) == link.identifier().hash().0
-	}
+        node_block::create_link_descriptor(&keys[..]) == link.identifier().hash().0
+    }
 
-	/// Validate an individual block. Will get latest link and confirm all signatures
+    /// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
         if let Some(ref mut link) = self.last_valid_link() {
@@ -229,7 +250,7 @@ impl DataChain {
 mod tests {
     use super::*;
     use sodiumoxide::crypto;
-use sodiumoxide::crypto::hash::sha256;
+    use sodiumoxide::crypto::hash::sha256;
     use itertools::Itertools;
     use node_block;
     use node_block::NodeBlock;
@@ -343,7 +364,7 @@ use sodiumoxide::crypto::hash::sha256;
         assert!(chain.add_node_block(link3_3.unwrap()).is_ok());
         // ########################################################################################
         // Check blocks are validating as NodeBlocks are added, no need to call validate_all here,
-		// should be automatic.
+        // should be automatic.
         // ########################################################################################
         assert_eq!(chain.links_len(), 3);
         assert!(chain.validate_ownership(&pub3));
@@ -363,7 +384,7 @@ use sodiumoxide::crypto::hash::sha256;
 
     }
 
-	#[test]
+    #[test]
     fn single_link_chain() {
         ::sodiumoxide::init();
         let keys = (0..50)
@@ -383,8 +404,10 @@ use sodiumoxide::crypto::hash::sha256;
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
-        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"), sha256::hash(b"sd1name"));
-        let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"), sha256::hash(b"sd2name"));
+        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
+                                                        sha256::hash(b"sd1name"));
+        let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
+                                                        sha256::hash(b"sd2name"));
         assert!(identifier1 != id_ident);
         assert!(identifier1 != sd1_ident);
         assert!(id_ident != sd1_ident);
@@ -451,15 +474,15 @@ use sodiumoxide::crypto::hash::sha256;
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
-		// the call below will not add any links
-		let id1 = id_1.unwrap();
+        // the call below will not add any links
+        let id1 = id_1.unwrap();
         assert!(chain.add_node_block(id1.clone()).is_ok());
         assert!(chain.add_node_block(id_3.unwrap()).is_err());
         assert!(chain.add_node_block(id_2.unwrap()).is_err());
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 3);
-		chain.prune();
+        chain.prune();
         assert_eq!(chain.len(), 2);
         assert_eq!(chain.valid_len(), 2);
         assert!(chain.add_node_block(id1.clone()).is_ok());
@@ -473,4 +496,3 @@ use sodiumoxide::crypto::hash::sha256;
 
     }
 }
-
