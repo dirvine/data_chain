@@ -157,8 +157,8 @@ impl DataChain {
     }
 
     /// Remove a block, will ignore Links
-    pub fn remove(&mut self, data_id: BlockIdentifier) {
-        self.chain.retain(|x| x.identifier() != &data_id || x.identifier().is_link());
+    pub fn remove(&mut self, data_id: &BlockIdentifier) {
+        self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
 
     }
 
@@ -329,9 +329,6 @@ use sodiumoxide::crypto::hash::sha256;
         assert_eq!(chain.valid_len(), 1);
         assert!(chain != chain_valid_links1); // will see 2nd link as not yet valid and remove  it
         assert!(chain.add_node_block(link2_1_again_1.unwrap()).is_err()); // try re-add 2.1
-        // ########################################################################################
-        // The call below will prune 2_1 as it is a new link without majority agreement
-        // ########################################################################################
         assert!(chain.validate_ownership(&pub2));
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_err());
@@ -455,12 +452,24 @@ use sodiumoxide::crypto::hash::sha256;
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
 		// the call below will not add any links
-        assert!(chain.add_node_block(id_1.unwrap()).is_ok());
+		let id1 = id_1.unwrap();
+        assert!(chain.add_node_block(id1.clone()).is_ok());
         assert!(chain.add_node_block(id_3.unwrap()).is_err());
         assert!(chain.add_node_block(id_2.unwrap()).is_err());
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 3);
+		chain.prune();
+        assert_eq!(chain.len(), 2);
+        assert_eq!(chain.valid_len(), 2);
+        assert!(chain.add_node_block(id1.clone()).is_ok());
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain.valid_len(), 2);
+        chain.remove(id1.identifier());
+        assert_eq!(chain.len(), 2);
+        assert!(chain.add_node_block(id1.clone()).is_ok());
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain.valid_len(), 2);
 
     }
 }
