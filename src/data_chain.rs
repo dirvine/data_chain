@@ -69,7 +69,6 @@ impl DataChain {
     }
 
     /// Add a nodeblock received from a peer
-    /// We do not validate the block, it may be out of order
     /// This is a case of `lazy accumulation`
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
         if !block.validate() {
