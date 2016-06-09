@@ -69,7 +69,7 @@ impl DataChain {
     }
 
     /// Add a nodeblock received from a peer
-    /// This is a case of `lazy accumulation`
+    /// Uses  `lazy accumulation`
     pub fn add_node_block(&mut self, block: NodeBlock) -> Result<(), Error> {
         if !block.validate() {
             return Err(Error::Validation);
