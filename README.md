@@ -3,6 +3,7 @@
 [![](http://meritbadge.herokuapp.com/data_chain)](https://crates.io/crates/data_chain)
 [![Build Status](https://travis-ci.org/dirvine/data_chain.svg?branch=master)](https://travis-ci.org/dirvine/data_chain)
 [![Build status](https://ci.appveyor.com/api/projects/status/h0674wyk1sdovi2j?svg=true)](https://ci.appveyor.com/project/dirvine/data-chain)
+[![Coverage Status](https://coveralls.io/repos/github/dirvine/data_chain/badge.svg?branch=master)](https://coveralls.io/github/dirvine/data_chain?branch=master)
 
 
 Data blocks that are chained to provide cryptographically verifiable assuredness  that they contain
