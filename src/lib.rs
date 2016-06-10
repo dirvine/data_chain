@@ -195,11 +195,27 @@
 //!
 //! # Panics
 //!
+//! In the `DataChain` there are some methods that may panic if invalid range is provided
+//! to an index position (slice). These are
+//!
+//! If index is beyond length of chain
+//!
+//! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)
+//! [split_off()](../data_chain/data_chain/struct.DataChain.html#method.split_off)
+//! [split_at()](../data_chain/data_chain/struct.DataChain.html#method.split_at)
+//! [split_at_mut()](../data_chain/data_chain/struct.DataChain.html#method.split_at_mut)
+//!
+//! If attept to push onto a chain longer than usize
+//!
+//! [push()](../data_chain/data_chain/struct.DataChain.html#method.push)
+//!
 //! # Errors
+//!
+//! A chain is usize in length. Passing from 32 -> 64 bit machine may cause an ooverflow error.
 //!
 //! # Safety
 //!
-//!
+//! There is no use of unsafe blocks.
 //!
 //! # Aborts
 //!
