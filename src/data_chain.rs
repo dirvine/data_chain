@@ -168,8 +168,10 @@ impl DataChain {
 
 	/// Inserts an element at position index within the chain, shifting all elements
 	/// after it to the right.
-	/// Panics if index is greater than the chains's length.
 	/// Will not validate this block!
+	/// # Panics
+	///
+	/// Panics if index is greater than the chains's length.
 	pub fn insert(&mut self, index: usize, block: Block) {
 		self.chain.insert(index, block)
 	}

@@ -1,7 +1,11 @@
 [package]
 authors = ["David Irvine <david.irvine@maidsafe.net>"]
 name = "data_chain"
-version = "0.1.0"
+version = "0.1.1"
+description = "Method of recording data securely on decentralised networks"
+license =  "GPL-3.0"
+readme = "README.md"
+repository = "https://github.com/dirvine/data_chain"
 
 [dependencies]
 itertools = "0.4.15"
