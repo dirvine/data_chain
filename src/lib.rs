@@ -64,7 +64,7 @@
 //! Please also see [github repository][1],
 //! and
 //! [RFC][3]
-
+//!
 //! # Examples
 //!
 //! Basic usage:
