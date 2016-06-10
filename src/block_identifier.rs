@@ -28,6 +28,11 @@ use sodiumoxide::crypto::hash::sha256::Digest;
 /// structured Data name
 pub type SdName = Digest;
 
+/// Structured Data version
+pub type Version = u64;
+/// Ledger type (delee or keep)
+
+pub type Ledger = bool;
 /// Represents the xored close group for the new grou on churn etc.
 /// This is signed by each group member.
 pub type LinkDescriptor = [u8; 32];
@@ -40,7 +45,7 @@ pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
     ImmutableData(Digest),
     ///           hash     name (identity + tag) (stored localy as name in data store)
-    StructuredData(Digest, SdName),
+    StructuredData(Digest, SdName, Version, Ledger),
     /// This array represents **this nodes** current close roup
     /// The array is all nodes xored together
     /// This is unique to this node, but known by all nodes connected to it
@@ -56,7 +61,7 @@ impl BlockIdentifier {
     pub fn hash(&self) -> Digest {
         match *self {
             BlockIdentifier::ImmutableData(hash) => hash,
-            BlockIdentifier::StructuredData(hash, _name) => hash,
+            BlockIdentifier::StructuredData(hash, _name, _, _) => hash,
             BlockIdentifier::Link(hash) => Digest(hash),
         }
     }
@@ -65,7 +70,7 @@ impl BlockIdentifier {
     pub fn structured_data_name(&self) -> Option<SdName> {
         match *self {
             BlockIdentifier::ImmutableData(_hash) => None,
-            BlockIdentifier::StructuredData(_hash, name) => Some(name),
+            BlockIdentifier::StructuredData(_hash, name, _, _) => Some(name),
             BlockIdentifier::Link(_hash) => None,
         }
     }
@@ -74,7 +79,7 @@ impl BlockIdentifier {
     pub fn is_link(&self) -> bool {
         match *self {
             BlockIdentifier::ImmutableData(_) |
-            BlockIdentifier::StructuredData(_, _) => false,
+            BlockIdentifier::StructuredData(_, _, _, _) => false,
             BlockIdentifier::Link(_) => true,
         }
     }
@@ -112,7 +117,7 @@ mod tests {
     #[test]
     fn create_validate_structured_data_identifier() {
         let sd_block = BlockIdentifier::StructuredData(sha256::hash(b"hash"),
-                                                       sha256::hash(b"name"));
+                                                       sha256::hash(b"name"), 0, false);
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
