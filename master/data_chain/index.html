@@ -53,7 +53,7 @@
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
 data and not injected.</p>
 
-<p>A chain nay look like</p>
+<p>A chain may look like</p>
 
 <pre><code class="language-norun">`link` - all current group members - cryptographically secured as valid
 
@@ -97,6 +97,13 @@ Please also see <a href="https://github.com/dirvine/data_chain/tree/master">gith
                            <td class='docblock short'>
                                 <p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
 links</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='block_identifier/index.html'
+                                  title='data_chain::block_identifier'>block_identifier</a></td>
+                           <td class='docblock short'>
+                                <p>Identify the variant parts of a block, for links this is the Digest of the hash of that group.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
