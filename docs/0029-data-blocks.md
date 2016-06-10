@@ -12,6 +12,71 @@ Data blocks are a container that allows large blocks of data to be maintained. T
 validated by a node on a network, close to the data name, to contain valid data that was
  guaranteed to have been correctly stored onto the network.
 
+# Definitions used
+
+- Decentralised network, A peer to peer network in xor space, using Kadmelia type addressing.
+- Hash, a cryptographic one way function that produces a fixed length representation of any input.
+- Immutable data, a data type that has a name == hash of it's contents (it is immutable as changing
+  the contents creates a new piece of immutable data).
+- Structured data, a data type that has a fixed name, but mutable contents.
+- GROUP_SIZE, the number of nodes surrounding a network address.
+- QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
+  paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
+- Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
+  described below) that also exist in the previous block.
+- Churn event, a change in the group, either by a node leaving or a node joining.
+
+
+# Abstract
+
+A mechanism to lock data descriptors in containers that may be held on a decentralised network.
+Such structures are cryptographically secured in lock step using a consensus of cryptographic
+signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7
+nodes) required to be considered valid (much like N of P sharing). In a decentralised network that
+has secured groups,these signatures are those closest to the holder of a `DataChain`. The
+`DataChain` will have a majority of existing group members if it is republished prior to more than
+GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the
+data validity.
+
+When a `DataChain` starts, the first item is probably a `link`. This is a block that uses the
+identity of a close group on the network. This `link` has an associated proof that is the
+`PublicKey` and a corresponding signature for each node. The `Signature` is the signed `link`
+block.  On each `churn` event a new link is created and again signed by all members of the
+close_group. This link is the nodes close group as known by all members of that close_group. The
+link is the xor result of that close_group.
+
+Data block entries are signed by an ever changing majority of pre-existing nodes.  As the chain
+grows, this rolling majority of different signatories can be cryptographically confirmed (via
+`links`).  This process continues to the very top of the chain which will contain entries signed by
+the majority of the current close group of nodes. This current group of nodes can then
+cryptographically validate the entire chain and every data element referred to within it.
+
+A data chain may look like
+
+`link:data:data:data:data:link:link:data:data`
+
+or
+
+`link:link:link:data:link:link:link:data:link`
+
+The `links` maintain group consensus and the data elements should individually validate all data
+blocks though the group consensus provided by the preceding `link`.
+
+As groups change and the network grows, or indeed shrinks, many chains held by various nodes will
+have a common element. This allows such chains to be cross referenced in order to build a complete
+picture of data from the start of the network. In essence, this chain of verifiable data elements
+provides a provable sequence of data validity and also the sequence of such data appearing on the
+network. It is assumed that a later project using graph analysis can provide analytics that may be
+subjected to deep learning algorithms that will improve network security and efficiency.
+
+It is through this basic recondition of chained majority agreements that assures the ability for a
+`DataChain` to be validated and therefore allows data to be republished.
+
+The design described below will show a system where node capabilities are amortised across a
+network, providing a balance of resources that can be mixed evenly across a network of nodes with
+varying capabilities, from mass persistent data storage to node with very little, transient data
+storage.
+
 # Motivation
 
 In a fully decentralised network there are many problems to solve, two of these issues can be
@@ -43,7 +108,7 @@ particular, at least in relation to the data space covered by the chain. This se
 counter-intuitive, but is in fact important. What concerns us in this design is that at least all
 group members agree on something that they can sign to attest to this group having existed on the
 network and in a manner they all agree on. To achieve this we again use `xor` and as described
-below the identifier for links is merely the xor of all group members in relations to individual
+below the identifier for links is merely the xor of all group members in relation to individual
 nodes and not any data item itself.
 
 This will no doubt cause confusion to the reader, but it is assumed that this will become apparent
@@ -110,8 +175,8 @@ the chain evolved.
 
 The chain itself is a very simple vector of blocks. The [API] of the `DataChain` allows for
 splitting, merging and validating chains. This allows chains to be exchanged and validated between
-nodes. If a chain can be fully validated and proven to be able to be owned by a receiving node then
-it is considered fully valid.
+nodes. If a chain can be proven to be able to be owned (by calling the chain validate_ownership
+function) by a receiving node then it is considered fully valid.
 
 An interesting aspect though is the ability to "validate in history". This means that even if a
 chain cannot be proven to be able to be fully published to a group (as there are not enough
@@ -164,18 +229,65 @@ Lower capability nodes will not attempt to build data history and will therefore
 potential. This is perfectly good though and possibly a requirement of such a network.
 
 
-##When the network is growing
+# Additional observations
 
-The data_block entries must be within the current close group of the claimant node
+## Archive nodes
 
-##When the network has shrunk
+Nodes that hold the longest `DataChains` may be considered to be archive nodes. Such nodes will be
+responsible for maintaining all network data for specific areas of the network address range. There
+will be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group
+and it would therefore require a minimum of 3 groups of archive nodes to collude against the
+network. It is important to note that each group is chosen at random by the network.
 
-The data_block entries are allowed to be outwith the current close_group.
+### Archive node Datachain length
 
+The length of the `DataChain` should be as long as possible. Although a node may not require to hold
+data outwith it's current close group. It is prudent such nodes hold as much of the Chain as
+possible as this all allow quicker rebuild of a network on complete outage. Nodes may keep such
+structures and associated data in a container that prunes older blocks to make space for new blocks
+as new blocks appear (FIFO or first in first out).
 
-On receipt of a Refresh message that contains a DataBlock, the receiving node will confirm each
-item the list of data names and types (DataIdentifier) are in it's close_group.
+#### Additional requirements of Archive nodes
 
+If an archive node requests data that is outwith its current close group, it should receive a higher
+reward than usual.## Non Archive nodes
+
+All nodes in a group will build on their `DataChain`, whether an Archive node or simply attempting
+to become an archive node. Small nodes with little resources though may find it difficult to create
+a `DataChain`of any significance. In these cases these smaller less capable nodes will receive
+limited rewards as they do not have the ability to respond to many data retrieval requests, if any
+at all. These small nodes though are still beneficial to the network to provide connectivity and
+lower level consensus at the routing level.
+
+A non archive node can request old data from existing archive nodes in a group, but the rate should
+be limited in cases where there are already three such nodes in a group. These messages will be the
+lowest priority messages in the group. Thereby any attacker will require to become an archive node
+and this will take time, unless the group falls below three (or (group_size / 2) - 1 archive nodes
+in which case the priority is increased on such relocation messages.
+
+## Chained chains
+
+As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
+on `DataBlocks` held. Such links across chains has not as yet been fully analysed, however, it is
+speculated that the ability to cross reference will enable a fuller picture of network data to be
+built up.
+
+### Structured data first version
+
+To strengthen the validity of mutable data (StructuredData) the first version (version 0) may be
+maintained in the chain. This will show age of such data, which may be particularly useful in types
+of mutable data that do not change ownership or indeed where network created elements (such as any
+currency) can be further validated.
+
+## Archive node pointers
+
+The possibility for a group to not have an ability, even with Archive nodes to store all data may
+still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
+known larger nodes outwith their group, by passing data and also passing a `DtaChain` to prove
+validity. This can introduce an addition to the `DataChain` object to provide pointers to data. In
+such cases the larger nodes should receive a proportion of any reward for doing so. It is, however,
+doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed
+across groups as described above.
 
 ###Network "difficulty"
 
@@ -183,30 +295,35 @@ The distance of the furthest group member to a nodes own ID is regarded as netwo
 small networks this will wildly fluctuate. This value must be written to the nodes configuration
 file, in case of SAFE this is the vault configuration file.
 
-###If list of existing data is zero
+## Network restart / mass segmentation
 
-This is a network restart, therefore we accept these messages as is and confirm there are at least
-GROUP_SIZE nodes signed such messages. The difficult measurement must match (or be less than) that
-of the  current receiving node in the previous network,
+The process described above will mean that decentralised network, far from potentially losing data
+on restart should recover with a very high degree of certainty.
 
-###If network difficulty is reduced significantly (less than half previous)
+If a node restarts or in cases of massive churn there will be a significant reduction in network
+difficulty. This reduction will mean that any nodes joining `again` should be accepted, regardless
+of chain length.
 
-Confirm at least one node in current group exits in the array in the list of that data element.
+If a restart has been detected, any node recognised in the last link of the chain will be allowed
+entry again.
+
 
 # Drawbacks
 
-In very small networks (less than approx 3000) network difficulty is a fluctuating number, this can
+- In very small networks (less than approx 3000) network difficulty is a fluctuating number, this can
 probably not be prevented, but may allow unwanted data or in fact prevent valid data from being
 refreshed.
+- This pattern is at it's earliest of stages and will require significant testing to ensure integrity of data as well as safety.
+- Chain merging and data integrity checking is not well defined in this RFC and will require further analysis during implementation.
 
 
 # Alternatives
 
-What other designs have been considered? What is the impact of not doing this?
+None as of yet
 
 # Unresolved questions
 
-What parts of the design are still to be done?
+To be discovered during review.
 
 [1]: https://dirvine.github.io/data_chain/master/data_chain/block_identifier/index.html
 [2]: https://dirvine.github.io/data_chain/master/data_chain/block/struct.Block.html

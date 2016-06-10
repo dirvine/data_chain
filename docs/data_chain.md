@@ -1,3 +1,4 @@
+DEPRICATED - PLEASE SEE [RFC] INSTEAD
 # DataChain's
 
 A data structure that may be cryptographically proven to contain valid data that has been secured
@@ -315,4 +316,4 @@ such cases the larger nodes should receive a proportion of any reward for doing 
 doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed
 across groups as described above.
 
-
+[RFC]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md
