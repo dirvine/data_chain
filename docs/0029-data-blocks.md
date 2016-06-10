@@ -26,12 +26,28 @@ data available is obviously required where we have large amounts of data to main
 advantage is the ability for such a network to recover from a full system outage (full network
 collapse, worldwide power outage etc.).
 
-Another very useful "side effect" of data republish is in network upgrades. As long as two versions
-of nodes have the ability to accept and store such data then even incompatible upgrades may be an
-option, that was not previously possible. This component requires some further research, but would
-appear to offer a significant advantage.
 
 # Detailed design
+
+## Data covered by a data chain
+
+Nodes in a decentralised network may have many common groups (log2(n) - 1, actually, where n =
+address size in bits). These common groups will each hold exponentially less data than the closest
+group. This proposal is aimed at only the closest group to a node. This means any data that can be
+validated by a majority of the current nodes close peers will be considered valid to push into the
+chain. As a chain will be transferable (with the data) it will not have an identifier of any
+particular address. Instead the identifiers for the groups will appear somewhat arbitrary,
+
+In fact the link identifiers to identify the group will not in fact identify any address in
+particular, at least in relation to the data space covered by the chain. This seems
+counter-intuitive, but is in fact important. What concerns us in this design is that at least all
+group members agree on something that they can sign to attest to this group having existed on the
+network and in a manner they all agree on. To achieve this we again use `xor` and as described
+below the identifier for links is merely the xor of all group members in relations to individual
+nodes and not any data item itself.
+
+This will no doubt cause confusion to the reader, but it is assumed that this will become apparent
+as the design unfolds below.
 
 ## BlockDentifier
 
@@ -107,15 +123,45 @@ though others do not remain this node does believe the chain, but cannot prove i
 2. A chain may contain an older link that is validate-able as there is a common link in a current
 held chain and the published one. The published chain may hold data after this point that cannot be
 validated, however the data up to the point of a common link (a link that holds enough common nodes
-to provide a majority against a link we already know in our own chain). This phenomenon allows even
-older data than we know to be collected and increase the length of the current chain. This allows
-the adding of "history" to an existing chain.
+to provide a majority against a link we already know in our own chain) can be proven valid. This
+phenomenon allows even older data than we know to be collected and increase the length of the
+current chain. This allows the adding of "history" to an existing chain.
 
 
 
 ## Routing requirements
 
+1. A node address will be a cryptographic signing key.
 
+2. A node will attempt to join a previous group with the last known key. It will not though, join
+the routing table at that stage. Routing will ask the upper layer (vaults in this case) if that
+node is acceptable. While this process is taking place this joining node will be added to a list of
+nodes attempting to join. If vaults agree the node is OK then routing will add this node to the
+routing table.
+
+3. If vaults reject a node, then it will follow the normal joining process (secure join)
+
+## Vault requirements
+
+1. A vault will allow majority - 1 nodes to join via the mechanism above.
+
+2. On receiving a join request for a node (from routing), vaults will request the nodes `DataChain`
+
+3. If this nodes `DataChain` is longer than an existing majority - 1 nodes, then nodes query the
+joining node for data from the chain and then it is allowed to join.
+
+4. All nodes that can hold a lot of data will try and build their data chain from existing nodes
+holding such data (`Archive Nodes`). This data is transferred with the lowest priority.
+
+5. On a churn even a node that is off line for a period may find on restart an existing node did
+build a chain and now this restarting node has to join another group to begin the process again of
+building a data chain.
+
+Nodes will build their chains to become more valuable to the network and therefore earn more
+safecoin. This process will encourage high capability nodes to spread evenly across the network.
+
+Lower capability nodes will not attempt to build data history and will therefore have less earning
+potential. This is perfectly good though and possibly a requirement of such a network.
 
 
 ##When the network is growing
@@ -129,27 +175,6 @@ The data_block entries are allowed to be outwith the current close_group.
 
 On receipt of a Refresh message that contains a DataBlock, the receiving node will confirm each
 item the list of data names and types (DataIdentifier) are in it's close_group.
-
-##Prevention of injection attacks
-
-To prevent such data being simply created in an off-line attack. To prevent this, the node must
-have existed in the network and be able to prove this. This does not completely prevent off-line
-attacks, but certainly makes them significantly more difficult and increasingly so as the network
-grows.
-
-Each Refresh message received from a node is signed by that node to the claimant node. These
-refresh messages
-
-In network restarts there exists a window of opportunity for an injection attack. This is a case
-where invalid SD in particular could be injected. To prevent this the StructuredData refresh
-message must include the hash of the StructuredData element.
-
-####Node memory
-
-Each node id added to the routing table should be "remembered" by all nodes that see this node.
-These remembered NodeId's will allow nodes to tie up refresh message node Id's with those found in
-the `DataBlock` These "previously seen" nodes should be written to the nodes cache file for later
-proof.
 
 
 ###Network "difficulty"
