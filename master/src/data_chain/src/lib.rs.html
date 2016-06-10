@@ -308,6 +308,22 @@
 <span id="264">264</span>
 <span id="265">265</span>
 <span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -412,9 +428,9 @@
 <span class='doccomment'>//!    let identifier1 = BlockIdentifier::Link(link_desc1);</span>
 <span class='doccomment'>//!    let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
 <span class='doccomment'>//!    let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd1name&quot;));</span>
+<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd1name&quot;), 0, false);</span>
 <span class='doccomment'>//!    let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd2name&quot;));</span>
+<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd2name&quot;), 1, true);</span>
 <span class='doccomment'>//!    assert!(identifier1 != id_ident);</span>
 <span class='doccomment'>//!    assert!(identifier1 != sd1_ident);</span>
 <span class='doccomment'>//!    assert!(id_ident != sd1_ident);</span>
@@ -506,11 +522,27 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Panics</span>
 <span class='doccomment'>//!</span>
+<span class='doccomment'>//! In the `DataChain` there are some methods that may panic if invalid range is provided</span>
+<span class='doccomment'>//! to an index position (slice). These are</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! If index is beyond length of chain</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)</span>
+<span class='doccomment'>//! [split_off()](../data_chain/data_chain/struct.DataChain.html#method.split_off)</span>
+<span class='doccomment'>//! [split_at()](../data_chain/data_chain/struct.DataChain.html#method.split_at)</span>
+<span class='doccomment'>//! [split_at_mut()](../data_chain/data_chain/struct.DataChain.html#method.split_at_mut)</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! If attept to push onto a chain longer than usize</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! [push()](../data_chain/data_chain/struct.DataChain.html#method.push)</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Errors</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! A chain is usize in length. Passing from 32 -&gt; 64 bit machine may cause an ooverflow error.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Safety</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!</span>
+<span class='doccomment'>//! There is no use of unsafe blocks.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! # Aborts</span>
 <span class='doccomment'>//!</span>
