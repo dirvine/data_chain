@@ -62,10 +62,9 @@
 //! of a network. It is not well enough understoof the validity of this action, but it may prove
 //! valuable in the event of network restarts.
 //! Please also see [github repository][1],
-//! [overview][2] and
-//! [RFC][3] - to be added
+//! and
+//! [RFC][3]
 //! [1]: https://github.com/dirvine/data_chain/tree/master
-//! [2]: https://github.com/dirvine/data_chain/blob/master/docs/data_chain.md
 //! [3]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md
 
 #![doc(html_logo_url =
