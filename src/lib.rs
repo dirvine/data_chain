@@ -69,7 +69,7 @@
 //!
 //! Basic usage:
 //!
-//!```rust
+//! ```rust
 //!
 //!    extern crate sodiumoxide;
 //!    extern crate data_chain;
@@ -191,7 +191,7 @@
 //!    assert_eq!(chain.valid_len(), 2);
 //!  }
 //!
-//!```
+//! ```
 //!
 //! # Panics
 //!
@@ -264,5 +264,3 @@ pub use node_block::{NodeBlock, create_link_descriptor};
 pub use block_identifier::BlockIdentifier;
 
 pub use data_chain::DataChain;
-
-

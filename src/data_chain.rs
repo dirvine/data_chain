@@ -69,168 +69,174 @@ impl DataChain {
 
     /// Add a nodeblock received from a peer
     /// Uses  `lazy accumulation`
-	/// If block becomes or is valid, then it is returned
-	pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
-		if !block.validate() {
-			return None;
-		}
-		let len; // first link in chain must be considered valid, we are creating this.
-		{
-			len = self.len();
-		}
-		{
-			let mut iter = self.chain.iter_mut().rev().multipeek();
-			'outer: while let Some(blk) = iter.next() {
-				// just get first
-				if blk.identifier() == block.identifier() {
-					if len == 1 {
-						let _ = blk.add_proof(block.proof().clone());
-						return None;
-					}
-					// in this case we have encountered a possible duplicate link
-					// (group) go for new link
-					if blk.identifier().is_link() && Self::link_locked(blk) {
-						blk.valid = true;
-						continue;
-					}
-					while let Some(link) = iter.peek() {
+    /// If block becomes or is valid, then it is returned
+    pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
+        if !block.validate() {
+            return None;
+        }
+        let len; // first link in chain must be considered valid, we are creating this.
+        {
+            len = self.len();
+        }
+        {
+            let mut iter = self.chain.iter_mut().rev().multipeek();
+            'outer: while let Some(blk) = iter.next() {
+                // just get first
+                if blk.identifier() == block.identifier() {
+                    if len == 1 {
+                        let _ = blk.add_proof(block.proof().clone());
+                        return None;
+                    }
+                    // in this case we have encountered a possible duplicate link
+                    // (group) go for new link
+                    if blk.identifier().is_link() && Self::link_locked(blk) {
+                        blk.valid = true;
+                        continue;
+                    }
+                    while let Some(link) = iter.peek() {
 
-						if link.identifier().is_link()
-							// && link.valid
-						{
+                        if link.identifier().is_link()
+                        // && link.valid
+                        {
 
-							// Do not allow blocks to be longer than previous valid link
-							// if link is locked
-							if blk.proof().len() >
-								if Self::link_locked(link) {
-									link.proof().len()
-								} else {
-									0
-								} {
-									continue 'outer;
-								} // again a duplicate
-							let _ = blk.add_proof(block.proof().clone());
-							if Self::validate_block_with_proof(blk, link) {
-								// we have the last good link
-								blk.valid = true;
-								break;
-							} else {
-								return None;
-							}
-						}
-					}
-					return Some(blk.identifier().clone());
-				}
-			}
-		}
-		if let Ok(blk) = Block::new(block) {
-			self.chain.push(blk);
-		}
-		None
+                            // Do not allow blocks to be longer than previous valid link
+                            // if link is locked
+                            if blk.proof().len() >
+                               if Self::link_locked(link) {
+                                link.proof().len()
+                            } else {
+                                0
+                            } {
+                                continue 'outer;
+                            } // again a duplicate
+                            let _ = blk.add_proof(block.proof().clone());
+                            if Self::validate_block_with_proof(blk, link) {
+                                // we have the last good link
+                                blk.valid = true;
+                                break;
+                            } else {
+                                return None;
+                            }
+                        }
+                    }
+                    return Some(blk.identifier().clone());
+                }
+            }
+        }
+        if let Ok(blk) = Block::new(block) {
+            self.chain.push(blk);
+        }
+        None
 
-	}
+    }
 
-	/// find a block (user required to test for validity)
+    /// find a block (user required to test for validity)
     pub fn find(&self, block_identifier: &BlockIdentifier) -> Option<&Block> {
-		self.chain.iter().find(|x| x.identifier() == block_identifier)
-	}
+        self.chain.iter().find(|x| x.identifier() == block_identifier)
+    }
 
-	/// Extract slice containing entire chain
- 	pub fn as_slice(&self) -> &[Block] {
-		self.chain.as_slice()
-	}
+    /// Extract slice containing entire chain
+    pub fn as_slice(&self) -> &[Block] {
+        self.chain.as_slice()
+    }
 
-	/// Extract mutable slice containing entire chain
- 	pub fn as_mut_slice(&mut self) -> &[Block] {
-		self.chain.as_mut_slice()
-	}
+    /// Extract mutable slice containing entire chain
+    pub fn as_mut_slice(&mut self) -> &[Block] {
+        self.chain.as_mut_slice()
+    }
 
-	/// Remove a block, will ignore Links
+    /// Remove a block, will ignore Links
     pub fn remove(&mut self, data_id: &BlockIdentifier) {
         self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
 
     }
 
-	/// Clear chain
-	pub fn clear(&mut self) {
-		self.chain.clear()
-	}
+    /// Clear chain
+    pub fn clear(&mut self) {
+        self.chain.clear()
+    }
 
-	/// Check if chain contains a particular identifier
+    /// Check if chain contains a particular identifier
     pub fn contains(&self, block_identifier: &BlockIdentifier) -> bool {
-		self.chain.iter().find(|x| x.identifier() == block_identifier).is_some()
-	}
+        self.chain.iter().find(|x| x.identifier() == block_identifier).is_some()
+    }
 
-	/// Return position of block identifier
-	pub fn position(&self, block_identifier: &BlockIdentifier) -> Option<usize> {
-		self.chain.iter().position(|x| x.identifier() == block_identifier)
-	}
+    /// Return position of block identifier
+    pub fn position(&self, block_identifier: &BlockIdentifier) -> Option<usize> {
+        self.chain.iter().position(|x| x.identifier() == block_identifier)
+    }
 
-	/// Inserts an element at position index within the chain, shifting all elements
-	/// after it to the right.
-	/// Will not validate this block!
-	/// # Panics
-	///
-	/// Panics if index is greater than the chains's length.
-	pub fn insert(&mut self, index: usize, block: Block) {
-		self.chain.insert(index, block)
-	}
-
-    /// Returns an iterator over subslices separated by elements that match pred.
-	/// The matched element is not contained in the subslices.
-	pub fn split<F>(&self, pred: F) -> Split<Block, F>
-                    where F: FnMut(&Block) -> bool {
-		self.chain.split(pred)
-	}
+    /// Inserts an element at position index within the chain, shifting all elements
+    /// after it to the right.
+    /// Will not validate this block!
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains's length.
+    pub fn insert(&mut self, index: usize, block: Block) {
+        self.chain.insert(index, block)
+    }
 
     /// Returns an iterator over subslices separated by elements that match pred.
-	/// The matched element is not contained in the subslices.
-	pub fn split_mut<F>(&mut self, pred: F) -> SplitMut<Block, F>
-                    where F: FnMut(&Block) -> bool {
-		self.chain.split_mut(pred)
-	}
+    /// The matched element is not contained in the subslices.
+    pub fn split<F>(&self, pred: F) -> Split<Block, F>
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.split(pred)
+    }
 
-	/// Returns an iterator over subslices separated by elements that match pred,
-	/// limited to returning at most n items. The matched element is not contained in the subslices.
+    /// Returns an iterator over subslices separated by elements that match pred.
+    /// The matched element is not contained in the subslices.
+    pub fn split_mut<F>(&mut self, pred: F) -> SplitMut<Block, F>
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.split_mut(pred)
+    }
+
+    /// Returns an iterator over subslices separated by elements that match pred,
+    /// limited to returning at most n items. The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
-	pub fn splitn<F>(&self, n: usize, pred: F) -> SplitN<Block, F>
-                    where F: FnMut(&Block) -> bool {
-		self.chain.splitn(n, pred)
-	}
+    pub fn splitn<F>(&self, n: usize, pred: F) -> SplitN<Block, F>
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.splitn(n, pred)
+    }
 
-	/// Returns an iterator over subslices separated by elements that match pred,
-	/// limited to returning at most n items. The matched element is not contained in the subslices.
+    /// Returns an iterator over subslices separated by elements that match pred,
+    /// limited to returning at most n items. The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
-	pub fn splitn_mut<F>(&mut self, n: usize, pred: F) -> SplitNMut<Block, F>
-                    where F: FnMut(&Block) -> bool {
-		self.chain.splitn_mut(n, pred)
-	}
+    pub fn splitn_mut<F>(&mut self, n: usize, pred: F) -> SplitNMut<Block, F>
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.splitn_mut(n, pred)
+    }
 
-	/// Splits the chain into two at the given index.
-	/// Returns a newly allocated Self. chain contains elements [0, at), and the returned
-	/// chain contains elements [at, len).
-	/// Note that the capacity of chain does not change.]]
-	pub fn split_off(&mut self, at: usize) -> Vec<Block> {
-		self.chain.split_off(at)
-	}
+    /// Splits the chain into two at the given index.
+    /// Returns a newly allocated Self. chain contains elements [0, at), and the returned
+    /// chain contains elements [at, len).
+    /// Note that the capacity of chain does not change.]]
+    pub fn split_off(&mut self, at: usize) -> Vec<Block> {
+        self.chain.split_off(at)
+    }
 
     /// Returns an iterator over subslices separated by elements that match pred limited to
-	/// returning at most n items. This starts at the end of the slice and works backwards.
-	/// The matched element is not contained in the subslices.
-	/// The last element returned, if any, will contain the remainder of the slice.
+    /// returning at most n items. This starts at the end of the slice and works backwards.
+    /// The matched element is not contained in the subslices.
+    /// The last element returned, if any, will contain the remainder of the slice.
     pub fn rsplitn<F>(&self, n: usize, pred: F) -> RSplitN<Block, F>
-	where F: FnMut(&Block) -> bool {
-		self.chain.rsplitn(n, pred)
-	}
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.rsplitn(n, pred)
+    }
 
-	/// Returns an iterator over subslices separated by elements that match pred limited to
-	/// returning at most n items. This starts at the end of the slice and works backwards.
-	/// The matched element is not contained in the subslices.
-	/// The last element returned, if any, will contain the remainder of the slice.
+    /// Returns an iterator over subslices separated by elements that match pred limited to
+    /// returning at most n items. This starts at the end of the slice and works backwards.
+    /// The matched element is not contained in the subslices.
+    /// The last element returned, if any, will contain the remainder of the slice.
     pub fn rsplitn_mut<F>(&mut self, n: usize, pred: F) -> RSplitNMut<Block, F>
-	where F: FnMut(&Block) -> bool {
-		self.chain.rsplitn_mut(n, pred)
-	}
+        where F: FnMut(&Block) -> bool
+    {
+        self.chain.rsplitn_mut(n, pred)
+    }
 
 
     // is link descriptor equal to all public keys xored together
@@ -318,7 +324,7 @@ impl DataChain {
             .cloned()
             .find(|x| x.identifier().is_link()) {
             for block in self.chain.iter_mut() {
-				block.remove_invalid_signatures();
+                block.remove_invalid_signatures();
                 if Self::validate_block_with_proof(block, &mut first_link) {
                     block.valid = true;
                     if block.identifier().is_link() {

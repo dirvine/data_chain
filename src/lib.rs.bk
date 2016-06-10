@@ -23,36 +23,198 @@
 // and limitations
 // relating to use of the SAFE Network Software.
 
-//! #data_blocks
+//! #data_chain
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!
-//! This crate assumes these objects below are relevent to `close_groups` this allows integrity
-//! check of the `DataChain` in so far as it will hold valid data identifiers agreed by this group
-//! & all groups since the group/network started.
+//! A chain may look like
 //!
-//! These chains allow nodes to become `archive nodes` on a network and also ensure data integrity
-//! AS LONG AS the data identifiers hold a validating element such as hash of the data itself.
+//! ```norun
+//! `link` - all current group members - cryptographically secured as valid
 //!
-//! Another purpose of these chains is to allow network restarts with valid data. Obviously this
-//! means the network nodes will have to tr and restart as the last known ID they had. Vaults
-//! will require to accept or reject such nodes in normal operation. On network restart though
-//! these nodes may be allowed to join a group if they can present a `DataChain` that appears
-//! healthy, even if there is not yet enough consensus to `trust` the data iself just yet.
-//! additional nodes will also join this group and hopefully confirm the data integrity is agreed
-//! as the last `Block` should contain a majorit of existing group members that have signed.
+//!  data - DataIdentifiers interspersed in a chain of links
 //!
-//! Nodes do no require to become `Archive nodes` if they have limited bandwidth or disk space, but
-//! they are still valuable as transient nodes which may deliver data stored whle they are in the
-//! group. Such nodes may only be involved in consensus and routing stability messages, returning
-//! a `Nack` to any `Get` request  due to upstream bandwidth limitations.
+//!  data - each block signed by a majority of previous link
 //!
-//! Several enhancement can be made to this scheme with a much deper investigation into any
-//! attack vectors. Such as
+//!  ....
+//!
+//! `link` - As churn events occur new links are created
+//!
+//! `link` - each link will have a majority
+//!          (usually n - 1 actually) members of previous link
+//! ```
+//!
+//!  The chain, when presented to the current close group (the group identified in last link)
+//!  can be validated as holding data that has been agreed by the network over time to exist,
+//!  A chain provides cryptographic proofs of data and group memberships over time.
+//!
+//! The link is a group agreement chain component which is created by sorting the closest nodes
+//! to a network node (Address) and sending this hash, signed to that node.
+//! The recipient will then receive these, `NodeBlocks` and create the chain link.
+//! This link will allow the agreed members of the group so sign `DataBlocks` for the chain
+//! If a majority of the link members sign the data, it is validly in the chain.
+//! On group membership changes, a new link is constructed in the chain and the process repeats.
+//! A chain can split and nodes will maintain several chains, dependent on data overlaps with
+//! the chains links.
+//! The link identifier is the hash of all group members that contains the current node.
+//!
+//! Containers of Chain Links only may also be maintained in groups to prove historic memberships
+//! of a network. It is not well enough understoof the validity of this action, but it may prove
+//! valuable in the event of network restarts.
+//! Please also see [github repository][1],
+//! and
+//! [RFC][3]
+//!
+//! # Examples
+//!
+//! Basic usage:
+//!
+//!```rust
+//!
+//!    extern crate sodiumoxide;
+//!    extern crate data_chain;
+//!    extern crate itertools;
+//!
+//!  fn main() {
+//!    use sodiumoxide::crypto;
+//!    use sodiumoxide::crypto::hash::sha256;
+//!    use itertools::Itertools;
+//!    use data_chain::{NodeBlock, BlockIdentifier, DataChain, create_link_descriptor};
+//!
+//!
+//!    ::sodiumoxide::init();
+//!    let keys = (0..50)
+//!        .map(|_| crypto::sign::gen_keypair())
+//!        .collect_vec();
+//!    // ########################################################################################
+//!    // create groups of keys to resemble close_groups
+//!    // ########################################################################################
+//!    let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
+//!    let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
+//!    let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
+//!    assert!(pub1 != pub2);
+//!    assert!(pub1 != pub3);
+//!    assert!(pub1.len() == 3);
+//!    assert!(pub2.len() == 3);
+//!    assert!(pub3.len() == 3);
+//!    let link_desc1 = create_link_descriptor(&pub1[..]);
+//!    let identifier1 = BlockIdentifier::Link(link_desc1);
+//!    let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
+//!    let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
+//!                                                    sha256::hash(b"sd1name"));
+//!    let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
+//!                                                    sha256::hash(b"sd2name"));
+//!    assert!(identifier1 != id_ident);
+//!    assert!(identifier1 != sd1_ident);
+//!    assert!(id_ident != sd1_ident);
+//!    assert!(sd1_ident != sd2_ident);
+//!    // ########################################################################################
+//!    // Create NodeBlocks, these are what nodes send to each other
+//!    // Here they are all links only. For Put Delete Post
+//!    // these would be Identifiers for the data types that includes a hash of the serialised data
+//!    // ########################################################################################
+//!    let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
+//!    let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
+//!    let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
+//!    let sd1_1 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
+//!    // here we need to add 2_1 again as 2_1 will be purged as part of test later on
+//!    let sd1_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
+//!    let sd1_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
+//!    let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
+//!    let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, id_ident);
+//!    let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
+//!    let id_2 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident.clone()); // fail w/wrong keys
+//!    let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, sd1_ident); // fail w/wrong keys
+//!    // #################### Create chain ########################
+//!    let mut chain = DataChain::default();
+//!    assert!(chain.is_empty());
+//!    // ############# start adding link #####################
+//!    assert!(chain.add_node_block(link1_1.unwrap()).is_none());
+//!    assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+//!    assert_eq!(chain.len(), 1);
+//!    assert!(chain.add_node_block(link1_2.unwrap()).is_none());
+//!    assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+//!    assert_eq!(chain.len(), 1);
+//!    assert!(chain.add_node_block(link1_3.unwrap()).is_none());
+//!    assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+//!    assert_eq!(chain.len(), 1);
+//!    // ########################################################################################
+//!    // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
+//!    // ########################################################################################
+//!    assert!(chain.validate_ownership(&pub1));
+//!    assert!(!chain.validate_ownership(&pub3));
+//!    assert_eq!(chain.len(), 1);
+//!    assert_eq!(chain.blocks_len(), 0);
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
+//!    // ########################################################################################
+//!    // Ading a link block will not increase length of chain links as it's not yet valid
+//!    // ########################################################################################
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert_eq!(chain.len(), 2); // contains an invalid link for now
+//!    assert_eq!(chain.valid_len(), 1);
+//!    assert!(chain.add_node_block(sd1_1_again_1.unwrap()).is_none()); // re-add 2.1
+//!    // ########################################################################################
+//!    // The call below will prune 2_1 as it is a new link without majority agreement
+//!    // ########################################################################################
+//!    assert!(chain.validate_ownership(&pub2));
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert!(chain.add_node_block(sd1_1_again_2.unwrap()).is_none()); // re-add 2.1
+//!    assert!(chain.add_node_block(sd1_2.unwrap()).is_some()); // majority reached here
+//!    assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert_eq!(chain.blocks_len(), 1);
+//!    assert_eq!(chain.len(), 2);
+//!    assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+//!    assert!(chain.validate_ownership(&pub2));
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert_eq!(chain.blocks_len(), 1);
+//!    assert_eq!(chain.len(), 2);
+//!    // the call below will not add any links
+//!    let id1 = id_1.unwrap();
+//!    assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature
+//!    assert!(chain.add_node_block(id_3.unwrap()).is_none()); // will not get majority
+//!    assert!(chain.add_node_block(id_2.unwrap()).is_none());
+//!    assert_eq!(chain.links_len(), 1);
+//!    assert_eq!(chain.blocks_len(), 1);
+//!    assert_eq!(chain.len(), 3);
+//!    chain.prune();
+//!    assert_eq!(chain.len(), 2);
+//!    assert_eq!(chain.valid_len(), 2);
+//!    assert!(chain.add_node_block(id1.clone()).is_none());
+//!    assert_eq!(chain.len(), 3);
+//!    assert_eq!(chain.valid_len(), 2);
+//!    chain.remove(id1.identifier());
+//!    assert_eq!(chain.len(), 2);
+//!    assert!(chain.add_node_block(id1.clone()).is_none());
+//!    assert_eq!(chain.len(), 3);
+//!    assert_eq!(chain.valid_len(), 2);
+//!  }
+//!
+//!```
+//!
+//! # Panics
+//!
+//! # Errors
+//!
+//! # Safety
+//!
+//!
+//!
+//! # Aborts
+//!
+//! There are no aborts in this crate.
+//!
+//! # Undefined Behaviour
+//!
+//! None known of.
+//! [1]: https://github.com/dirvine/data_chain/tree/master
+//! [3]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md
+
 #![doc(html_logo_url =
            "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
        html_favicon_url = "http://maidsafe.net/img/favicon.ico",
-       html_root_url = "http://dirvine.github.io/data_blocks")]
+       html_root_url = "http://dirvine.github.io/data_chain")]
 
 // For explanation of lint checks, run `rustc -W help` or see
 // https://github.com/maidsafe/QA/blob/master/Documentation/Rust%20Lint%20Checks.md
@@ -71,420 +233,36 @@
 
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
-#![cfg_attr(feature="clippy", deny(clippyclippy_pedantic))]
+#![cfg_attr(feature="clippy", deny(clippy_pedantic))]
 #![cfg_attr(feature="clippy", allow(use_debug))]
 
 extern crate sodiumoxide;
 extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
-#[cfg(test)]
 extern crate itertools;
-extern crate rayon;
+// extern crate rayon;
 
-use std::collections::HashMap;
-use sodiumoxide::crypto;
-// use sodiumoxide::crypto::hash;
-use sodiumoxide::crypto::hash::sha256::Digest;
-use sodiumoxide::crypto::hash::sha256;
-use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
-use maidsafe_utilities::serialisation;
-use rayon::prelude::*;
+/// Error types for this crate
+pub mod error;
 
-const GROUP_SIZE: usize = 8;
+/// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or
+/// links
+pub mod block;
 
-/// Error types.
-///
-/// Hopefully sodiumoxide eventually defines errors properly, otherwise this makes little sense.
-#[allow(missing_docs)]
-#[derive(Debug)]
-pub enum Error {
-    Serialisation(serialisation::SerialisationError),
-    Crypto,
-    Validation,
-    Signature,
-    Majority,
-}
+/// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
+pub mod data_chain;
 
-impl From<serialisation::SerialisationError> for Error {
-    fn from(orig_error: serialisation::SerialisationError) -> Self {
-        Error::Serialisation(orig_error)
-    }
-}
+/// A node block is a partial block, sent by group members to each other to create a `Block`
+pub mod node_block;
 
-impl From<()> for Error {
-    fn from(_: ()) -> Self {
-        Error::Crypto
-    }
-}
+/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
+pub mod block_identifier;
 
-/// Dummy data identifiers for this crate
-#[allow(missing_docs)]
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub enum BlockIdentifier {
-    Type1(u64),
-    Type2(u64),
-    Link(Digest), // hash of group (all current close group id's)
-}
+pub use node_block::{NodeBlock, create_link_descriptor};
 
+pub use block_identifier::BlockIdentifier;
 
-impl BlockIdentifier {
-    /// Define a name getter as data identifiers may contain more info that does
-    /// not change the name (such as with structured data and versions etc.)
-    /// In this module we do not care about other info and any validation is outwith this area
-    /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn name(&self) -> Option<u64> {
-        match *self {
-            BlockIdentifier::Type1(name) => Some(name),
-            BlockIdentifier::Type2(name) => Some(name),
-            BlockIdentifier::Link(_) => None, // links do not have names
-        }
-    }
+pub use data_chain::DataChain;
 
-    /// Create a new chain link
-    /// All group members should do this on each churn event
-    /// All group members should also agree on the exact same members
-    pub fn link(&mut self, group_ids: &mut [PublicKey]) -> Result<BlockIdentifier, Error> {
-        let sorted = group_ids.sort();
-        let serialised = try!(serialisation::serialise(&sorted));
-        Ok(BlockIdentifier::Link(sha256::hash(&serialised)))
-    }
-}
 
-/// Sent by any group member when data is `Put`, `Post` or `Delete` in this group
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub struct NodeBlock {
-    identifier: BlockIdentifier,
-    proof: (PublicKey, Signature),
-}
-
-impl NodeBlock {
-    /// Create a Block (used by nodes in network to send to holders of `DataChains`)
-    pub fn new(pub_key: &PublicKey,
-               secret_key: &SecretKey,
-               data_identifier: BlockIdentifier)
-               -> Result<NodeBlock, Error> {
-        let signature =
-            crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
-                                        secret_key);
-
-        Ok(NodeBlock {
-            identifier: data_identifier,
-            proof: (pub_key.clone(), signature),
-        })
-
-    }
-}
-
-/// The link is ordered
-/// Block signatures are placed in the appropriate slot of the array
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
-pub enum Proof {
-    Link([Option<(PublicKey, Signature)>; GROUP_SIZE]),
-    Block([Option<Signature>; GROUP_SIZE]),
-}
-
-/// Used to validate chain `linksi`.
-/// On a network churn event the latest `Block` is copied from the chain and sent
-/// To new node. The `lost Nodes` signature is removed. The new node receives this - signs a
-/// `NodeBlock  for this `BlockIdentifier` and returns it to the `archive node`
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
-pub struct Block {
-    identifier: BlockIdentifier,
-    proof: Proof,
-}
-
-impl Block {
-    /// construct a block
-    pub fn new(data_id: BlockIdentifier) -> Block {
-        match data_id {
-            BlockIdentifier::Link(_) => {
-                Block {
-                    identifier: data_id,
-                    proof: Proof::Link([None; GROUP_SIZE]),
-                }
-            }
-            _ => {
-                Block {
-                    identifier: data_id,
-                    proof: Proof::Block([None; GROUP_SIZE]),
-                }
-            }
-
-        }
-    }
-
-    /// name of block is name of identifier
-    pub fn name(&self) -> Option<u64> {
-        self.identifier.name()
-    }
-
-    /// Get the identifier
-    pub fn identifier(&self) -> &BlockIdentifier {
-        &self.identifier
-    }
-
-   // /// Add a NodeBlock (i.e. after accumulation there could be slow nodes)
-   //pub fn add_node(&mut self, public_key: PublicKey, signature: Signature) -> Result<(), Error> {
-   //
-   //     let data = try!(serialisation::serialise(&self.identifier));
-   //     if crypto::sign::verify_detached(&signature, &data[..], &public_key) {
-   //         // let _ = self.proof.insert(public_key, signature);
-   //         Ok(())
-   //     } else {
-   //         return Err(Error::Signature);
-   //     }
-   // }
-}
-
-/// Created by holder of chain, can be passed to others as proof of data held.
-/// This object is verifiable if :
-/// The last validation contains the majority of current close group
-/// OR on network restart the nodes all must try and restart on
-/// previous names. They can continue any validation of the holder of a chain.
-/// This requires nodes to always restart as last ID and if there was no restart they are rejected
-/// at vault level.
-/// If there was a restart then the nodes should validate and continue.
-/// N:B this means all nodes can use a named directory for data_store and clear if they restart
-/// as a new id. This allows cleanup of old data_cache directories.
-#[derive(RustcEncodable, RustcDecodable)]
-pub struct DataChain {
-    chain: Vec<Block>,
-    group_size: u64,
-}
-
-impl DataChain {
-    /// Create a new chain with no elements yet.
-    pub fn new(group_size: u64) -> DataChain {
-        DataChain {
-            chain: Vec::new(),
-            group_size: group_size,
-        }
-    }
-    /// Nodes always validate a chain before accepting it
-    pub fn validate(&mut self) -> Result<(), Error> {
-        if self.chain.is_empty() {
-            return Ok(());
-        }
-        Ok(try!(self.validate_majorities().and(self.validate_signatures())))
-    }
-
-    /// Size of close group (maximum proof size)
-    pub fn group_size(&self) -> u64 {
-        self.group_size
-    }
-
-    /// Add a Block to the chain
-    pub fn add_block(&mut self, data_block: Block) -> Result<(), Error> {
-        let data = try!(serialisation::serialise(&data_block.identifier));
-
-        if let Some(last) = self.chain.last() {
-            if !self.has_majority(last, &data_block) {
-                return Err(Error::Majority);
-            }
-        }
-
-        if !data_block.proof
-            .iter()
-            .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0)) {
-            return Err(Error::Signature);
-        }
-        // TODO Remove any old copies of this data from the chain. It should not happen though
-        self.chain.push(data_block);
-        Ok(())
-    }
-
-    /// number of non-deleted blocks
-    pub fn len(&self) -> usize {
-        self.chain.len()
-    }
-
-    /// Contains no blocks that are not deleted
-    pub fn empty(&self) -> bool {
-        self.chain.is_empty()
-    }
-
-    /// Delete a block (will not delete a link)
-    pub fn delete(&mut self, data_id: BlockIdentifier) {
-        match data_id {
-            BlockIdentifier::Link => {}
-            _ => self.chain.retain(|x| x != data_id),
-        }
-    }
-
-    /// Delete a block refered to by name
-    /// Will either remove a block as long as consensus would remain intact
-    /// Otherwise mark as deleted.
-    /// If block is in front of container (`.fisrt()`) then we delete that.
-    pub fn delete_name(&mut self, name: u64) {
-
-        self.chain.retain(|x| if let Some(y) = x.name() {
-            y != name
-        } else {
-            false
-        });
-    }
-
-    fn validate_majorities(&self) -> Result<(), Error> {
-        if self.chain
-            .iter()
-            .zip(self.chain.iter().skip(1))
-            .all(|block| self.has_majority(block.0, block.1)) {
-            Ok(())
-        } else {
-            Err(Error::Majority)
-        }
-    }
-
-    fn validate_signatures(&self) -> Result<(), Error> {
-        if self.chain
-            .iter()
-            .all(|x| {
-                if let Ok(data) = serialisation::serialise(&x.identifier) {
-                    x.proof
-                        .iter()
-                        .all(|v| crypto::sign::verify_detached(v.1, &data[..], v.0))
-                } else {
-                    false
-                }
-            }) {
-            Ok(())
-        } else {
-            Err(Error::Signature)
-        }
-    }
-
-    fn has_majority(&self, block0: &Block, block1: &Block) -> bool {
-        block1.proof.keys().filter(|k| block0.proof.contains_key(k)).count() as u64 * 2 >
-        self.group_size
-
-    }
-}
-
-
-
-#[cfg(test)]
-
-mod tests {
-    use super::*;
-    use sodiumoxide::crypto;
-    use itertools::Itertools;
-    use maidsafe_utilities::serialisation;
-    use std::time;
-
-    #[test]
-    fn simple_node_data_block_comparisons() {
-        let keys = crypto::sign::gen_keypair();
-        let test_data1 = BlockIdentifier::Type1(1u64);
-        let test_data2 = BlockIdentifier::Type1(1u64);
-        let test_data3 = BlockIdentifier::Type2(1u64);
-        let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
-        let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
-        let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
-        assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
-        assert!(test_node_data_block1 != test_node_data_block3.clone());
-        assert!(test_node_data_block2 != test_node_data_block3);
-
-    }
-
-    fn create_data_chain(count: u64) -> DataChain {
-        let group_size = 8;
-        let mut chain = DataChain::new(group_size);
-
-        let keys = (0..count + group_size)
-            .map(|_| crypto::sign::gen_keypair())
-            .collect_vec();
-
-
-
-
-        let data_blocks = (0..count)
-            .map(|x| {
-                let mut block = if x % 2 == 0 {
-                    Block::new(BlockIdentifier::Type1(x))
-                } else {
-                    Block::new(BlockIdentifier::Type2(x))
-                };
-                let data = serialisation::serialise(&block.identifier).expect("serialise fail");
-                for y in 0..group_size {
-                    let _ = block.add_node(keys[x as usize + y as usize].0,
-                                           crypto::sign::sign_detached(&data[..],
-                                                                       &keys[x as usize +
-                                                                             y as usize]
-                                                                           .1));
-                }
-                block
-            })
-            .collect_vec();
-
-        let now = time::Instant::now();
-
-        for i in data_blocks.iter() {
-            chain.add_block(i.clone()).expect("chain fill failed");
-        }
-        println!("Took {:?}.{:?} seconds to add {:?} blocks",
-                 now.elapsed().as_secs(),
-                 now.elapsed().subsec_nanos(),
-                 chain.len());
-        chain
-    }
-
-    #[test]
-    fn create_and_validate_chain() {
-        let count = 1000;
-        let mut chain = create_data_chain(count);
-
-        let now1 = time::Instant::now();
-        let _ = chain.validate().expect("validate failed");
-        println!("Took {:?}.{:?} seconds to validate  {:?} blocks",
-                 now1.elapsed().as_secs(),
-                 now1.elapsed().subsec_nanos(),
-                 count);
-
-    }
-
-
-    #[test]
-    fn delete_all_and_validate() {
-        let count = 100i64;
-        let mut chain = create_data_chain(count as u64);
-
-        assert_eq!(chain.len(), count as usize);
-        assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
-                   count as usize);
-
-        for i in 0..count {
-            let _ = chain.delete(i as u64);
-        }
-
-        // internally all entries there, but marked deleted (entry 0 removed)
-        assert_eq!(chain.chain.iter().map(|x| x.deleted).count(), 0);
-        assert_eq!(chain.len(), 0);
-        assert!(chain.empty());
-    }
-
-    #[test]
-    fn delete_rev_and_validate() {
-        let count = 100i64;
-        let mut chain = create_data_chain(count as u64);
-
-        assert_eq!(chain.len(), count as usize);
-        assert_eq!(chain.chain.iter().map(|x| !x.deleted).count(),
-                   count as usize);
-
-        for i in count..0 {
-            let _ = chain.delete(i as u64);
-        }
-        let _ = chain.delete(0);
-        // internally all entries there, but marked deleted (entry 0 removed)
-        assert_eq!(chain.chain.iter().map(|x| x.deleted).count() + 1,
-                   count as usize);
-        assert_eq!(chain.len() + 1, count as usize);
-        assert!(!chain.empty());
-        let _ = chain.validate().expect("validate failed");
-
-    }
-
-
-
-}
