@@ -35,13 +35,15 @@ appear to offer a significant advantage.
 
 ## BlockDentifier
 
-A [DataIdentifier][1] is simple enumeration that represents, either a `Data` item (`structuredData`
-or `ImmutableData`).  The other type that can be represented in the `enum` is a `Link`. A `Link`
-represents a valid group of nodes that is close to a point in the Xor address space. This point
-changes with respect to changing nodes around any node. The representation of the link address in
-the chain (which is not representative of the address of the data or the node) is the Xor of all
-the current close group members of the current node. All close group members will recognise the
-group of this node and this node will also know the close group of all of it's close nodes.
+A [BlockIdentifier][1] is simple enumeration that represents, either a `Data` item (`structuredData`
+or `ImmutableData`).
+
+The other type that can be represented in the `enum` is a `Link`. A `Link` represents a valid group
+of nodes that is close to a point in the Xor address space. This point changes with respect to
+changing nodes around any node. The representation of the link address in the chain (which is not
+representative of the address of the data or the node) is the Xor of all the current close group
+members of the current node. All close group members will recognise the group of this node and this
+node will also know the close group of all of it's close nodes.
 
 ## Block
 

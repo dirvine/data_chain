@@ -27,7 +27,7 @@
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
 //! data and not injected.
 //!
-//! A chain nay look like
+//! A chain may look like
 //!
 //! ```norun
 //! `link` - all current group members - cryptographically secured as valid
@@ -114,4 +114,4 @@ pub mod data_chain;
 pub mod node_block;
 
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
-mod block_identifier;
+pub mod block_identifier;
