@@ -148,7 +148,13 @@ impl DataChain {
     /// Remove a block, will ignore Links
     pub fn remove(&mut self, data_id: &BlockIdentifier) {
         self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
+    }
 
+	/// Remove a block, with a predicate
+    pub fn remove_with<F>(&mut self, pred: F)
+		where F: FnMut(&Block) -> bool
+		{
+        self.chain.retain(pred);
     }
 
     /// Clear chain
