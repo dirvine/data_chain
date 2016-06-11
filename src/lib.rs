@@ -201,13 +201,6 @@
 //! If index is beyond length of chain
 //!
 //! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)
-//! [split_off()](../data_chain/data_chain/struct.DataChain.html#method.split_off)
-//! [split_at()](../data_chain/data_chain/struct.DataChain.html#method.split_at)
-//! [split_at_mut()](../data_chain/data_chain/struct.DataChain.html#method.split_at_mut)
-//!
-//! If attept to push onto a chain longer than usize
-//!
-//! [push()](../data_chain/data_chain/struct.DataChain.html#method.push)
 //!
 //! # Errors
 //!
