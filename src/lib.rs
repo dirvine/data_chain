@@ -101,9 +101,9 @@
 //!    let identifier1 = BlockIdentifier::Link(link_desc1);
 //!    let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
 //!    let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
-//!                                                    sha256::hash(b"sd1name"), 0, false);
+//!                                                    sha256::hash(b"sd1name"), false);
 //!    let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
-//!                                                    sha256::hash(b"sd2name"), 1, true);
+//!                                                    sha256::hash(b"sd2name"), true);
 //!    assert!(identifier1 != id_ident);
 //!    assert!(identifier1 != sd1_ident);
 //!    assert!(id_ident != sd1_ident);
