@@ -78,6 +78,8 @@ If block becomes or is valid, then it is returned</p>
 <div class='docblock'><p>Extract mutable slice containing entire chain</p>
 </div><h4 id='method.remove' class='method'><code>fn <a href='#method.remove' class='fnname'>remove</a>(&amp;mut self, data_id: &amp;<a class='enum' href='../../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>)</code></h4>
 <div class='docblock'><p>Remove a block, will ignore Links</p>
+</div><h4 id='method.remove_with' class='method'><code>fn <a href='#method.remove_with' class='fnname'>remove_with</a>&lt;F&gt;(&amp;mut self, pred: F) <span class='where'>where F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(&amp;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></span></code></h4>
+<div class='docblock'><p>Remove a block, with a predicate</p>
 </div><h4 id='method.clear' class='method'><code>fn <a href='#method.clear' class='fnname'>clear</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Clear chain</p>
 </div><h4 id='method.contains' class='method'><code>fn <a href='#method.contains' class='fnname'>contains</a>(&amp;self, block_identifier: &amp;<a class='enum' href='../../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
