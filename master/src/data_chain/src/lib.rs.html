@@ -428,9 +428,9 @@
 <span class='doccomment'>//!    let identifier1 = BlockIdentifier::Link(link_desc1);</span>
 <span class='doccomment'>//!    let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
 <span class='doccomment'>//!    let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd1name&quot;), 0, false);</span>
+<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd1name&quot;), false);</span>
 <span class='doccomment'>//!    let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd2name&quot;), 1, true);</span>
+<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd2name&quot;), true);</span>
 <span class='doccomment'>//!    assert!(identifier1 != id_ident);</span>
 <span class='doccomment'>//!    assert!(identifier1 != sd1_ident);</span>
 <span class='doccomment'>//!    assert!(id_ident != sd1_ident);</span>
