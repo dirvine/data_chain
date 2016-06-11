@@ -195,9 +195,6 @@
 //!
 //! # Panics
 //!
-//! In the `DataChain` there are some methods that may panic if invalid range is provided
-//! to an index position (slice). These are
-//!
 //! If index is beyond length of chain
 //!
 //! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)
