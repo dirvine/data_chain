@@ -24,7 +24,6 @@
 // relating to use of the SAFE Network Software.
 
 
-use sodiumoxide::crypto::sign::{PublicKey, Signature};
 use sodiumoxide::crypto;
 use maidsafe_utilities::serialisation;
 use block_identifier::BlockIdentifier;
@@ -38,7 +37,7 @@ use error::Error;
 #[derive(Debug, RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct Block {
     identifier: BlockIdentifier,
-    proof: Vec<(PublicKey, Signature)>,
+    proof: Vec<NodeBlockProof>,
     pub valid: bool,
 }
 
@@ -49,7 +48,7 @@ impl Block {
             return Err(Error::Signature);
         }
         let mut vec = Vec::new();
-        vec.push((*node_block.proof().key(), *node_block.proof().sig()));
+        vec.push(NodeBlockProof::new(*node_block.proof().key(), *node_block.proof().sig()));
         Ok(Block {
             identifier: node_block.identifier().clone(),
             proof: vec,
@@ -62,7 +61,7 @@ impl Block {
         if !self.validate_proof(&proof) {
             return Err(Error::Signature);
         }
-        self.proof.push((*proof.key(), *proof.sig()));
+        self.proof.push(NodeBlockProof::new(*proof.key(), *proof.sig()));
         self.proof.sort();
         self.proof.dedup();
         Ok(())
@@ -85,7 +84,7 @@ impl Block {
         } else {
             return false;
         };
-        self.proof().iter().all(|x| crypto::sign::verify_detached(&x.1, &data[..], &x.0))
+        self.proof().iter().all(|x| crypto::sign::verify_detached(x.sig(), &data[..], x.key()))
     }
 
     /// Prune any bad signatures.
@@ -96,16 +95,16 @@ impl Block {
             self.proof.clear();
             return;
         };
-        self.proof.retain(|x| crypto::sign::verify_detached(&x.1, &data[..], &x.0));
+        self.proof.retain(|x| crypto::sign::verify_detached(&x.sig(), &data[..], &x.key()));
     }
 
     /// getter
-    pub fn proof(&self) -> &Vec<(PublicKey, Signature)> {
+    pub fn proof(&self) -> &Vec<NodeBlockProof> {
         &self.proof
     }
 
     /// getter
-    pub fn proof_mut(&mut self) -> &Vec<(PublicKey, Signature)> {
+    pub fn proof_mut(&mut self) -> &Vec<NodeBlockProof> {
         &self.proof
     }
 

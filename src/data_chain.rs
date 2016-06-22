@@ -59,7 +59,7 @@ impl DataChain {
         if let Some(last_link) = self.last_valid_link() {
             return (last_link.proof()
                 .iter()
-                .filter(|k| my_group.iter().any(|&z| PublicKey(z.0) == k.0))
+                .filter(|&k| my_group.iter().any(|&z| PublicKey(z.0) == *k.key()))
                 .count() * 2) > last_link.proof().len();
 
         } else {
@@ -251,7 +251,7 @@ impl DataChain {
             return false;
         }
 
-        let keys = link.proof().iter().map(|x| x.0).collect_vec();
+        let keys = link.proof().iter().cloned().map(|x| *x.key()).collect_vec();
         node_block::create_link_descriptor(&keys[..]) == link.identifier().hash().0
     }
 
@@ -348,8 +348,8 @@ impl DataChain {
     fn validate_block_with_proof(block: &Block, proof: &Block) -> bool {
         proof.proof()
             .iter()
-            .map(|x| x.0)
-            .filter(|&y| block.proof().iter().map(|z| z.0).any(|p| p == y))
+            .map(|x| x.key())
+            .filter(|&y| block.proof().iter().map(|z| z.key()).any(|p| p == y))
             .count() * 2 > proof.proof().len()
     }
 }

@@ -44,7 +44,7 @@ pub fn create_link_descriptor(group: &[PublicKey]) -> LinkDescriptor {
 
 
 /// Proof as provided by a close group member
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
+#[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Debug, Clone)]
 pub struct NodeBlockProof {
     key: PublicKey,
     sig: Signature,
