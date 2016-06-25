@@ -72,58 +72,73 @@ impl DataChain {
     /// If block becomes or is valid, then it is returned
     pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
         if !block.validate() {
+            println!("validate failed");
             return None;
         }
-        let len; // first link in chain must be considered valid, we are creating this.
+        let len;
         {
-            len = self.len();
+            len = self.chain.len();
+
+        if self.chain.is_empty() {
+            if let Ok(blk) = Block::new(block.clone()) {
+            println!("####### Start block #######");
+            self.chain.push(blk);
+            return None;
+            }
+        }
         }
         {
-            let mut iter = self.chain.iter_mut().rev().multipeek();
-            'outer: while let Some(blk) = iter.next() {
-                // just get first
-                if blk.identifier() == block.identifier() {
-                    if len == 1 {
-                        let _ = blk.add_proof(block.proof().clone());
-                        return None;
-                    }
-                    // in this case we have encountered a possible duplicate link
-                    // (group) go for new link
-                    if blk.identifier().is_link() && Self::link_locked(blk) {
-                        blk.valid = true;
-                        continue;
-                    }
-                    while let Some(link) = iter.peek() {
 
-                        if link.identifier().is_link()
-                        // && link.valid
-                        {
+            let iter = self.chain.iter_mut().into_rc();
+            let mut biter = iter.clone().filter(|x| x.identifier().is_block());
+            let mut liter = iter.clone().filter(|x| x.identifier().is_link());
+            let mut gliter = iter.clone().filter(|x| x.identifier().is_link() && x.valid);
 
-                            // Do not allow blocks to be longer than previous valid link
-                            // if link is locked
-                            if blk.proof().len() >
-                               if Self::link_locked(link) {
-                                link.proof().len()
-                            } else {
-                                0
-                            } {
-                                continue 'outer;
-                            } // again a duplicate
-                            let _ = blk.add_proof(block.proof().clone());
-                            if Self::validate_block_with_proof(blk, link) {
-                                // we have the last good link
-                                blk.valid = true;
-                                break;
-                            } else {
-                                return None;
-                            }
+            if block.identifier().is_link() {
+                while let Some(link) = liter.next() {
+                            println!("match");
+                    if link.identifier() == block.identifier() {
+                        if link.proof().iter().any(|x| x.key() == block.proof().key()) {
+                            return None;
+                        }
+
+                        let _ = link.add_proof(block.proof().clone());
+                        println!("blk length {:?}", link.proof().len());
+
+                        if len == 1 ||
+                            gliter.filter(|x| x.identifier() != link.identifier())
+                            .inspect(|x| println!("block iter {:?}", x))
+                                  .any(|y|  Self::validate_block_with_proof(link, y)) {
+                            println!("valid link ");
+                            link.valid = true;
+                            return Some(link.identifier().clone());
+                        } else {
+                            println!("Not enough blocks to be valid");
+                            link.valid = false;
+                            return None;
                         }
                     }
-                    return Some(blk.identifier().clone());
+                    println!("link not found");
+                }
+            } else {
+                while let Some(blk) = biter.next() {
+                    if blk.identifier() == block.identifier() {
+                            println!("match");
+                            let _ = blk.add_proof(block.proof().clone());
+                        if gliter.any(|x| Self::validate_block_with_proof(blk, x)) {
+                            println!("valid block");
+                            blk.valid = true;
+                            return Some(blk.identifier().clone());
+                        }
+                            println!("no match");
+                            blk.valid = false;
+                            return None;
+                    }
                 }
             }
         }
         if let Ok(blk) = Block::new(block) {
+            println!("####### New block #######");
             self.chain.push(blk);
         }
         None
@@ -150,10 +165,10 @@ impl DataChain {
         self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
     }
 
-	/// Remove a block, with a predicate
+    /// Remove a block, with a predicate
     pub fn remove_with<F>(&mut self, pred: F)
-		where F: FnMut(&Block) -> bool
-		{
+        where F: FnMut(&Block) -> bool
+    {
         self.chain.retain(pred);
     }
 
@@ -246,6 +261,7 @@ impl DataChain {
 
 
     // is link descriptor equal to all public keys xored together
+#[allow(unused)]
     fn link_locked(link: &Block) -> bool {
         if link.identifier().is_block() {
             return false;
@@ -348,8 +364,7 @@ impl DataChain {
     fn validate_block_with_proof(block: &Block, proof: &Block) -> bool {
         proof.proof()
             .iter()
-            .map(|x| x.key())
-            .filter(|&y| block.proof().iter().map(|z| z.key()).any(|p| p == y))
+            .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
             .count() * 2 > proof.proof().len()
     }
 }
@@ -364,9 +379,52 @@ mod tests {
     use itertools::Itertools;
     use node_block;
     use node_block::NodeBlock;
+    use block::Block;
     use block_identifier::BlockIdentifier;
 
     // use std::time;
+    #[test]
+    fn validate_with_proof() {
+        ::sodiumoxide::init();
+        let keys = (0..10)
+            .map(|_| crypto::sign::gen_keypair())
+            .collect_vec();
+        let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
+        let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
+        let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
+        let identifier1 = BlockIdentifier::Link(link_desc1);
+        let identifier2 = BlockIdentifier::Link(link_desc2);
+        let identifier3 = BlockIdentifier::ImmutableData(sha256::hash(b"a"));
+        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
+        let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
+        let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
+        let id1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
+        let id2 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier3.clone());
+        let id3 = NodeBlock::new(&keys[4].0, &keys[4].1, identifier3);
+
+        let mut block1 = Block::new(link1_1.unwrap()).unwrap();
+        assert!(block1.add_proof(link1_2.unwrap().proof().clone()).is_ok());
+        assert!(block1.add_proof(link1_3.unwrap().proof().clone()).is_ok());
+
+        let mut block2 = Block::new(link2_1.unwrap()).unwrap();
+        assert!(!DataChain::validate_block_with_proof(&block2, &block1));
+        assert!(block2.add_proof(link2_2.unwrap().proof().clone()).is_ok());
+        assert!(DataChain::validate_block_with_proof(&block2, &block1));
+        assert!(block2.add_proof(link2_3.unwrap().proof().clone()).is_ok());
+        assert!(DataChain::validate_block_with_proof(&block2, &block1));
+
+        let mut block3 = Block::new(id1.unwrap()).unwrap();
+        assert!(!DataChain::validate_block_with_proof(&block3, &block2));
+        assert!(block3.add_proof(id2.unwrap().proof().clone()).is_ok());
+        assert!(DataChain::validate_block_with_proof(&block3, &block2));
+        assert!(block3.add_proof(id3.unwrap().proof().clone()).is_ok());
+        assert!(DataChain::validate_block_with_proof(&block3, &block2));
+
+    }
 
     #[test]
     fn link_only_chain() {
@@ -411,8 +469,8 @@ mod tests {
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
         let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         // here we need to add 2_1 again as 2_1 will be purged as part of test later on
-        let link2_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
-        let link2_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        // let link2_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        // let link2_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
         let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
         let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
@@ -434,8 +492,12 @@ mod tests {
         assert!(chain.add_node_block(link1_1.unwrap()).is_none());
         assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_2.unwrap()).is_none());
-        assert!(chain.add_node_block(link1_3.unwrap()).is_none());
+        assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+        assert_eq!(chain.len(), 1);
+        assert!(chain.add_node_block(link1_3.unwrap()).is_some());
+        assert_eq!(chain.len(), 1);
+        assert!(DataChain::link_locked(&chain.chain[0]));
+        assert_eq!(chain.len(), 1);
         // ########################################################################################
         // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
         // ########################################################################################
@@ -445,32 +507,34 @@ mod tests {
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(link2_1.unwrap()).is_none());
-        // ########################################################################################
-        // Ading a link block will not increase length of chain links as it's not yet valid
-        // ########################################################################################
-        assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.blocks_len(), 0);
-        assert_eq!(chain, chain.get_all_links()); // includes invalid (yet) links
-        // ########################################################################################
-        // The call below will mark 2_1 as invalid as it is a new link without majority agreement
-        // ########################################################################################
-        let chain_valid_links1 = chain.get_all_valid_links();
-        assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.len(), 2); // contains an invalid link for now
-        assert_eq!(chain.valid_len(), 1);
-        assert!(chain != chain_valid_links1); // will see 2nd link as not yet valid and remove  it
-        assert!(chain.add_node_block(link2_1_again_1.unwrap()).is_none()); // try re-add 2.1
-        assert!(chain.validate_ownership(&pub2));
-        assert_eq!(chain.links_len(), 1);
-        assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_none());
-        assert!(chain.add_node_block(link2_2.unwrap()).is_some()); // majority reached here
+        // // ########################################################################################
+        // // Ading a link block will not increase length of chain links as it's not yet valid
+        // assert_eq!(chain.links_len(), 1);
+        // assert_eq!(chain.blocks_len(), 0);
+        // assert_eq!(chain, chain.get_all_links()); // includes invalid (yet) links
+        // // ########################################################################################
+        // // The call below will mark 2_1 as invalid as it is a new link without majority agreement
+        // // ########################################################################################
+        // let chain_valid_links1 = chain.get_all_valid_links();
+        // assert_eq!(chain.links_len(), 1);
+        // assert_eq!(chain.len(), 2); // contains an invalid link for now
+        // assert_eq!(chain.valid_len(), 1);
+        // assert!(chain != chain_valid_links1); // will see 2nd link as not yet valid and remove  it
+        // assert!(chain.add_node_block(link2_1_again_1.unwrap()).is_none()); // try re-add 2.1
+        // assert!(chain.validate_ownership(&pub2));
+        // assert_eq!(chain.links_len(), 1);
+        // assert_eq!(chain.len(), 2); // contains an invalid link for now
+        // assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_none());
+        println!("Add 2_2");
+        assert!(chain.add_node_block(link2_2.unwrap()).is_none()); // majority reached here
         // assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
-        assert_eq!(chain.links_len(), 2);
+        assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.len(), 2);
+        println!("Add 2_3");
         assert!(chain.add_node_block(link2_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub2));
         assert!(chain.add_node_block(link3_1.unwrap()).is_none());
-        assert!(chain.add_node_block(link3_2.unwrap()).is_some()); // majority reached here
+        assert!(chain.add_node_block(link3_2.unwrap()).is_none()); // majority reached here
         assert!(chain.add_node_block(link3_3.unwrap()).is_some());
         // ########################################################################################
         // Check blocks are validating as NodeBlocks are added, no need to call validate_all here,
@@ -495,7 +559,7 @@ mod tests {
     }
 
     #[test]
-    fn single_link_chain() {
+    fn data_link_chain() {
         ::sodiumoxide::init();
         let keys = (0..50)
             .map(|_| crypto::sign::gen_keypair())
@@ -515,9 +579,11 @@ mod tests {
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
         let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
-                                                        sha256::hash(b"sd1name"), false);
+                                                        sha256::hash(b"sd1name"),
+                                                        false);
         let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
-                                                        sha256::hash(b"sd2name"), true);
+                                                        sha256::hash(b"sd2name"),
+                                                        true);
         assert!(identifier1 != id_ident);
         assert!(identifier1 != sd1_ident);
         assert!(id_ident != sd1_ident);
@@ -530,26 +596,23 @@ mod tests {
         let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
-        let sd1_1 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
-        // here we need to add 2_1 again as 2_1 will be purged as part of test later on
-        let sd1_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
-        let sd1_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone());
-        let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
-        let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, id_ident);
-        let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
-        let id_2 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident.clone()); // fail w/wrong keys
-        let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, sd1_ident); // fail w/wrong keys
+        let sd1_1 = NodeBlock::new(&keys[1].0, &keys[1].1, sd1_ident.clone());
+        let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
+        let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident);
+        let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
+        let id_2 = NodeBlock::new(&keys[3].0, &keys[3].1, id_ident.clone()); // fail w/wrong keys
+        let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
         // ############# start adding link #####################
         assert!(chain.add_node_block(link1_1.unwrap()).is_none());
-        assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+        assert!(chain.validate_ownership(&pub1));
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_2.unwrap()).is_none());
-        assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+        assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+        assert!(chain.validate_ownership(&pub1));
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_3.unwrap()).is_none());
+        assert!(chain.add_node_block(link1_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
         assert_eq!(chain.len(), 1);
         // ########################################################################################
@@ -561,25 +624,14 @@ mod tests {
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
-        // ########################################################################################
-        // Ading a link block will not increase length of chain links as it's not yet valid
-        // ########################################################################################
-        assert_eq!(chain.links_len(), 1);
+        assert!(chain.add_node_block(sd1_2.unwrap()).is_none());
         assert_eq!(chain.len(), 2); // contains an invalid link for now
         assert_eq!(chain.valid_len(), 1);
-        assert!(chain.add_node_block(sd1_1_again_1.unwrap()).is_none()); // re-add 2.1
-        // ########################################################################################
-        // The call below will prune 2_1 as it is a new link without majority agreement
-        // ########################################################################################
-        assert!(chain.validate_ownership(&pub2));
-        assert_eq!(chain.links_len(), 1);
-        assert!(chain.add_node_block(sd1_1_again_2.unwrap()).is_none()); // re-add 2.1
-        assert!(chain.add_node_block(sd1_2.unwrap()).is_some()); // majority reached here
         assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+        assert!(chain.add_node_block(sd1_3.unwrap()).is_none());
         assert!(chain.validate_ownership(&pub2));
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);

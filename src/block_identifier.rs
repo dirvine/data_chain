@@ -113,8 +113,8 @@ mod tests {
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(sha256::hash(b"hash"),
-                                                       sha256::hash(b"name"), false);
+        let sd_block =
+            BlockIdentifier::StructuredData(sha256::hash(b"hash"), sha256::hash(b"name"), false);
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());

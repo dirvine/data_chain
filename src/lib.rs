@@ -135,7 +135,7 @@
 //!    assert!(chain.add_node_block(link1_2.unwrap()).is_none());
 //!    assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
 //!    assert_eq!(chain.len(), 1);
-//!    assert!(chain.add_node_block(link1_3.unwrap()).is_none());
+//!    assert!(chain.add_node_block(link1_3.unwrap()).is_some());
 //!    assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
 //!    assert_eq!(chain.len(), 1);
 //!    // ########################################################################################
@@ -160,12 +160,12 @@
 //!    assert!(chain.validate_ownership(&pub2));
 //!    assert_eq!(chain.links_len(), 1);
 //!    assert!(chain.add_node_block(sd1_1_again_2.unwrap()).is_none()); // re-add 2.1
-//!    assert!(chain.add_node_block(sd1_2.unwrap()).is_some()); // majority reached here
+//!    assert!(chain.add_node_block(sd1_2.unwrap()).is_none()); // majority reached here
 //!    assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
 //!    assert_eq!(chain.links_len(), 1);
 //!    assert_eq!(chain.blocks_len(), 1);
 //!    assert_eq!(chain.len(), 2);
-//!    assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+//!    assert!(chain.add_node_block(sd1_3.unwrap()).is_none());
 //!    assert!(chain.validate_ownership(&pub2));
 //!    assert_eq!(chain.links_len(), 1);
 //!    assert_eq!(chain.blocks_len(), 1);

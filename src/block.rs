@@ -61,10 +61,12 @@ impl Block {
         if !self.validate_proof(&proof) {
             return Err(Error::Signature);
         }
-        self.proof.push(NodeBlockProof::new(*proof.key(), *proof.sig()));
-        self.proof.sort();
-        self.proof.dedup();
-        Ok(())
+        if !self.proof().iter().any(|x| x.key() == proof.key()) {
+            println!("adding");
+            self.proof.push(NodeBlockProof::new(*proof.key(), *proof.sig()));
+            return Ok(());
+        }
+        Err(Error::Validation)
     }
 
     /// validate signed correctly
