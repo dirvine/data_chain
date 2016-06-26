@@ -82,37 +82,38 @@ impl DataChain {
             // position of this match if any
             len = self.chain.len();
 
-        if self.chain.is_empty() {
-            if let Ok(blk) = Block::new(block.clone()) {
-            self.chain.push(blk);
-            return None;
+            if self.chain.is_empty() {
+                if let Ok(blk) = Block::new(block.clone()) {
+                    self.chain.push(blk);
+                    return None;
+                }
             }
-        }
         }
         {
 
             let mut iter = self.chain.iter_mut();
 
-                while let Some(blk) = iter.next() {
-                    if blk.identifier() == block.identifier() {
-                        if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
-                            return None;
-                        }
+            while let Some(blk) = iter.next() {
+                if blk.identifier() == block.identifier() {
+                    if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
+                        return None;
+                    }
 
-                        let _ = blk.add_proof(block.proof().clone());
+                    let _ = blk.add_proof(block.proof().clone());
 
-                        if len == 1 ||
-                            // TODO for links do not check for any match, only a match a few links back (no more than 1/2 of link length)
+                    if len == 1 ||
+                            // TODO for links do not check for any match, only a match a few
+                            // links back (no more than 1/2 of link length)
                             links.chain.iter().filter(|x| x.identifier() != blk.identifier())
                                   .any(|y|  Self::validate_block_with_proof(blk, y)) {
-                            blk.valid = true;
-                            return Some(blk.identifier().clone());
-                        } else {
-                            blk.valid = false;
-                            return None;
-                        }
+                        blk.valid = true;
+                        return Some(blk.identifier().clone());
+                    } else {
+                        blk.valid = false;
+                        return None;
                     }
                 }
+            }
         }
         if let Ok(blk) = Block::new(block) {
             self.chain.push(blk);
@@ -237,7 +238,7 @@ impl DataChain {
 
 
     // is link descriptor equal to all public keys xored together
-#[allow(unused)]
+    #[allow(unused)]
     fn link_locked(link: &Block) -> bool {
         if link.identifier().is_block() {
             return false;
@@ -315,31 +316,29 @@ impl DataChain {
 
     }
 
-    /// Validate and return all links in chain
+    /// Validate and return all valid links in chain 4 before and after target
     pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> DataChain {
         // FIXME the value of 4 is arbitrary
         // instead the length of last link len() should perhaps be used
         let top_links = self.chain
-                .iter()
-                .cloned()
-                .skip_while(|x| x.identifier() != block_id)
-                .filter(|x| x.identifier().is_link() && x.valid)
-                .take(4)
-                .collect_vec();
+            .iter()
+            .cloned()
+            .skip_while(|x| x.identifier() != block_id)
+            .filter(|x| x.identifier().is_link() && x.valid)
+            .take(4)
+            .collect_vec();
 
         let mut bottom_links = self.chain
-                .iter()
-                .rev()
-                .cloned()
-                .skip_while(|x| x.identifier() != block_id)
-                .filter(|x| x.identifier().is_link() && x.valid)
-                .take(4)
-                .collect_vec();
-       bottom_links.extend(top_links);
+            .iter()
+            .rev()
+            .cloned()
+            .skip_while(|x| x.identifier() != block_id)
+            .filter(|x| x.identifier().is_link() && x.valid)
+            .take(4)
+            .collect_vec();
+        bottom_links.extend(top_links);
 
-        DataChain {
-            chain : bottom_links,
-        }
+        DataChain { chain: bottom_links }
 
     }
 
