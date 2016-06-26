@@ -77,7 +77,9 @@ impl DataChain {
         let len;
         let links;
         {
-            links = self.get_all_valid_links();
+            links = self.valid_links_at_block_id(&block.identifier());
+            // TODO the previous call should only get links prior and after the
+            // position of this match if any
             len = self.chain.len();
 
         if self.chain.is_empty() {
@@ -100,6 +102,7 @@ impl DataChain {
                         let _ = blk.add_proof(block.proof().clone());
 
                         if len == 1 ||
+                            // TODO for links do not check for any match, only a match a few links back (no more than 1/2 of link length)
                             links.chain.iter().filter(|x| x.identifier() != blk.identifier())
                                   .any(|y|  Self::validate_block_with_proof(blk, y)) {
                             blk.valid = true;
@@ -312,6 +315,33 @@ impl DataChain {
 
     }
 
+    /// Validate and return all links in chain
+    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> DataChain {
+        let top_links = self.chain
+                .iter()
+                .cloned()
+                .skip_while(|x| x.identifier() != block_id)
+                .filter(|x| x.identifier().is_link() && x.valid)
+                .take(4)
+                .collect_vec();
+
+        let mut bottom_links = self.chain
+                .iter()
+                .rev()
+                .cloned()
+                .skip_while(|x| x.identifier() != block_id)
+                .filter(|x| x.identifier().is_link() && x.valid)
+                .take(4)
+                .collect_vec();
+       bottom_links.extend(top_links);
+
+        DataChain {
+            chain : bottom_links,
+        }
+
+    }
+
+
     /// Mark all links that are valid as such.
     pub fn mark_blocks_valid(&mut self) {
         if let Some(mut first_link) = self.chain
@@ -480,24 +510,6 @@ mod tests {
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(link2_1.unwrap()).is_none());
-        // // ########################################################################################
-        // // Ading a link block will not increase length of chain links as it's not yet valid
-        // assert_eq!(chain.links_len(), 1);
-        // assert_eq!(chain.blocks_len(), 0);
-        // assert_eq!(chain, chain.get_all_links()); // includes invalid (yet) links
-        // // ########################################################################################
-        // // The call below will mark 2_1 as invalid as it is a new link without majority agreement
-        // // ########################################################################################
-        // let chain_valid_links1 = chain.get_all_valid_links();
-        // assert_eq!(chain.links_len(), 1);
-        // assert_eq!(chain.len(), 2); // contains an invalid link for now
-        // assert_eq!(chain.valid_len(), 1);
-        // assert!(chain != chain_valid_links1); // will see 2nd link as not yet valid and remove  it
-        // assert!(chain.add_node_block(link2_1_again_1.unwrap()).is_none()); // try re-add 2.1
-        // assert!(chain.validate_ownership(&pub2));
-        // assert_eq!(chain.links_len(), 1);
-        // assert_eq!(chain.len(), 2); // contains an invalid link for now
-        // assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_none());
         assert!(chain.add_node_block(link2_2.unwrap()).is_some()); // majority reached here
         // assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
         assert_eq!(chain.links_len(), 2);
