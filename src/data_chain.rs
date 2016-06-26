@@ -72,16 +72,16 @@ impl DataChain {
     /// If block becomes or is valid, then it is returned
     pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
         if !block.validate() {
-            println!("validate failed");
             return None;
         }
         let len;
+        let links;
         {
+            links = self.get_all_valid_links();
             len = self.chain.len();
 
         if self.chain.is_empty() {
             if let Ok(blk) = Block::new(block.clone()) {
-            println!("####### Start block #######");
             self.chain.push(blk);
             return None;
             }
@@ -89,55 +89,29 @@ impl DataChain {
         }
         {
 
-            let iter = self.chain.iter_mut().into_rc();
-            let mut biter = iter.clone().filter(|x| x.identifier().is_block());
-            let mut liter = iter.clone().filter(|x| x.identifier().is_link());
-            let mut gliter = iter.clone().filter(|x| x.identifier().is_link() && x.valid);
+            let mut iter = self.chain.iter_mut();
 
-            if block.identifier().is_link() {
-                while let Some(link) = liter.next() {
-                            println!("match");
-                    if link.identifier() == block.identifier() {
-                        if link.proof().iter().any(|x| x.key() == block.proof().key()) {
+                while let Some(blk) = iter.next() {
+                    if blk.identifier() == block.identifier() {
+                        if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
                             return None;
                         }
 
-                        let _ = link.add_proof(block.proof().clone());
-                        println!("blk length {:?}", link.proof().len());
+                        let _ = blk.add_proof(block.proof().clone());
 
                         if len == 1 ||
-                            gliter.filter(|x| x.identifier() != link.identifier())
-                                  .any(|y|  Self::validate_block_with_proof(link, y)) {
-                            println!("valid link ");
-                            link.valid = true;
-                            return Some(link.identifier().clone());
-                        } else {
-                            println!("Not enough blocks to be valid");
-                            link.valid = false;
-                            return None;
-                        }
-                    }
-                    println!("link not found");
-                }
-            } else {
-                while let Some(blk) = biter.next() {
-                    if blk.identifier() == block.identifier() {
-                            println!("match");
-                            let _ = blk.add_proof(block.proof().clone());
-                        if gliter.any(|x| Self::validate_block_with_proof(blk, x)) {
-                            println!("valid block");
+                            links.chain.iter().filter(|x| x.identifier() != blk.identifier())
+                                  .any(|y|  Self::validate_block_with_proof(blk, y)) {
                             blk.valid = true;
                             return Some(blk.identifier().clone());
-                        }
-                            println!("no match");
+                        } else {
                             blk.valid = false;
                             return None;
+                        }
                     }
                 }
-            }
         }
         if let Ok(blk) = Block::new(block) {
-            println!("####### New block #######");
             self.chain.push(blk);
         }
         None
@@ -524,16 +498,14 @@ mod tests {
         // assert_eq!(chain.links_len(), 1);
         // assert_eq!(chain.len(), 2); // contains an invalid link for now
         // assert!(chain.add_node_block(link2_1_again_2.unwrap()).is_none());
-        println!("Add 2_2");
-        assert!(chain.add_node_block(link2_2.unwrap()).is_none()); // majority reached here
+        assert!(chain.add_node_block(link2_2.unwrap()).is_some()); // majority reached here
         // assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
-        assert_eq!(chain.links_len(), 1);
+        assert_eq!(chain.links_len(), 2);
         assert_eq!(chain.len(), 2);
-        println!("Add 2_3");
         assert!(chain.add_node_block(link2_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub2));
         assert!(chain.add_node_block(link3_1.unwrap()).is_none());
-        assert!(chain.add_node_block(link3_2.unwrap()).is_none()); // majority reached here
+        assert!(chain.add_node_block(link3_2.unwrap()).is_some()); // majority reached here
         assert!(chain.add_node_block(link3_3.unwrap()).is_some());
         // ########################################################################################
         // Check blocks are validating as NodeBlocks are added, no need to call validate_all here,
@@ -599,7 +571,7 @@ mod tests {
         let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
         let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident);
         let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
-        let id_2 = NodeBlock::new(&keys[3].0, &keys[3].1, id_ident.clone()); // fail w/wrong keys
+        let id_2 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone()); // fail w/wrong keys
         let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         let mut chain = DataChain::default();
@@ -623,14 +595,14 @@ mod tests {
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
         assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
-        assert!(chain.add_node_block(sd1_2.unwrap()).is_none());
-        assert_eq!(chain.len(), 2); // contains an invalid link for now
-        assert_eq!(chain.valid_len(), 1);
+        assert!(chain.add_node_block(sd1_2.unwrap()).is_some());
+        assert_eq!(chain.len(), 2);
+        assert_eq!(chain.valid_len(), 2);
         assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(sd1_3.unwrap()).is_none());
+        assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub2));
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
@@ -638,17 +610,17 @@ mod tests {
         // the call below will not add any links
         let id1 = id_1.unwrap();
         assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature
-        assert!(chain.add_node_block(id_3.unwrap()).is_none()); // will not get majority
-        assert!(chain.add_node_block(id_2.unwrap()).is_none());
+        assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
+        assert!(chain.add_node_block(id_3.unwrap()).is_some());
         assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.blocks_len(), 1);
+        assert_eq!(chain.blocks_len(), 2);
         assert_eq!(chain.len(), 3);
         chain.prune();
-        assert_eq!(chain.len(), 2);
-        assert_eq!(chain.valid_len(), 2);
+        assert_eq!(chain.len(), 3);
+        assert_eq!(chain.valid_len(), 3);
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
-        assert_eq!(chain.valid_len(), 2);
+        assert_eq!(chain.valid_len(), 3);
         chain.remove(id1.identifier());
         assert_eq!(chain.len(), 2);
         assert!(chain.add_node_block(id1.clone()).is_none());

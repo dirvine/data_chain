@@ -62,7 +62,6 @@ impl Block {
             return Err(Error::Signature);
         }
         if !self.proof().iter().any(|x| x.key() == proof.key()) {
-            println!("adding");
             self.proof.push(NodeBlockProof::new(*proof.key(), *proof.sig()));
             return Ok(());
         }
