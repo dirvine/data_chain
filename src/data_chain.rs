@@ -107,7 +107,6 @@ impl DataChain {
 
                         if len == 1 ||
                             gliter.filter(|x| x.identifier() != link.identifier())
-                            .inspect(|x| println!("block iter {:?}", x))
                                   .any(|y|  Self::validate_block_with_proof(link, y)) {
                             println!("valid link ");
                             link.valid = true;
