@@ -303,17 +303,6 @@
 <span id="259">259</span>
 <span id="260">260</span>
 <span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -399,113 +388,102 @@
 <span class='doccomment'>//!    use data_chain::{NodeBlock, BlockIdentifier, DataChain, create_link_descriptor};</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!    ::sodiumoxide::init();</span>
-<span class='doccomment'>//!    let keys = (0..50)</span>
-<span class='doccomment'>//!        .map(|_| crypto::sign::gen_keypair())</span>
-<span class='doccomment'>//!        .collect_vec();</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    // create groups of keys to resemble close_groups</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();</span>
-<span class='doccomment'>//!    let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();</span>
-<span class='doccomment'>//!    let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();</span>
-<span class='doccomment'>//!    assert!(pub1 != pub2);</span>
-<span class='doccomment'>//!    assert!(pub1 != pub3);</span>
-<span class='doccomment'>//!    assert!(pub1.len() == 3);</span>
-<span class='doccomment'>//!    assert!(pub2.len() == 3);</span>
-<span class='doccomment'>//!    assert!(pub3.len() == 3);</span>
-<span class='doccomment'>//!    let link_desc1 = create_link_descriptor(&amp;pub1[..]);</span>
-<span class='doccomment'>//!    let identifier1 = BlockIdentifier::Link(link_desc1);</span>
-<span class='doccomment'>//!    let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
-<span class='doccomment'>//!    let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd1name&quot;), false);</span>
-<span class='doccomment'>//!    let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
-<span class='doccomment'>//!                                                    sha256::hash(b&quot;sd2name&quot;), true);</span>
-<span class='doccomment'>//!    assert!(identifier1 != id_ident);</span>
-<span class='doccomment'>//!    assert!(identifier1 != sd1_ident);</span>
-<span class='doccomment'>//!    assert!(id_ident != sd1_ident);</span>
-<span class='doccomment'>//!    assert!(sd1_ident != sd2_ident);</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    // Create NodeBlocks, these are what nodes send to each other</span>
-<span class='doccomment'>//!    // Here they are all links only. For Put Delete Post</span>
-<span class='doccomment'>//!    // these would be Identifiers for the data types that includes a hash of the serialised data</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    let link1_1 = NodeBlock::new(&amp;keys[0].0, &amp;keys[0].1, identifier1.clone());</span>
-<span class='doccomment'>//!    let link1_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, identifier1.clone());</span>
-<span class='doccomment'>//!    let link1_3 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, identifier1);</span>
-<span class='doccomment'>//!    let sd1_1 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, id_ident.clone());</span>
-<span class='doccomment'>//!    // here we need to add 2_1 again as 2_1 will be purged as part of test later on</span>
-<span class='doccomment'>//!    let sd1_1_again_1 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, id_ident.clone());</span>
-<span class='doccomment'>//!    let sd1_1_again_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, id_ident.clone());</span>
-<span class='doccomment'>//!    let sd1_2 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, id_ident.clone());</span>
-<span class='doccomment'>//!    let sd1_3 = NodeBlock::new(&amp;keys[3].0, &amp;keys[3].1, id_ident);</span>
-<span class='doccomment'>//!    let id_1 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, sd1_ident.clone());</span>
-<span class='doccomment'>//!    let id_2 = NodeBlock::new(&amp;keys[3].0, &amp;keys[3].1, sd1_ident.clone()); // fail w/wrong keys</span>
-<span class='doccomment'>//!    let id_3 = NodeBlock::new(&amp;keys[4].0, &amp;keys[4].1, sd1_ident); // fail w/wrong keys</span>
-<span class='doccomment'>//!    // #################### Create chain ########################</span>
-<span class='doccomment'>//!    let mut chain = DataChain::default();</span>
-<span class='doccomment'>//!    assert!(chain.is_empty());</span>
-<span class='doccomment'>//!    // ############# start adding link #####################</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(link1_1.unwrap()).is_none());</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub1)); // 1 link - all OK</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(link1_2.unwrap()).is_none());</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub1)); // 1 link - all OK</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(link1_3.unwrap()).is_none());</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub1)); // 1 link - all OK</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub1));</span>
-<span class='doccomment'>//!    assert!(!chain.validate_ownership(&amp;pub3));</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.blocks_len(), 0);</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(sd1_1.unwrap()).is_none());</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    // Ading a link block will not increase length of chain links as it&#39;s not yet valid</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 2); // contains an invalid link for now</span>
-<span class='doccomment'>//!    assert_eq!(chain.valid_len(), 1);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(sd1_1_again_1.unwrap()).is_none()); // re-add 2.1</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    // The call below will prune 2_1 as it is a new link without majority agreement</span>
-<span class='doccomment'>//!    // ########################################################################################</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub2));</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(sd1_1_again_2.unwrap()).is_none()); // re-add 2.1</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(sd1_2.unwrap()).is_some()); // majority reached here</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub2)); // Ok as now 2 is in majority</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.blocks_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(sd1_3.unwrap()).is_some());</span>
-<span class='doccomment'>//!    assert!(chain.validate_ownership(&amp;pub2));</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.blocks_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//!    // the call below will not add any links</span>
-<span class='doccomment'>//!    let id1 = id_1.unwrap();</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(id_3.unwrap()).is_none()); // will not get majority</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(id_2.unwrap()).is_none());</span>
-<span class='doccomment'>//!    assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.blocks_len(), 1);</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//!    chain.prune();</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//!    assert_eq!(chain.valid_len(), 2);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(id1.clone()).is_none());</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//!    assert_eq!(chain.valid_len(), 2);</span>
-<span class='doccomment'>//!    chain.remove(id1.identifier());</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//!    assert!(chain.add_node_block(id1.clone()).is_none());</span>
-<span class='doccomment'>//!    assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//!    assert_eq!(chain.valid_len(), 2);</span>
+<span class='doccomment'>//! ::sodiumoxide::init();</span>
+<span class='doccomment'>//! let keys = (0..50)</span>
+<span class='doccomment'>//!     .map(|_| crypto::sign::gen_keypair())</span>
+<span class='doccomment'>//!     .collect_vec();</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! // create groups of keys to resemble close_groups</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();</span>
+<span class='doccomment'>//! let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();</span>
+<span class='doccomment'>//! let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();</span>
+<span class='doccomment'>//! assert!(pub1 != pub2);</span>
+<span class='doccomment'>//! assert!(pub1 != pub3);</span>
+<span class='doccomment'>//! assert!(pub1.len() == 3);</span>
+<span class='doccomment'>//! assert!(pub2.len() == 3);</span>
+<span class='doccomment'>//! assert!(pub3.len() == 3);</span>
+<span class='doccomment'>//! let link_desc1 = create_link_descriptor(&amp;pub1[..]);</span>
+<span class='doccomment'>//! let identifier1 = BlockIdentifier::Link(link_desc1);</span>
+<span class='doccomment'>//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
+<span class='doccomment'>//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
+<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd1name&quot;),</span>
+<span class='doccomment'>//!                                                 false);</span>
+<span class='doccomment'>//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
+<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd2name&quot;),</span>
+<span class='doccomment'>//!                                                 true);</span>
+<span class='doccomment'>//! assert!(identifier1 != id_ident);</span>
+<span class='doccomment'>//! assert!(identifier1 != sd1_ident);</span>
+<span class='doccomment'>//! assert!(id_ident != sd1_ident);</span>
+<span class='doccomment'>//! assert!(sd1_ident != sd2_ident);</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! // Create NodeBlocks, these are what nodes send to each other</span>
+<span class='doccomment'>//! // Here they are all links only. For Put Delete Post</span>
+<span class='doccomment'>//! // these would be Identifiers for the data types that includes a hash of the serialised data</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! let link1_1 = NodeBlock::new(&amp;keys[0].0, &amp;keys[0].1, identifier1.clone());</span>
+<span class='doccomment'>//! let link1_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, identifier1.clone());</span>
+<span class='doccomment'>//! let link1_3 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, identifier1);</span>
+<span class='doccomment'>//! let sd1_1 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, sd1_ident.clone());</span>
+<span class='doccomment'>//! let sd1_2 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, sd1_ident.clone());</span>
+<span class='doccomment'>//! let sd1_3 = NodeBlock::new(&amp;keys[3].0, &amp;keys[3].1, sd1_ident);</span>
+<span class='doccomment'>//! let id_1 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, id_ident.clone());</span>
+<span class='doccomment'>//! let id_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, id_ident.clone()); // fail w/wrong keys</span>
+<span class='doccomment'>//! let id_3 = NodeBlock::new(&amp;keys[4].0, &amp;keys[4].1, id_ident); // fail w/wrong keys</span>
+<span class='doccomment'>//! // #################### Create chain ########################</span>
+<span class='doccomment'>//! let mut chain = DataChain::default();</span>
+<span class='doccomment'>//! assert!(chain.is_empty());</span>
+<span class='doccomment'>//! // ############# start adding link #####################</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(link1_1.unwrap()).is_none());</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(link1_2.unwrap()).is_some());</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(link1_3.unwrap()).is_some());</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1)); // 1 link - all OK</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK</span>
+<span class='doccomment'>//! // ########################################################################################</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
+<span class='doccomment'>//! assert!(!chain.validate_ownership(&amp;pub3));</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 0);</span>
+<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(sd1_1.unwrap()).is_none());</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(sd1_2.unwrap()).is_some());</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
+<span class='doccomment'>//! assert_eq!(chain.valid_len(), 2);</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub2)); // Ok as now 2 is in majority</span>
+<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(sd1_3.unwrap()).is_some());</span>
+<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub2));</span>
+<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
+<span class='doccomment'>//! // the call below will not add any links</span>
+<span class='doccomment'>//! let id1 = id_1.unwrap();</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(id_3.unwrap()).is_some());</span>
+<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
+<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 2);</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
+<span class='doccomment'>//! chain.prune();</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
+<span class='doccomment'>//! assert_eq!(chain.valid_len(), 3);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none());</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
+<span class='doccomment'>//! assert_eq!(chain.valid_len(), 3);</span>
+<span class='doccomment'>//! chain.remove(id1.identifier());</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
+<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none());</span>
+<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
+<span class='doccomment'>//! assert_eq!(chain.valid_len(), 2);</span>
+<span class='doccomment'>//!</span>
 <span class='doccomment'>//!  }</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```</span>

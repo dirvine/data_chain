@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-170' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#45-47' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-171' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#45-47' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct DataChain {
     // some fields omitted
 }</pre><div class='docblock'><p>Created by holder of chain, can be passed to others as proof of data held.
@@ -141,6 +141,8 @@ were from last known valid group.</p>
 <div class='docblock'><p>Return all links in chain
 Does not perform validation on links</p>
 </div><h4 id='method.get_all_valid_links' class='method'><code>fn <a href='#method.get_all_valid_links' class='fnname'>get_all_valid_links</a>(&amp;mut self) -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
+<div class='docblock'><p>Validate and return all links in chain</p>
+</div><h4 id='method.valid_links_at_block_id' class='method'><code>fn <a href='#method.valid_links_at_block_id' class='fnname'>valid_links_at_block_id</a>(&amp;mut self, block_id: &amp;<a class='enum' href='../../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
 <div class='docblock'><p>Validate and return all links in chain</p>
 </div><h4 id='method.mark_blocks_valid' class='method'><code>fn <a href='#method.mark_blocks_valid' class='fnname'>mark_blocks_valid</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Mark all links that are valid as such.</p>

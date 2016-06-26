@@ -285,8 +285,8 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>create_validate_structured_data_identifier</span>() {
-        <span class='kw'>let</span> <span class='ident'>sd_block</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;hash&quot;</span>),
-                                                       <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>), <span class='boolval'>false</span>);
+        <span class='kw'>let</span> <span class='ident'>sd_block</span> <span class='op'>=</span>
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;hash&quot;</span>), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>), <span class='boolval'>false</span>);
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>sd_block</span>.<span class='ident'>is_link</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>is_block</span>());
