@@ -102,10 +102,10 @@ impl DataChain {
                     let _ = blk.add_proof(block.proof().clone());
 
                     if len == 1 ||
-                            // TODO for links do not check for any match, only a match a few
-                            // links back (no more than 1/2 of link length)
-                            links.chain.iter().filter(|x| x.identifier() != blk.identifier())
-                                  .any(|y|  Self::validate_block_with_proof(blk, y)) {
+                       links.chain
+                        .iter()
+                        .filter(|x| x.identifier() != blk.identifier())
+                        .any(|y| Self::validate_block_with_proof(blk, y)) {
                         blk.valid = true;
                         return Some(blk.identifier().clone());
                     } else {
@@ -169,7 +169,7 @@ impl DataChain {
     /// Will not validate this block!
     /// # Panics
     ///
-    /// Panics if index is greater than the chains's length.
+    /// Panics if index is greater than the chains length.
     pub fn insert(&mut self, index: usize, block: Block) {
         self.chain.insert(index, block)
     }
@@ -193,6 +193,9 @@ impl DataChain {
     /// Returns an iterator over subslices separated by elements that match pred,
     /// limited to returning at most n items. The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains length.
     pub fn splitn<F>(&self, n: usize, pred: F) -> SplitN<Block, F>
         where F: FnMut(&Block) -> bool
     {
@@ -202,6 +205,9 @@ impl DataChain {
     /// Returns an iterator over subslices separated by elements that match pred,
     /// limited to returning at most n items. The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains length.
     pub fn splitn_mut<F>(&mut self, n: usize, pred: F) -> SplitNMut<Block, F>
         where F: FnMut(&Block) -> bool
     {
@@ -212,6 +218,9 @@ impl DataChain {
     /// Returns a newly allocated Self. chain contains elements [0, at), and the returned
     /// chain contains elements [at, len).
     /// Note that the capacity of chain does not change.]]
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains length.
     pub fn split_off(&mut self, at: usize) -> Vec<Block> {
         self.chain.split_off(at)
     }
@@ -220,6 +229,9 @@ impl DataChain {
     /// returning at most n items. This starts at the end of the slice and works backwards.
     /// The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains length.
     pub fn rsplitn<F>(&self, n: usize, pred: F) -> RSplitN<Block, F>
         where F: FnMut(&Block) -> bool
     {
@@ -230,6 +242,9 @@ impl DataChain {
     /// returning at most n items. This starts at the end of the slice and works backwards.
     /// The matched element is not contained in the subslices.
     /// The last element returned, if any, will contain the remainder of the slice.
+    /// # Panics
+    ///
+    /// Panics if index is greater than the chains length.
     pub fn rsplitn_mut<F>(&mut self, n: usize, pred: F) -> RSplitNMut<Block, F>
         where F: FnMut(&Block) -> bool
     {
@@ -251,8 +266,10 @@ impl DataChain {
     /// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
-        if let Some(ref mut link) = self.last_valid_link() {
-            return Self::validate_block_with_proof(block, link);
+        for link in &self.valid_links_at_block_id(&block.identifier()).chain {
+            if Self::validate_block_with_proof(block, link) {
+                return true;
+            }
         }
         false
     }
