@@ -679,6 +679,23 @@
 <span id="635">635</span>
 <span id="636">636</span>
 <span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
+<span id="652">652</span>
+<span id="653">653</span>
+<span id="654">654</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -784,10 +801,10 @@
                     <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>());
 
                     <span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>==</span> <span class='number'>1</span> <span class='op'>||</span>
-                            <span class='comment'>// TODO for links do not check for any match, only a match a few</span>
-                            <span class='comment'>// links back (no more than 1/2 of link length)</span>
-                            <span class='ident'>links</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>())
-                                  .<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>y</span><span class='op'>|</span>  <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>blk</span>, <span class='ident'>y</span>)) {
+                       <span class='ident'>links</span>.<span class='ident'>chain</span>
+                        .<span class='ident'>iter</span>()
+                        .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>())
+                        .<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>y</span><span class='op'>|</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>blk</span>, <span class='ident'>y</span>)) {
                         <span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
                         <span class='kw'>return</span> <span class='prelude-val'>Some</span>(<span class='ident'>blk</span>.<span class='ident'>identifier</span>().<span class='ident'>clone</span>());
                     } <span class='kw'>else</span> {
@@ -851,7 +868,7 @@
     <span class='doccomment'>/// Will not validate this block!</span>
     <span class='doccomment'>/// # Panics</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// Panics if index is greater than the chains&#39;s length.</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>insert</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>, <span class='ident'>block</span>: <span class='ident'>Block</span>) {
         <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>insert</span>(<span class='ident'>index</span>, <span class='ident'>block</span>)
     }
@@ -875,6 +892,9 @@
     <span class='doccomment'>/// Returns an iterator over subslices separated by elements that match pred,</span>
     <span class='doccomment'>/// limited to returning at most n items. The matched element is not contained in the subslices.</span>
     <span class='doccomment'>/// The last element returned, if any, will contain the remainder of the slice.</span>
+    <span class='doccomment'>/// # Panics</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>splitn</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>pred</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>SplitN</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>F</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>
     {
@@ -884,6 +904,9 @@
     <span class='doccomment'>/// Returns an iterator over subslices separated by elements that match pred,</span>
     <span class='doccomment'>/// limited to returning at most n items. The matched element is not contained in the subslices.</span>
     <span class='doccomment'>/// The last element returned, if any, will contain the remainder of the slice.</span>
+    <span class='doccomment'>/// # Panics</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>splitn_mut</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>pred</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>SplitNMut</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>F</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>
     {
@@ -894,6 +917,9 @@
     <span class='doccomment'>/// Returns a newly allocated Self. chain contains elements [0, at), and the returned</span>
     <span class='doccomment'>/// chain contains elements [at, len).</span>
     <span class='doccomment'>/// Note that the capacity of chain does not change.]]</span>
+    <span class='doccomment'>/// # Panics</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>split_off</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>at</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>split_off</span>(<span class='ident'>at</span>)
     }
@@ -902,6 +928,9 @@
     <span class='doccomment'>/// returning at most n items. This starts at the end of the slice and works backwards.</span>
     <span class='doccomment'>/// The matched element is not contained in the subslices.</span>
     <span class='doccomment'>/// The last element returned, if any, will contain the remainder of the slice.</span>
+    <span class='doccomment'>/// # Panics</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>rsplitn</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>pred</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>RSplitN</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>F</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>
     {
@@ -912,6 +941,9 @@
     <span class='doccomment'>/// returning at most n items. This starts at the end of the slice and works backwards.</span>
     <span class='doccomment'>/// The matched element is not contained in the subslices.</span>
     <span class='doccomment'>/// The last element returned, if any, will contain the remainder of the slice.</span>
+    <span class='doccomment'>/// # Panics</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// Panics if index is greater than the chains length.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>rsplitn_mut</span><span class='op'>&lt;</span><span class='ident'>F</span><span class='op'>&gt;</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>n</span>: <span class='ident'>usize</span>, <span class='ident'>pred</span>: <span class='ident'>F</span>) <span class='op'>-&gt;</span> <span class='ident'>RSplitNMut</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>F</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>F</span>: <span class='ident'>FnMut</span>(<span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>
     {
@@ -933,8 +965,10 @@
     <span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
     <span class='doccomment'>/// were from last known valid group.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='kw-2'>mut</span> <span class='ident'>link</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_valid_link</span>() {
-            <span class='kw'>return</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='ident'>link</span>);
+        <span class='kw'>for</span> <span class='ident'>link</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>valid_links_at_block_id</span>(<span class='kw-2'>&amp;</span><span class='ident'>block</span>.<span class='ident'>identifier</span>()).<span class='ident'>chain</span> {
+            <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='ident'>link</span>) {
+                <span class='kw'>return</span> <span class='boolval'>true</span>;
+            }
         }
         <span class='boolval'>false</span>
     }
