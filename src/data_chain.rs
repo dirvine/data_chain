@@ -317,6 +317,8 @@ impl DataChain {
 
     /// Validate and return all links in chain
     pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> DataChain {
+        // FIXME the value of 4 is arbitrary
+        // instead the length of last link len() should perhaps be used
         let top_links = self.chain
                 .iter()
                 .cloned()
@@ -385,7 +387,6 @@ mod tests {
     use block::Block;
     use block_identifier::BlockIdentifier;
 
-    // use std::time;
     #[test]
     fn validate_with_proof() {
         ::sodiumoxide::init();
@@ -426,7 +427,6 @@ mod tests {
         assert!(DataChain::validate_block_with_proof(&block3, &block2));
         assert!(block3.add_proof(id3.unwrap().proof().clone()).is_ok());
         assert!(DataChain::validate_block_with_proof(&block3, &block2));
-
     }
 
     #[test]
@@ -472,8 +472,6 @@ mod tests {
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
         let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         // here we need to add 2_1 again as 2_1 will be purged as part of test later on
-        // let link2_1_again_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
-        // let link2_1_again_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
         let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
         let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
         let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
@@ -538,7 +536,6 @@ mod tests {
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 3);
-
     }
 
     #[test]
@@ -619,7 +616,6 @@ mod tests {
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
-        // the call below will not add any links
         let id1 = id_1.unwrap();
         assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature
         assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
@@ -638,6 +634,5 @@ mod tests {
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
-
     }
 }
