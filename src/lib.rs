@@ -194,7 +194,8 @@
 //!
 //! # Safety
 //!
-//! There is no use of unsafe blocks.
+//! There is no use of unsafe blocks, in the DataChain object. There is however unsafe blocks in
+//! the memory mapped container.
 //!
 //! # Aborts
 //!
@@ -232,6 +233,7 @@
 #![cfg_attr(feature="clippy", allow(use_debug))]
 
 extern crate sodiumoxide;
+extern crate memmap;
 extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
@@ -248,6 +250,9 @@ pub mod block;
 /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
 pub mod data_chain;
 
+/// Memory backed storage and access for persistent data chain
+pub mod mmap;
+
 /// A node block is a partial block, sent by group members to each other to create a `Block`
 pub mod node_block;
 
@@ -259,3 +264,5 @@ pub use node_block::{NodeBlock, create_link_descriptor};
 pub use block_identifier::BlockIdentifier;
 
 pub use data_chain::DataChain;
+
+pub use mmap::FileDataChain;

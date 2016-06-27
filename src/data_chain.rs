@@ -24,12 +24,14 @@
 // relating to use of the SAFE Network Software.
 
 use std::slice::{Split, SplitMut, SplitN, SplitNMut, RSplitN, RSplitNMut};
+use std::mem;
 use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
 use node_block;
 use sodiumoxide::crypto::sign::PublicKey;
+// use mmap::FileDataChain;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -122,6 +124,12 @@ impl DataChain {
 
     }
 
+    // get size of chain for storing on disk
+    #[allow(unused)]
+    fn size_of(&self) -> usize {
+        self.chain.capacity() * mem::size_of::<Block>() + (mem::size_of::<usize>() * 2)
+
+    }
     /// find a block (user required to test for validity)
     pub fn find(&self, block_identifier: &BlockIdentifier) -> Option<&Block> {
         self.chain.iter().find(|x| x.identifier() == block_identifier)
@@ -650,5 +658,6 @@ mod tests {
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
+        println!("size is {}", chain.size_of());
     }
 }

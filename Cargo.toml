@@ -1,15 +1,17 @@
 [package]
 authors = ["David Irvine <david.irvine@maidsafe.net>"]
-name = "data_chain"
-version = "0.1.1"
 description = "Method of recording data securely on decentralised networks"
-license =  "GPL-3.0"
+license = "GPL-3.0"
+name = "data_chain"
 readme = "README.md"
 repository = "https://github.com/dirvine/data_chain"
+version = "0.1.1"
 
 [dependencies]
+fs2 = "0.2.5"
 itertools = "0.4.15"
 maidsafe_utilities = "~0.5.4"
+memmap = "~0.3.0"
 rayon = "~0.4.0"
 rustc-serialize = "~0.3.19"
 sodiumoxide = "~0.0.10"
