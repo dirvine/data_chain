@@ -696,6 +696,15 @@
 <span id="652">652</span>
 <span id="653">653</span>
 <span id="654">654</span>
+<span id="655">655</span>
+<span id="656">656</span>
+<span id="657">657</span>
+<span id="658">658</span>
+<span id="659">659</span>
+<span id="660">660</span>
+<span id="661">661</span>
+<span id="662">662</span>
+<span id="663">663</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -723,12 +732,14 @@
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>Split</span>, <span class='ident'>SplitMut</span>, <span class='ident'>SplitN</span>, <span class='ident'>SplitNMut</span>, <span class='ident'>RSplitN</span>, <span class='ident'>RSplitNMut</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
 <span class='kw'>use</span> <span class='ident'>node_block</span>::<span class='ident'>NodeBlock</span>;
 <span class='kw'>use</span> <span class='ident'>node_block</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
+<span class='comment'>// use mmap::FileDataChain;</span>
 
 <span class='doccomment'>/// Created by holder of chain, can be passed to others as proof of data held.</span>
 <span class='doccomment'>/// This object is verifiable if :</span>
@@ -821,6 +832,12 @@
 
     }
 
+    <span class='comment'>// get size of chain for storing on disk</span>
+    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
+    <span class='kw'>fn</span> <span class='ident'>size_of</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>capacity</span>() <span class='op'>*</span> <span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>() <span class='op'>+</span> (<span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>() <span class='op'>*</span> <span class='number'>2</span>)
+
+    }
     <span class='doccomment'>/// find a block (user required to test for validity)</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>find</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block_identifier</span>: <span class='kw-2'>&amp;</span><span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block_identifier</span>)
@@ -1349,6 +1366,7 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>id1</span>.<span class='ident'>clone</span>()).<span class='ident'>is_none</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>3</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>valid_len</span>(), <span class='number'>2</span>);
+        <span class='macro'>println</span><span class='macro'>!</span>(<span class='string'>&quot;size is {}&quot;</span>, <span class='ident'>chain</span>.<span class='ident'>size_of</span>());
     }
 }
 </pre>

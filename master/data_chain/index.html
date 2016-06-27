@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#26-261' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#26-268' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data_chain' class='section-header'><a href='#data_chain'>data_chain</a></h1>
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
@@ -214,7 +214,8 @@ and
 <p>A chain is usize in length. Passing from 32 -&gt; 64 bit machine may cause an ooverflow error.</p>
 
 <h1 id='safety' class='section-header'><a href='#safety'>Safety</a></h1>
-<p>There is no use of unsafe blocks.</p>
+<p>There is no use of unsafe blocks, in the DataChain object. There is however unsafe blocks in
+the memory mapped container.</p>
 
 <h1 id='aborts' class='section-header'><a href='#aborts'>Aborts</a></h1>
 <p>There are no aborts in this crate.</p>
@@ -222,7 +223,7 @@ and
 <h1 id='undefined-behaviour' class='section-header'><a href='#undefined-behaviour'>Undefined Behaviour</a></h1>
 <p>None known of.</p>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub use node_block::{<a class='struct' href='../data_chain/node_block/struct.NodeBlock.html' title='data_chain::node_block::NodeBlock'>NodeBlock</a>, <a class='fn' href='../data_chain/node_block/fn.create_link_descriptor.html' title='data_chain::node_block::create_link_descriptor'>create_link_descriptor</a>};</code></td></tr><tr><td><code>pub use block_identifier::<a class='enum' href='../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>;</code></td></tr><tr><td><code>pub use data_chain::<a class='struct' href='../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr><td><code>pub use node_block::{<a class='struct' href='../data_chain/node_block/struct.NodeBlock.html' title='data_chain::node_block::NodeBlock'>NodeBlock</a>, <a class='fn' href='../data_chain/node_block/fn.create_link_descriptor.html' title='data_chain::node_block::create_link_descriptor'>create_link_descriptor</a>};</code></td></tr><tr><td><code>pub use block_identifier::<a class='enum' href='../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>;</code></td></tr><tr><td><code>pub use data_chain::<a class='struct' href='../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a>;</code></td></tr><tr><td><code>pub use mmap::<a class='struct' href='../data_chain/mmap/struct.FileDataChain.html' title='data_chain::mmap::FileDataChain'>FileDataChain</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='mod' href='block/index.html'
@@ -251,6 +252,13 @@ links</p>
                                   title='data_chain::error'>error</a></td>
                            <td class='docblock short'>
                                 <p>Error types for this crate</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='mmap/index.html'
+                                  title='data_chain::mmap'>mmap</a></td>
+                           <td class='docblock short'>
+                                <p>Memory backed storage and access for persistent data chain</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
