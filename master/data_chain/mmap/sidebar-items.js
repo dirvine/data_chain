@@ -1,1 +1,0 @@
-initSidebarItems({"struct":[["FileDataChain","A memory map backed data chain"]]});
