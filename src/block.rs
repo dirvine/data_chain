@@ -27,7 +27,7 @@
 use sodiumoxide::crypto;
 use maidsafe_utilities::serialisation;
 use block_identifier::BlockIdentifier;
-use node_block::{NodeBlock, NodeBlockProof};
+use node_block::{NodeBlock, Proof};
 use error::Error;
 
 /// Used to validate chain
@@ -37,7 +37,7 @@ use error::Error;
 #[derive(Debug, RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct Block {
     identifier: BlockIdentifier,
-    proof: Vec<NodeBlockProof>,
+    proof: Vec<Proof>,
     pub valid: bool,
 }
 
@@ -48,7 +48,7 @@ impl Block {
             return Err(Error::Signature);
         }
         let mut vec = Vec::new();
-        vec.push(NodeBlockProof::new(*node_block.proof().key(), *node_block.proof().sig()));
+        vec.push(Proof::new(*node_block.proof().key(), *node_block.proof().sig()));
         Ok(Block {
             identifier: node_block.identifier().clone(),
             proof: vec,
@@ -57,19 +57,19 @@ impl Block {
     }
 
     /// Add a proof from a peer
-    pub fn add_proof(&mut self, proof: NodeBlockProof) -> Result<(), Error> {
+    pub fn add_proof(&mut self, proof: Proof) -> Result<(), Error> {
         if !self.validate_proof(&proof) {
             return Err(Error::Signature);
         }
         if !self.proof().iter().any(|x| x.key() == proof.key()) {
-            self.proof.push(NodeBlockProof::new(*proof.key(), *proof.sig()));
+            self.proof.push(Proof::new(*proof.key(), *proof.sig()));
             return Ok(());
         }
         Err(Error::Validation)
     }
 
     /// validate signed correctly
-    pub fn validate_proof(&self, proof: &NodeBlockProof) -> bool {
+    pub fn validate_proof(&self, proof: &Proof) -> bool {
         let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
             data
         } else {
@@ -96,16 +96,16 @@ impl Block {
             self.proof.clear();
             return;
         };
-        self.proof.retain(|x| crypto::sign::verify_detached(&x.sig(), &data[..], &x.key()));
+        self.proof.retain(|x| crypto::sign::verify_detached(x.sig(), &data[..], x.key()));
     }
 
     /// getter
-    pub fn proof(&self) -> &Vec<NodeBlockProof> {
+    pub fn proof(&self) -> &Vec<Proof> {
         &self.proof
     }
 
     /// getter
-    pub fn proof_mut(&mut self) -> &Vec<NodeBlockProof> {
+    pub fn proof_mut(&mut self) -> &Vec<Proof> {
         &self.proof
     }
 

@@ -25,8 +25,42 @@
 
 
 // use sodiumoxide::crypto;
-// use maidsafe_utilities::serialisation;
+use maidsafe_utilities::serialisation;
 // use block_identifier::BlockIdentifier;
 // use node_block::{NodeBlock, NodeBlockProof};
-// use error::Error;
+use error::Error;
+
+use std::io::{self, Read};
+use std::fs;
+use fs2::*;
+use std::path::Path;
+
+pub struct
+
+
+    /// Create a new chain backed up on disk
+	/// Provide the directory to create the files in
+	pub fn new(path: &Path) -> io::Result<DataChain> {
+		let path = path.join("data_chain");
+        let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path));
+		// hold a lock on the file for the whole session
+		try!(file.lock_exclusive());
+        Ok(DataChain {
+			chain : Blocks::default(),
+			path : path.to_str().unwrap().to_string(),
+			})
+	}
+ /// Open from existing directory
+	pub fn open_path(path: &Path) -> Result<DataChain, Error> {
+		let path = path.join("data_chain");
+        let mut file = try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path));
+		// hold a lock on the file for the whole session
+		try!(file.lock_exclusive());
+		let mut buf = Vec::<u8>::new();
+		let _ = try!(file.read_to_end(&mut buf));
+        Ok(DataChain {
+			chain : try!(serialisation::deserialise::<Blocks>(&buf[..])),
+			path : path.to_str().unwrap().to_string()
+		})
+	}
 

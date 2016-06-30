@@ -45,15 +45,15 @@ pub fn create_link_descriptor(group: &[PublicKey]) -> LinkDescriptor {
 
 /// Proof as provided by a close group member
 #[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Debug, Clone)]
-pub struct NodeBlockProof {
+pub struct Proof {
     key: PublicKey,
     sig: Signature,
 }
 
-impl NodeBlockProof {
+impl Proof {
     /// cstr
-    pub fn new(key: PublicKey, sig: Signature) -> NodeBlockProof {
-        NodeBlockProof {
+    pub fn new(key: PublicKey, sig: Signature) -> Proof {
+        Proof {
             key: key,
             sig: sig,
         }
@@ -77,7 +77,7 @@ impl NodeBlockProof {
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct NodeBlock {
     identifier: BlockIdentifier,
-    proof: NodeBlockProof,
+    proof: Proof,
 }
 
 impl NodeBlock {
@@ -92,7 +92,7 @@ impl NodeBlock {
 
         Ok(NodeBlock {
             identifier: data_identifier,
-            proof: NodeBlockProof::new(*pub_key, signature),
+            proof: Proof::new(*pub_key, signature),
         })
 
     }
@@ -102,7 +102,7 @@ impl NodeBlock {
         &self.identifier
     }
     /// Getter
-    pub fn proof(&self) -> &NodeBlockProof {
+    pub fn proof(&self) -> &Proof {
         &self.proof
     }
 

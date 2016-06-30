@@ -25,6 +25,7 @@
 
 use std::fmt;
 use std::error;
+use std::io;
 use maidsafe_utilities::serialisation;
 
 
@@ -35,6 +36,7 @@ use maidsafe_utilities::serialisation;
 #[derive(Debug)]
 pub enum Error {
     Serialisation(serialisation::SerialisationError),
+    Io(io::Error),
     Crypto,
     Validation,
     Signature,
@@ -47,6 +49,7 @@ impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             Error::Serialisation(ref err) => err.fmt(f),
+            Error::Io(ref err) => err.fmt(f),
             Error::Crypto => write!(f, "Crypto failure."),
             Error::Validation => write!(f, "Not enough signatures."),
             Error::Signature => write!(f, "Invalid signature."),
@@ -61,6 +64,7 @@ impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
             Error::Serialisation(ref err) => err.description(),
+            Error::Io(ref err) => err.description(),
             Error::Crypto => "Crypto failure.",
             Error::Validation => "Not enough signatures.",
             Error::Signature => "Invalid signature.",
@@ -68,6 +72,12 @@ impl error::Error for Error {
             Error::NoLink => "Cold not get a valid link.",
             Error::BadIdentifier => "Invalid identifier type.",
         }
+    }
+}
+
+impl From<io::Error> for Error {
+    fn from(orig_error: io::Error) -> Self {
+        Error::Io(orig_error)
     }
 }
 

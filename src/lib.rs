@@ -194,8 +194,7 @@
 //!
 //! # Safety
 //!
-//! There is no use of unsafe blocks, in the DataChain object. There is however unsafe blocks in
-//! the memory mapped container.
+//! There is no use of unsafe blocks.
 //!
 //! # Aborts
 //!
@@ -229,7 +228,7 @@
 
 #![cfg_attr(feature="clippy", feature(plugin))]
 #![cfg_attr(feature="clippy", plugin(clippy))]
-#![cfg_attr(feature="clippy", deny(clippy_pedantic))]
+#![cfg_attr(feature="clippy", deny(clippy))]
 #![cfg_attr(feature="clippy", allow(use_debug))]
 
 extern crate sodiumoxide;
@@ -238,6 +237,7 @@ extern crate rustc_serialize;
 extern crate maidsafe_utilities;
 extern crate itertools;
 // extern crate rayon;
+extern crate fs2;
 
 /// Error types for this crate
 pub mod error;

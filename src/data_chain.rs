@@ -25,12 +25,18 @@
 
 use std::slice::{Split, SplitMut, SplitN, SplitNMut, RSplitN, RSplitNMut};
 use std::mem;
+use std::io::{self, Read};
+use std::fs;
+use fs2::*;
+use std::path::Path;
 use itertools::Itertools;
+use maidsafe_utilities::serialisation;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
 use node_block;
 use sodiumoxide::crypto::sign::PublicKey;
+use error::Error;
 // use mmap::FileDataChain;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
@@ -46,10 +52,43 @@ use sodiumoxide::crypto::sign::PublicKey;
 #[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
+	path: String
 }
 
+type Blocks = Vec<Block>;
+
+// impl Drop for DataChain
+
+/// FIXME - only write out the vector not the name
+
 impl DataChain {
-    /// Nodes always validate a chain before accepting it
+	/// Create a new chain backed up on disk
+	/// Provide the directory to create the files in
+	pub fn new(path: &Path) -> io::Result<DataChain> {
+		let full_path = path.join("data_chain");
+        let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&full_path));
+		// hold a lock on the file for the whole session
+		try!(file.lock_exclusive());
+        Ok(DataChain {
+			chain : Blocks::default(),
+			path : full_path.to_string_lossy().clone().to_string(),
+			})
+	}
+ /// Open from existing directory
+	pub fn open_path(path: &Path) -> Result<DataChain, Error> {
+		let full_path = path.join("data_chain");
+        let mut file = try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&full_path));
+		// hold a lock on the file for the whole session
+		try!(file.lock_exclusive());
+		let mut buf = Vec::<u8>::new();
+		let _ = try!(file.read_to_end(&mut buf));
+        Ok(DataChain {
+			chain : try!(serialisation::deserialise::<Blocks>(&buf[..])),
+			path : full_path.to_string_lossy().clone().to_string(),
+		})
+	}
+
+	/// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
@@ -79,7 +118,7 @@ impl DataChain {
         let len;
         let links;
         {
-            links = self.valid_links_at_block_id(&block.identifier());
+            links = self.valid_links_at_block_id(block.identifier());
             // TODO the previous call should only get links prior and after the
             // position of this match if any
             len = self.chain.len();
@@ -93,9 +132,8 @@ impl DataChain {
         }
         {
 
-            let mut iter = self.chain.iter_mut();
 
-            while let Some(blk) = iter.next() {
+            for blk in &mut self.chain {
                 if blk.identifier() == block.identifier() {
                     if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
                         return None;
@@ -104,7 +142,7 @@ impl DataChain {
                     let _ = blk.add_proof(block.proof().clone());
 
                     if len == 1 ||
-                       links.chain
+                       links
                         .iter()
                         .filter(|x| x.identifier() != blk.identifier())
                         .any(|y| Self::validate_block_with_proof(blk, y)) {
@@ -164,7 +202,7 @@ impl DataChain {
 
     /// Check if chain contains a particular identifier
     pub fn contains(&self, block_identifier: &BlockIdentifier) -> bool {
-        self.chain.iter().find(|x| x.identifier() == block_identifier).is_some()
+        self.chain.iter().any(|x| x.identifier() == block_identifier)
     }
 
     /// Return position of block identifier
@@ -274,7 +312,7 @@ impl DataChain {
     /// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
-        for link in &self.valid_links_at_block_id(&block.identifier()).chain {
+        for link in &self.valid_links_at_block_id(block.identifier()) {
             if Self::validate_block_with_proof(block, link) {
                 return true;
             }
@@ -317,32 +355,28 @@ impl DataChain {
 
     /// Return all links in chain
     /// Does not perform validation on links
-    pub fn get_all_links(&self) -> DataChain {
-        DataChain {
-            chain: self.chain
+    pub fn get_all_links(&self) -> Vec<Block> {
+            self.chain
                 .iter()
                 .cloned()
                 .filter(|x| x.identifier().is_link())
-                .collect_vec(),
-        }
+                .collect_vec()
 
     }
 
     /// Validate and return all links in chain
-    pub fn get_all_valid_links(&mut self) -> DataChain {
+    pub fn get_all_valid_links(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
-        DataChain {
-            chain: self.chain
+            self.chain
                 .iter()
                 .cloned()
                 .filter(|x| x.identifier().is_link() && x.valid)
-                .collect_vec(),
-        }
+                .collect_vec()
 
     }
 
     /// Validate and return all valid links in chain 4 before and after target
-    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> DataChain {
+    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> Vec<Block> {
         // FIXME the value of 4 is arbitrary
         // instead the length of last link len() should perhaps be used
         let top_links = self.chain
@@ -363,7 +397,7 @@ impl DataChain {
             .collect_vec();
         bottom_links.extend(top_links);
 
-        DataChain { chain: bottom_links }
+        bottom_links
 
     }
 
@@ -374,9 +408,9 @@ impl DataChain {
             .iter()
             .cloned()
             .find(|x| x.identifier().is_link()) {
-            for block in self.chain.iter_mut() {
+            for block in &mut self.chain {
                 block.remove_invalid_signatures();
-                if Self::validate_block_with_proof(block, &mut first_link) {
+                if Self::validate_block_with_proof(block, &first_link) {
                     block.valid = true;
                     if block.identifier().is_link() {
                         first_link = block.clone();
@@ -549,9 +583,9 @@ mod tests {
         assert!(chain.validate_ownership(&pub3));
         assert!(!chain.validate_ownership(&pub1));
         let chain_links = chain.get_all_links();
-        assert_eq!(chain, chain_links);
+        assert_eq!(chain.chain, chain_links);
         let chain_valid_links = chain.get_all_valid_links();
-        assert_eq!(chain, chain_valid_links);
+        assert_eq!(chain.chain, chain_valid_links);
         assert_eq!(chain.len(), 3);
         assert!(!chain.is_empty());
         assert_eq!(chain.blocks_len(), 0);
