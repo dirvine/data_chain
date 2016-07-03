@@ -23,21 +23,14 @@
 // and limitations
 // relating to use of the SAFE Network Software.
 
-use std::slice::{Split, SplitMut, SplitN, SplitNMut, RSplitN, RSplitNMut};
+use std::slice::{RSplitN, RSplitNMut, Split, SplitMut, SplitN, SplitNMut};
 use std::mem;
-use std::io::{self, Read};
-use std::fs;
-use fs2::*;
-use std::path::Path;
 use itertools::Itertools;
-use maidsafe_utilities::serialisation;
 use block::Block;
 use block_identifier::BlockIdentifier;
 use node_block::NodeBlock;
 use node_block;
 use sodiumoxide::crypto::sign::PublicKey;
-use error::Error;
-// use mmap::FileDataChain;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -52,43 +45,15 @@ use error::Error;
 #[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
-	path: String
+    path: String,
 }
 
 type Blocks = Vec<Block>;
 
-// impl Drop for DataChain
-
 /// FIXME - only write out the vector not the name
 
 impl DataChain {
-	/// Create a new chain backed up on disk
-	/// Provide the directory to create the files in
-	pub fn new(path: &Path) -> io::Result<DataChain> {
-		let full_path = path.join("data_chain");
-        let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&full_path));
-		// hold a lock on the file for the whole session
-		try!(file.lock_exclusive());
-        Ok(DataChain {
-			chain : Blocks::default(),
-			path : full_path.to_string_lossy().clone().to_string(),
-			})
-	}
- /// Open from existing directory
-	pub fn open_path(path: &Path) -> Result<DataChain, Error> {
-		let full_path = path.join("data_chain");
-        let mut file = try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&full_path));
-		// hold a lock on the file for the whole session
-		try!(file.lock_exclusive());
-		let mut buf = Vec::<u8>::new();
-		let _ = try!(file.read_to_end(&mut buf));
-        Ok(DataChain {
-			chain : try!(serialisation::deserialise::<Blocks>(&buf[..])),
-			path : full_path.to_string_lossy().clone().to_string(),
-		})
-	}
-
-	/// Nodes always validate a chain before accepting it
+    /// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
     /// our current group with the majority of the last known link
@@ -119,8 +84,6 @@ impl DataChain {
         let links;
         {
             links = self.valid_links_at_block_id(block.identifier());
-            // TODO the previous call should only get links prior and after the
-            // position of this match if any
             len = self.chain.len();
 
             if self.chain.is_empty() {
@@ -142,8 +105,7 @@ impl DataChain {
                     let _ = blk.add_proof(block.proof().clone());
 
                     if len == 1 ||
-                       links
-                        .iter()
+                       links.iter()
                         .filter(|x| x.identifier() != blk.identifier())
                         .any(|y| Self::validate_block_with_proof(blk, y)) {
                         blk.valid = true;
@@ -356,22 +318,22 @@ impl DataChain {
     /// Return all links in chain
     /// Does not perform validation on links
     pub fn get_all_links(&self) -> Vec<Block> {
-            self.chain
-                .iter()
-                .cloned()
-                .filter(|x| x.identifier().is_link())
-                .collect_vec()
+        self.chain
+            .iter()
+            .cloned()
+            .filter(|x| x.identifier().is_link())
+            .collect_vec()
 
     }
 
     /// Validate and return all links in chain
     pub fn get_all_valid_links(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
-            self.chain
-                .iter()
-                .cloned()
-                .filter(|x| x.identifier().is_link() && x.valid)
-                .collect_vec()
+        self.chain
+            .iter()
+            .cloned()
+            .filter(|x| x.identifier().is_link() && x.valid)
+            .collect_vec()
 
     }
 

@@ -24,7 +24,7 @@
 // relating to use of the SAFE Network Software.
 
 use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto::sign::{Signature, PublicKey, SecretKey};
+use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
 use sodiumoxide::crypto;
 use block_identifier::{BlockIdentifier, LinkDescriptor};
 use error::Error;

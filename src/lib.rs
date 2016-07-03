@@ -236,8 +236,6 @@ extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
 extern crate itertools;
-// extern crate rayon;
-extern crate fs2;
 
 /// Error types for this crate
 pub mod error;
@@ -260,4 +258,3 @@ pub use node_block::{NodeBlock, create_link_descriptor};
 pub use block_identifier::BlockIdentifier;
 
 pub use data_chain::DataChain;
-
