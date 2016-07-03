@@ -701,10 +701,6 @@
 <span id="657">657</span>
 <span id="658">658</span>
 <span id="659">659</span>
-<span id="660">660</span>
-<span id="661">661</span>
-<span id="662">662</span>
-<span id="663">663</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -731,7 +727,7 @@
 <span class='comment'>// and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>Split</span>, <span class='ident'>SplitMut</span>, <span class='ident'>SplitN</span>, <span class='ident'>SplitNMut</span>, <span class='ident'>RSplitN</span>, <span class='ident'>RSplitNMut</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>slice</span>::{<span class='ident'>RSplitN</span>, <span class='ident'>RSplitNMut</span>, <span class='ident'>Split</span>, <span class='ident'>SplitMut</span>, <span class='ident'>SplitN</span>, <span class='ident'>SplitNMut</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>block</span>::<span class='ident'>Block</span>;
@@ -739,7 +735,6 @@
 <span class='kw'>use</span> <span class='ident'>node_block</span>::<span class='ident'>NodeBlock</span>;
 <span class='kw'>use</span> <span class='ident'>node_block</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
-<span class='comment'>// use mmap::FileDataChain;</span>
 
 <span class='doccomment'>/// Created by holder of chain, can be passed to others as proof of data held.</span>
 <span class='doccomment'>/// This object is verifiable if :</span>
@@ -754,7 +749,12 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Default</span>, <span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>DataChain</span> {
     <span class='ident'>chain</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>,
+    <span class='ident'>path</span>: <span class='ident'>String</span>,
 }
+
+<span class='kw'>type</span> <span class='ident'>Blocks</span> <span class='op'>=</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>;
+
+<span class='doccomment'>/// FIXME - only write out the vector not the name</span>
 
 <span class='kw'>impl</span> <span class='ident'>DataChain</span> {
     <span class='doccomment'>/// Nodes always validate a chain before accepting it</span>
@@ -787,9 +787,7 @@
         <span class='kw'>let</span> <span class='ident'>len</span>;
         <span class='kw'>let</span> <span class='ident'>links</span>;
         {
-            <span class='ident'>links</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>valid_links_at_block_id</span>(<span class='kw-2'>&amp;</span><span class='ident'>block</span>.<span class='ident'>identifier</span>());
-            <span class='comment'>// TODO the previous call should only get links prior and after the</span>
-            <span class='comment'>// position of this match if any</span>
+            <span class='ident'>links</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>valid_links_at_block_id</span>(<span class='ident'>block</span>.<span class='ident'>identifier</span>());
             <span class='ident'>len</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>len</span>();
 
             <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>is_empty</span>() {
@@ -801,9 +799,8 @@
         }
         {
 
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>();
 
-            <span class='kw'>while</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>blk</span>) <span class='op'>=</span> <span class='ident'>iter</span>.<span class='ident'>next</span>() {
+            <span class='kw'>for</span> <span class='ident'>blk</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>chain</span> {
                 <span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block</span>.<span class='ident'>identifier</span>() {
                     <span class='kw'>if</span> <span class='ident'>blk</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>key</span>() <span class='op'>==</span> <span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>key</span>()) {
                         <span class='kw'>return</span> <span class='prelude-val'>None</span>;
@@ -812,8 +809,7 @@
                     <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>blk</span>.<span class='ident'>add_proof</span>(<span class='ident'>block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>());
 
                     <span class='kw'>if</span> <span class='ident'>len</span> <span class='op'>==</span> <span class='number'>1</span> <span class='op'>||</span>
-                       <span class='ident'>links</span>.<span class='ident'>chain</span>
-                        .<span class='ident'>iter</span>()
+                       <span class='ident'>links</span>.<span class='ident'>iter</span>()
                         .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>blk</span>.<span class='ident'>identifier</span>())
                         .<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>y</span><span class='op'>|</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>blk</span>, <span class='ident'>y</span>)) {
                         <span class='ident'>blk</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
@@ -872,7 +868,7 @@
 
     <span class='doccomment'>/// Check if chain contains a particular identifier</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>block_identifier</span>: <span class='kw-2'>&amp;</span><span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block_identifier</span>).<span class='ident'>is_some</span>()
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>==</span> <span class='ident'>block_identifier</span>)
     }
 
     <span class='doccomment'>/// Return position of block identifier</span>
@@ -982,7 +978,7 @@
     <span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
     <span class='doccomment'>/// were from last known valid group.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>for</span> <span class='ident'>link</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>valid_links_at_block_id</span>(<span class='kw-2'>&amp;</span><span class='ident'>block</span>.<span class='ident'>identifier</span>()).<span class='ident'>chain</span> {
+        <span class='kw'>for</span> <span class='ident'>link</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>valid_links_at_block_id</span>(<span class='ident'>block</span>.<span class='ident'>identifier</span>()) {
             <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='ident'>link</span>) {
                 <span class='kw'>return</span> <span class='boolval'>true</span>;
             }
@@ -1025,32 +1021,28 @@
 
     <span class='doccomment'>/// Return all links in chain</span>
     <span class='doccomment'>/// Does not perform validation on links</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_all_links</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>DataChain</span> {
-        <span class='ident'>DataChain</span> {
-            <span class='ident'>chain</span>: <span class='self'>self</span>.<span class='ident'>chain</span>
-                .<span class='ident'>iter</span>()
-                .<span class='ident'>cloned</span>()
-                .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>())
-                .<span class='ident'>collect_vec</span>(),
-        }
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_all_links</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>chain</span>
+            .<span class='ident'>iter</span>()
+            .<span class='ident'>cloned</span>()
+            .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>())
+            .<span class='ident'>collect_vec</span>()
 
     }
 
     <span class='doccomment'>/// Validate and return all links in chain</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_all_valid_links</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>DataChain</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>get_all_valid_links</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>mark_blocks_valid</span>();
-        <span class='ident'>DataChain</span> {
-            <span class='ident'>chain</span>: <span class='self'>self</span>.<span class='ident'>chain</span>
-                .<span class='ident'>iter</span>()
-                .<span class='ident'>cloned</span>()
-                .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>x</span>.<span class='ident'>valid</span>)
-                .<span class='ident'>collect_vec</span>(),
-        }
+        <span class='self'>self</span>.<span class='ident'>chain</span>
+            .<span class='ident'>iter</span>()
+            .<span class='ident'>cloned</span>()
+            .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>x</span>.<span class='ident'>valid</span>)
+            .<span class='ident'>collect_vec</span>()
 
     }
 
     <span class='doccomment'>/// Validate and return all valid links in chain 4 before and after target</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>valid_links_at_block_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block_id</span>: <span class='kw-2'>&amp;</span><span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>DataChain</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>valid_links_at_block_id</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block_id</span>: <span class='kw-2'>&amp;</span><span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
         <span class='comment'>// FIXME the value of 4 is arbitrary</span>
         <span class='comment'>// instead the length of last link len() should perhaps be used</span>
         <span class='kw'>let</span> <span class='ident'>top_links</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>
@@ -1071,7 +1063,7 @@
             .<span class='ident'>collect_vec</span>();
         <span class='ident'>bottom_links</span>.<span class='ident'>extend</span>(<span class='ident'>top_links</span>);
 
-        <span class='ident'>DataChain</span> { <span class='ident'>chain</span>: <span class='ident'>bottom_links</span> }
+        <span class='ident'>bottom_links</span>
 
     }
 
@@ -1082,9 +1074,9 @@
             .<span class='ident'>iter</span>()
             .<span class='ident'>cloned</span>()
             .<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>()) {
-            <span class='kw'>for</span> <span class='ident'>block</span> <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter_mut</span>() {
+            <span class='kw'>for</span> <span class='ident'>block</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>chain</span> {
                 <span class='ident'>block</span>.<span class='ident'>remove_invalid_signatures</span>();
-                <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>first_link</span>) {
+                <span class='kw'>if</span> <span class='ident'>Self</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>block</span>, <span class='kw-2'>&amp;</span><span class='ident'>first_link</span>) {
                     <span class='ident'>block</span>.<span class='ident'>valid</span> <span class='op'>=</span> <span class='boolval'>true</span>;
                     <span class='kw'>if</span> <span class='ident'>block</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() {
                         <span class='ident'>first_link</span> <span class='op'>=</span> <span class='ident'>block</span>.<span class='ident'>clone</span>();
@@ -1257,9 +1249,9 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>validate_ownership</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub3</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chain</span>.<span class='ident'>validate_ownership</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>));
         <span class='kw'>let</span> <span class='ident'>chain_links</span> <span class='op'>=</span> <span class='ident'>chain</span>.<span class='ident'>get_all_links</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>, <span class='ident'>chain_links</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>chain</span>, <span class='ident'>chain_links</span>);
         <span class='kw'>let</span> <span class='ident'>chain_valid_links</span> <span class='op'>=</span> <span class='ident'>chain</span>.<span class='ident'>get_all_valid_links</span>();
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>, <span class='ident'>chain_valid_links</span>);
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>chain</span>, <span class='ident'>chain_valid_links</span>);
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>3</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chain</span>.<span class='ident'>is_empty</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>blocks_len</span>(), <span class='number'>0</span>);

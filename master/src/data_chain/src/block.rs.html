@@ -188,7 +188,7 @@
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
 <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
-<span class='kw'>use</span> <span class='ident'>node_block</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>NodeBlockProof</span>};
+<span class='kw'>use</span> <span class='ident'>node_block</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>Proof</span>};
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 
 <span class='doccomment'>/// Used to validate chain</span>
@@ -198,7 +198,7 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Block</span> {
     <span class='ident'>identifier</span>: <span class='ident'>BlockIdentifier</span>,
-    <span class='ident'>proof</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>NodeBlockProof</span><span class='op'>&gt;</span>,
+    <span class='ident'>proof</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Proof</span><span class='op'>&gt;</span>,
     <span class='kw'>pub</span> <span class='ident'>valid</span>: <span class='ident'>bool</span>,
 }
 
@@ -209,7 +209,7 @@
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Signature</span>);
         }
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>vec</span> <span class='op'>=</span> <span class='ident'>Vec</span>::<span class='ident'>new</span>();
-        <span class='ident'>vec</span>.<span class='ident'>push</span>(<span class='ident'>NodeBlockProof</span>::<span class='ident'>new</span>(<span class='op'>*</span><span class='ident'>node_block</span>.<span class='ident'>proof</span>().<span class='ident'>key</span>(), <span class='op'>*</span><span class='ident'>node_block</span>.<span class='ident'>proof</span>().<span class='ident'>sig</span>()));
+        <span class='ident'>vec</span>.<span class='ident'>push</span>(<span class='ident'>Proof</span>::<span class='ident'>new</span>(<span class='op'>*</span><span class='ident'>node_block</span>.<span class='ident'>proof</span>().<span class='ident'>key</span>(), <span class='op'>*</span><span class='ident'>node_block</span>.<span class='ident'>proof</span>().<span class='ident'>sig</span>()));
         <span class='prelude-val'>Ok</span>(<span class='ident'>Block</span> {
             <span class='ident'>identifier</span>: <span class='ident'>node_block</span>.<span class='ident'>identifier</span>().<span class='ident'>clone</span>(),
             <span class='ident'>proof</span>: <span class='ident'>vec</span>,
@@ -218,19 +218,19 @@
     }
 
     <span class='doccomment'>/// Add a proof from a peer</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_proof</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>proof</span>: <span class='ident'>NodeBlockProof</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_proof</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>proof</span>: <span class='ident'>Proof</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>validate_proof</span>(<span class='kw-2'>&amp;</span><span class='ident'>proof</span>) {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Signature</span>);
         }
         <span class='kw'>if</span> <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>key</span>() <span class='op'>==</span> <span class='ident'>proof</span>.<span class='ident'>key</span>()) {
-            <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>push</span>(<span class='ident'>NodeBlockProof</span>::<span class='ident'>new</span>(<span class='op'>*</span><span class='ident'>proof</span>.<span class='ident'>key</span>(), <span class='op'>*</span><span class='ident'>proof</span>.<span class='ident'>sig</span>()));
+            <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>push</span>(<span class='ident'>Proof</span>::<span class='ident'>new</span>(<span class='op'>*</span><span class='ident'>proof</span>.<span class='ident'>key</span>(), <span class='op'>*</span><span class='ident'>proof</span>.<span class='ident'>sig</span>()));
             <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(());
         }
         <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Validation</span>)
     }
 
     <span class='doccomment'>/// validate signed correctly</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>proof</span>: <span class='kw-2'>&amp;</span><span class='ident'>NodeBlockProof</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>proof</span>: <span class='kw-2'>&amp;</span><span class='ident'>Proof</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>) {
             <span class='ident'>data</span>
         } <span class='kw'>else</span> {
@@ -257,16 +257,16 @@
             <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>clear</span>();
             <span class='kw'>return</span>;
         };
-        <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='kw-2'>&amp;</span><span class='ident'>x</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='kw-2'>&amp;</span><span class='ident'>x</span>.<span class='ident'>key</span>()));
+        <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>retain</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='ident'>x</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='ident'>x</span>.<span class='ident'>key</span>()));
     }
 
     <span class='doccomment'>/// getter</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>NodeBlockProof</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>proof</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Proof</span><span class='op'>&gt;</span> {
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>proof</span>
     }
 
     <span class='doccomment'>/// getter</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>proof_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>NodeBlockProof</span><span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>proof_mut</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Proof</span><span class='op'>&gt;</span> {
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>proof</span>
     }
 

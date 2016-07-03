@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-172' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#47-49' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-182' class='srclink' href='../../src/data_chain/src/data_chain.rs.html#46-49' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct DataChain {
     // some fields omitted
 }</pre><div class='docblock'><p>Created by holder of chain, can be passed to others as proof of data held.
@@ -60,7 +60,8 @@ at vault level.
 If there was a restart then the nodes should validate and continue.
 N:B this means all nodes can use a named directory for data store and clear if they restart
 as a new id. This allows clean-up of old data cache directories.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='impl-items'><h4 id='method.validate_ownership' class='method'><code>fn <a href='#method.validate_ownership' class='fnname'>validate_ownership</a>(&amp;mut self, my_group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h3><div class='docblock'><p>FIXME - only write out the vector not the name</p>
+</div><div class='impl-items'><h4 id='method.validate_ownership' class='method'><code>fn <a href='#method.validate_ownership' class='fnname'>validate_ownership</a>(&amp;mut self, my_group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Nodes always validate a chain before accepting it
 Validation takes place from start of chain to now.
 Also confirm we can accept this chain, by comparing
@@ -152,12 +153,12 @@ were from last known valid group.</p>
 <div class='docblock'><p>number of links</p>
 </div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Contains no blocks that are not valid</p>
-</div><h4 id='method.get_all_links' class='method'><code>fn <a href='#method.get_all_links' class='fnname'>get_all_links</a>(&amp;self) -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
+</div><h4 id='method.get_all_links' class='method'><code>fn <a href='#method.get_all_links' class='fnname'>get_all_links</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>&gt;</code></h4>
 <div class='docblock'><p>Return all links in chain
 Does not perform validation on links</p>
-</div><h4 id='method.get_all_valid_links' class='method'><code>fn <a href='#method.get_all_valid_links' class='fnname'>get_all_valid_links</a>(&amp;mut self) -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
+</div><h4 id='method.get_all_valid_links' class='method'><code>fn <a href='#method.get_all_valid_links' class='fnname'>get_all_valid_links</a>(&amp;mut self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>&gt;</code></h4>
 <div class='docblock'><p>Validate and return all links in chain</p>
-</div><h4 id='method.valid_links_at_block_id' class='method'><code>fn <a href='#method.valid_links_at_block_id' class='fnname'>valid_links_at_block_id</a>(&amp;mut self, block_id: &amp;<a class='enum' href='../../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='struct' href='../../data_chain/data_chain/struct.DataChain.html' title='data_chain::data_chain::DataChain'>DataChain</a></code></h4>
+</div><h4 id='method.valid_links_at_block_id' class='method'><code>fn <a href='#method.valid_links_at_block_id' class='fnname'>valid_links_at_block_id</a>(&amp;mut self, block_id: &amp;<a class='enum' href='../../data_chain/block_identifier/enum.BlockIdentifier.html' title='data_chain::block_identifier::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../data_chain/block/struct.Block.html' title='data_chain::block::Block'>Block</a>&gt;</code></h4>
 <div class='docblock'><p>Validate and return all valid links in chain 4 before and after target</p>
 </div><h4 id='method.mark_blocks_valid' class='method'><code>fn <a href='#method.mark_blocks_valid' class='fnname'>mark_blocks_valid</a>(&amp;mut self)</code></h4>
 <div class='docblock'><p>Mark all links that are valid as such.</p>
