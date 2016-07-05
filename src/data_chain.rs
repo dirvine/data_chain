@@ -695,6 +695,7 @@ mod tests {
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
+        assert!(chain.write().is_err());
     }
 
     #[test]
