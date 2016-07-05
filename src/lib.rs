@@ -238,6 +238,9 @@ extern crate maidsafe_utilities;
 extern crate itertools;
 extern crate fs2;
 
+#[cfg(test)]
+extern crate tempdir;
+
 /// Error types for this crate
 pub mod error;
 
