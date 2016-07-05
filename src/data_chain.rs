@@ -695,7 +695,6 @@ mod tests {
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
-        println!("size is {}", chain.size_of());
     }
 
     #[test]
@@ -778,7 +777,6 @@ mod tests {
         assert!(chain.add_node_block(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
-        println!("size is {}", chain.size_of());
         assert!(chain.write().is_ok());
         let chain2 = DataChain::from_path(&dir.path());
         assert!(chain2.is_ok());
