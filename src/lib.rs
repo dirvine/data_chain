@@ -236,6 +236,7 @@ extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;
 extern crate itertools;
+extern crate fs2;
 
 /// Error types for this crate
 pub mod error;

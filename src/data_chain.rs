@@ -25,6 +25,13 @@
 
 use std::slice::{RSplitN, RSplitNMut, Split, SplitMut, SplitN, SplitNMut};
 use std::mem;
+use std::path::{Path, PathBuf};
+use error::Error;
+use std::io::{self, Write, Read};
+use std::fs;
+use fs2::FileExt;
+use maidsafe_utilities::serialisation;
+use std::borrow::Cow;
 use itertools::Itertools;
 use block::Block;
 use block_identifier::BlockIdentifier;
@@ -43,16 +50,51 @@ use sodiumoxide::crypto::sign::PublicKey;
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
 #[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
-pub struct DataChain {
+pub struct DataChain<'a> {
     chain: Vec<Block>,
-    path: String,
+    path: Option<Cow<'a, PathBuf>>,
 }
 
 type Blocks = Vec<Block>;
 
 /// FIXME - only write out the vector not the name
 
-impl DataChain {
+impl<'a> DataChain<'a> {
+    /// Create a new chain backed up on disk
+    /// Provide the directory to create the files in
+    pub fn create_in_path(path: &Path) -> io::Result<DataChain> {
+        let path = path.join("data_chain");
+        let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path));
+        // hold a lock on the file for the whole session
+        try!(file.lock_exclusive());
+        Ok(DataChain {
+            chain: Blocks::default(),
+            path: Some(Cow::Owned(path)),
+        })
+    }
+    /// Open from existing directory
+    pub fn from_path(path: &Path) -> Result<DataChain, Error> {
+        let path = path.join("data_chain");
+        let mut file =
+            try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path));
+        // hold a lock on the file for the whole session
+        try!(file.lock_exclusive());
+        let mut buf = Vec::<u8>::new();
+        let _ = try!(file.read_to_end(&mut buf));
+        Ok(DataChain {
+            chain: try!(serialisation::deserialise::<Blocks>(&buf[..])),
+            path: Some(Cow::Owned(path)),
+        })
+    }
+    /// Write current data chain to supplied path
+    pub fn write(&self) -> Result<(), Error> {
+        if let Some(path) = self.path.to_owned() {
+        let mut file =
+            try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path.as_path()));
+           try!(file.write_all(&try!(serialisation::serialise(&self.chain))))
+        }
+        Err(Error::NoFile)
+    }
     /// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
@@ -657,3 +699,4 @@ mod tests {
         println!("size is {}", chain.size_of());
     }
 }
+
