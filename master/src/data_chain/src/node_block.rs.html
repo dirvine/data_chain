@@ -192,37 +192,25 @@
 <span id="148">148</span>
 <span id="149">149</span>
 <span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
-<span class='comment'>// This SAFE Network Software is licensed to you under (1) the MaidSafe.net</span>
-<span class='comment'>// Commercial License,</span>
-<span class='comment'>// version 1.0 or later, or (2) The General Public License (GPL), version 3,</span>
-<span class='comment'>// depending on which</span>
+<span class='comment'>// This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,</span>
+<span class='comment'>// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which</span>
 <span class='comment'>// licence you accepted on initial access to the Software (the &quot;Licences&quot;).</span>
 <span class='comment'>//</span>
-<span class='comment'>// By contributing code to the SAFE Network Software, or to this project</span>
-<span class='comment'>// generally, you agree to be</span>
-<span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0.</span>
-<span class='comment'>// This, along with the</span>
-<span class='comment'>// Licenses can be found in the root directory of this project at LICENSE,</span>
-<span class='comment'>// COPYING and CONTRIBUTOR.</span>
+<span class='comment'>// By contributing code to the SAFE Network Software, or to this project generally, you agree to be</span>
+<span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the</span>
+<span class='comment'>// Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network</span>
-<span class='comment'>// Software distributed</span>
-<span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES</span>
-<span class='comment'>// OR CONDITIONS OF ANY</span>
+<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed </span>
+<span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
 <span class='comment'>// KIND, either express or implied.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Please review the Licences for the specific language governing permissions</span>
-<span class='comment'>// and limitations</span>
+<span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
+
+
 
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::{<span class='ident'>PublicKey</span>, <span class='ident'>SecretKey</span>, <span class='ident'>Signature</span>};
@@ -312,7 +300,7 @@
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>) {
             <span class='ident'>data</span>
         } <span class='kw'>else</span> {
-            <span class='kw'>return</span> <span class='boolval'>false</span>;
+            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
         };
         <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>key</span>())
     }
@@ -322,7 +310,7 @@
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>identifier</span>) {
             <span class='ident'>data</span>
         } <span class='kw'>else</span> {
-            <span class='kw'>return</span> <span class='boolval'>false</span>;
+            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
         };
         <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>key</span>())
     }
@@ -331,7 +319,7 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='ident'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
     <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
@@ -379,6 +367,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

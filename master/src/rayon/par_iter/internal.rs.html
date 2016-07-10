@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/rayon-0.4.0/src/par_iter/internal.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rayon-0.4.0/src/par_iter/internal.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>internal.rs.html -- source</title>
@@ -181,12 +181,12 @@
 <span class='doccomment'>//! See `README.md` for a high-level overview.</span>
 
 <span class='kw'>use</span> <span class='ident'>join</span>;
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>IndexedParallelIterator</span>;
-<span class='kw'>use</span> <span class='ident'>super</span>::<span class='ident'>len</span>::<span class='op'>*</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>IndexedParallelIterator</span>;
+<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>len</span>::<span class='op'>*</span>;
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ProducerCallback</span><span class='op'>&lt;</span><span class='ident'>ITEM</span><span class='op'>&gt;</span> {
     <span class='kw'>type</span> <span class='ident'>Output</span>;
-    <span class='kw'>fn</span> <span class='ident'>callback</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>producer</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Output</span>
+    <span class='kw'>fn</span> <span class='ident'>callback</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>producer</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>
         <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>Producer</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>ITEM</span><span class='op'>&gt;</span>;
 }
 
@@ -199,13 +199,13 @@
 
     <span class='doccomment'>/// Split into two producers; one produces items `0..index`, the</span>
     <span class='doccomment'>/// other `index..N`. Index must be less than `N`.</span>
-    <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='kw'>Self</span>, <span class='kw'>Self</span>);
+    <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='self'>Self</span>, <span class='self'>Self</span>);
 }
 
 <span class='doccomment'>/// A consumer which consumes items that are fed to it.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>&gt;</span>: <span class='ident'>Send</span> <span class='op'>+</span> <span class='ident'>Sized</span> {
-    <span class='kw'>type</span> <span class='ident'>Folder</span>: <span class='ident'>Folder</span><span class='op'>&lt;</span><span class='ident'>Item</span>, <span class='prelude-ty'>Result</span><span class='op'>=</span><span class='ident'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
-    <span class='kw'>type</span> <span class='ident'>Reducer</span>: <span class='ident'>Reducer</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Folder</span>: <span class='ident'>Folder</span><span class='op'>&lt;</span><span class='ident'>Item</span>, <span class='prelude-ty'>Result</span><span class='op'>=</span><span class='self'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Reducer</span>: <span class='ident'>Reducer</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='prelude-ty'>Result</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='prelude-ty'>Result</span>: <span class='ident'>Send</span>;
 
     <span class='doccomment'>/// If it costs `producer_cost` to produce the items we will</span>
@@ -216,11 +216,11 @@
     <span class='doccomment'>/// `0..index` and one processing items from `index..`. Also</span>
     <span class='doccomment'>/// produces a reducer that can be used to reduce the results at</span>
     <span class='doccomment'>/// the end.</span>
-    <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='kw'>Self</span>, <span class='kw'>Self</span>, <span class='ident'>Self</span>::<span class='ident'>Reducer</span>);
+    <span class='kw'>fn</span> <span class='ident'>split_at</span>(<span class='self'>self</span>, <span class='ident'>index</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> (<span class='self'>Self</span>, <span class='self'>Self</span>, <span class='self'>Self</span>::<span class='ident'>Reducer</span>);
 
     <span class='doccomment'>/// Convert the consumer into a folder that can consume items</span>
     <span class='doccomment'>/// sequentially, eventually producing a final result.</span>
-    <span class='kw'>fn</span> <span class='ident'>into_folder</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Folder</span>;
+    <span class='kw'>fn</span> <span class='ident'>into_folder</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Folder</span>;
 
 }
 
@@ -228,10 +228,10 @@
     <span class='kw'>type</span> <span class='prelude-ty'>Result</span>;
 
     <span class='doccomment'>/// Consume next item and return new sequential state.</span>
-    <span class='kw'>fn</span> <span class='ident'>consume</span>(<span class='self'>self</span>, <span class='ident'>item</span>: <span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>consume</span>(<span class='self'>self</span>, <span class='ident'>item</span>: <span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
 
     <span class='doccomment'>/// Finish consuming items, produce final result.</span>
-    <span class='kw'>fn</span> <span class='ident'>complete</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='prelude-ty'>Result</span>;
+    <span class='kw'>fn</span> <span class='ident'>complete</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='prelude-ty'>Result</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>Reducer</span><span class='op'>&lt;</span><span class='prelude-ty'>Result</span><span class='op'>&gt;</span> {
@@ -242,8 +242,8 @@
 
 <span class='doccomment'>/// A stateless consumer can be freely copied.</span>
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>UnindexedConsumer</span><span class='op'>&lt;</span><span class='ident'>ITEM</span><span class='op'>&gt;</span>: <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='ident'>ITEM</span><span class='op'>&gt;</span> {
-    <span class='kw'>fn</span> <span class='ident'>split_off</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span>;
-    <span class='kw'>fn</span> <span class='ident'>to_reducer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Reducer</span>;
+    <span class='kw'>fn</span> <span class='ident'>split_off</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>;
+    <span class='kw'>fn</span> <span class='ident'>to_reducer</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Reducer</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>bridge</span><span class='op'>&lt;</span><span class='ident'>PAR_ITER</span>,<span class='ident'>C</span><span class='op'>&gt;</span>(<span class='kw-2'>mut</span> <span class='ident'>par_iter</span>: <span class='ident'>PAR_ITER</span>,
@@ -331,6 +331,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

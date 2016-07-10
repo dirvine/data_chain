@@ -50,15 +50,18 @@
                </span><a id='src-153' class='srclink' href='../src/rayon/api.rs.html#212-214' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ThreadPool {
     // some fields omitted
-}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><code>impl <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></h3><div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(configuration: <a class='struct' href='../rayon/struct.Configuration.html' title='rayon::Configuration'>Configuration</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a>, <a class='enum' href='../rayon/enum.InitError.html' title='rayon::InitError'>InitError</a>&gt;</code></h4>
+}</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-155' class='srclink' href='../src/rayon/api.rs.html#216-239' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(configuration: <a class='struct' href='../rayon/struct.Configuration.html' title='rayon::Configuration'>Configuration</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a>, <a class='enum' href='../rayon/enum.InitError.html' title='rayon::InitError'>InitError</a>&gt;</code></h4>
 <div class='docblock'><p>Constructs a new thread pool with the given configuration. If
 the configuration is not valid, returns a suitable <code>Err</code>
 result.  See <code>InitError</code> for more details.</p>
 </div><h4 id='method.install' class='method'><code>fn <a href='#method.install' class='fnname'>install</a>&lt;OP, R&gt;(&amp;self, op: OP) -&gt; R <span class='where'>where OP: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnOnce.html' title='core::ops::FnOnce'>FnOnce</a>() -&gt; R + <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Send.html' title='core::marker::Send'>Send</a></span></code></h4>
 <div class='docblock'><p>Executes <code>op</code> within the threadpool. Any attempts to <code>join</code>
 which occur there will then operate within that threadpool.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></h3><div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-</div></section>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-166' class='srclink' href='../src/rayon/api.rs.html#241-245' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
+<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
@@ -81,6 +84,8 @@ which occur there will then operate within that threadpool.</p>
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/rayon-0.4.0/src/thread_pool.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rayon-0.4.0/src/thread_pool.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>thread_pool.rs.html -- source</title>
@@ -566,7 +566,7 @@
 
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>terminate</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>state</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>();
-        <span class='ident'>state</span>.<span class='ident'>terminate</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+        <span class='ident'>state</span>.<span class='ident'>terminate</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
         <span class='kw'>for</span> <span class='ident'>job</span> <span class='kw'>in</span> <span class='ident'>state</span>.<span class='ident'>injected_jobs</span>.<span class='ident'>drain</span>(..) {
             <span class='kw'>unsafe</span> {
                 (<span class='op'>*</span><span class='ident'>job</span>.<span class='number'>0</span>).<span class='ident'>abort</span>();
@@ -581,7 +581,7 @@
         <span class='ident'>RegistryState</span> {
             <span class='ident'>threads_at_work</span>: <span class='number'>0</span>,
             <span class='ident'>injected_jobs</span>: <span class='ident'>VecDeque</span>::<span class='ident'>new</span>(),
-            <span class='ident'>terminate</span>: <span class='boolval'>false</span>,
+            <span class='ident'>terminate</span>: <span class='boolvalue'>false</span>,
         }
     }
 }
@@ -711,12 +711,12 @@
     }
     <span class='kw'>let</span> <span class='ident'>_guard</span> <span class='op'>=</span> <span class='ident'>PanicGuard</span>;
 
-    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
     <span class='kw'>loop</span> {
         <span class='kw'>match</span> <span class='ident'>registry</span>.<span class='ident'>wait_for_work</span>(<span class='ident'>index</span>, <span class='ident'>was_active</span>) {
             <span class='ident'>Work</span>::<span class='ident'>Job</span>(<span class='ident'>injected_job</span>) <span class='op'>=&gt;</span> {
                 (<span class='op'>*</span><span class='ident'>injected_job</span>.<span class='number'>0</span>).<span class='ident'>execute</span>();
-                <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+                <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
                 <span class='kw'>continue</span>;
             }
             <span class='ident'>Work</span>::<span class='ident'>Terminate</span> <span class='op'>=&gt;</span> <span class='kw'>break</span>,
@@ -727,9 +727,9 @@
             <span class='macro'>log</span><span class='macro'>!</span>(<span class='ident'>StoleWork</span> { <span class='ident'>worker</span>: <span class='ident'>index</span> });
             <span class='ident'>registry</span>.<span class='ident'>start_working</span>(<span class='ident'>index</span>);
             (<span class='op'>*</span><span class='ident'>stolen_job</span>.<span class='number'>0</span>).<span class='ident'>execute</span>();
-            <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolval'>true</span>;
+            <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolvalue'>true</span>;
         } <span class='kw'>else</span> {
-            <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolval'>false</span>;
+            <span class='ident'>was_active</span> <span class='op'>=</span> <span class='boolvalue'>false</span>;
         }
     }
 }
@@ -771,6 +771,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

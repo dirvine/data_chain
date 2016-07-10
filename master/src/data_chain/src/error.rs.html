@@ -133,37 +133,25 @@
 <span id="89">89</span>
 <span id="90">90</span>
 <span id="91">91</span>
-<span id="92">92</span>
-<span id="93">93</span>
-<span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
-<span id="97">97</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
-<span class='comment'>// This SAFE Network Software is licensed to you under (1) the MaidSafe.net</span>
-<span class='comment'>// Commercial License,</span>
-<span class='comment'>// version 1.0 or later, or (2) The General Public License (GPL), version 3,</span>
-<span class='comment'>// depending on which</span>
+<span class='comment'>// This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,</span>
+<span class='comment'>// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which</span>
 <span class='comment'>// licence you accepted on initial access to the Software (the &quot;Licences&quot;).</span>
 <span class='comment'>//</span>
-<span class='comment'>// By contributing code to the SAFE Network Software, or to this project</span>
-<span class='comment'>// generally, you agree to be</span>
-<span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0.</span>
-<span class='comment'>// This, along with the</span>
-<span class='comment'>// Licenses can be found in the root directory of this project at LICENSE,</span>
-<span class='comment'>// COPYING and CONTRIBUTOR.</span>
+<span class='comment'>// By contributing code to the SAFE Network Software, or to this project generally, you agree to be</span>
+<span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the</span>
+<span class='comment'>// Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network</span>
-<span class='comment'>// Software distributed</span>
-<span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES</span>
-<span class='comment'>// OR CONDITIONS OF ANY</span>
+<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed </span>
+<span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
 <span class='comment'>// KIND, either express or implied.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Please review the Licences for the specific language governing permissions</span>
-<span class='comment'>// and limitations</span>
+<span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
+
+
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
@@ -221,19 +209,19 @@
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>io</span>::<span class='ident'>Error</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>orig_error</span>: <span class='ident'>io</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>orig_error</span>: <span class='ident'>io</span>::<span class='ident'>Error</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>Error</span>::<span class='ident'>Io</span>(<span class='ident'>orig_error</span>)
     }
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>serialisation</span>::<span class='ident'>SerialisationError</span><span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>orig_error</span>: <span class='ident'>serialisation</span>::<span class='ident'>SerialisationError</span>) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>orig_error</span>: <span class='ident'>serialisation</span>::<span class='ident'>SerialisationError</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>Error</span>::<span class='ident'>Serialisation</span>(<span class='ident'>orig_error</span>)
     }
 }
 
 <span class='kw'>impl</span> <span class='ident'>From</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Error</span> {
-    <span class='kw'>fn</span> <span class='ident'>from</span>(_: ()) <span class='op'>-&gt;</span> <span class='kw'>Self</span> {
+    <span class='kw'>fn</span> <span class='ident'>from</span>(_: ()) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
         <span class='ident'>Error</span>::<span class='ident'>Crypto</span>
     }
 }
@@ -261,6 +249,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 

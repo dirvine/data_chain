@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-88ac128001ac3a9a/rayon-0.4.0/src/par_iter/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/rayon-0.4.0/src/par_iter/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -515,28 +515,28 @@
 <span class='kw'>mod</span> <span class='ident'>test</span>;
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>IntoParallelIterator</span> {
-    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Item</span>: <span class='ident'>Send</span>;
 
-    <span class='kw'>fn</span> <span class='ident'>into_par_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Iter</span>;
+    <span class='kw'>fn</span> <span class='ident'>into_par_iter</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Iter</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>IntoParallelRefIterator</span><span class='op'>&lt;</span><span class='lifetime'>&#39;data</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Item</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;data</span>;
 
-    <span class='kw'>fn</span> <span class='ident'>par_iter</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Iter</span>;
+    <span class='kw'>fn</span> <span class='ident'>par_iter</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Iter</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>IntoParallelRefMutIterator</span><span class='op'>&lt;</span><span class='lifetime'>&#39;data</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Item</span>: <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;data</span>;
 
-    <span class='kw'>fn</span> <span class='ident'>par_iter_mut</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Iter</span>;
+    <span class='kw'>fn</span> <span class='ident'>par_iter_mut</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Iter</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ToParallelChunks</span><span class='op'>&lt;</span><span class='lifetime'>&#39;data</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> [<span class='ident'>Self</span>::<span class='ident'>Item</span>]<span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> [<span class='self'>Self</span>::<span class='ident'>Item</span>]<span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Item</span>: <span class='ident'>Sync</span> <span class='op'>+</span> <span class='lifetime'>&#39;data</span>;
 
     <span class='doccomment'>/// Returns a parallel iterator over at most `size` elements of</span>
@@ -547,11 +547,11 @@
     <span class='doccomment'>/// produce many chunks with fewer than `size` elements), but an</span>
     <span class='doccomment'>/// implementation should strive to maximize chunk size when</span>
     <span class='doccomment'>/// possible.</span>
-    <span class='kw'>fn</span> <span class='ident'>par_chunks</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='self'>self</span>, <span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Iter</span>;
+    <span class='kw'>fn</span> <span class='ident'>par_chunks</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='self'>self</span>, <span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Iter</span>;
 }
 
 <span class='kw'>pub</span> <span class='kw'>trait</span> <span class='ident'>ToParallelChunksMut</span><span class='op'>&lt;</span><span class='lifetime'>&#39;data</span><span class='op'>&gt;</span> {
-    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> [<span class='ident'>Self</span>::<span class='ident'>Item</span>]<span class='op'>&gt;</span>;
+    <span class='kw'>type</span> <span class='ident'>Iter</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> [<span class='self'>Self</span>::<span class='ident'>Item</span>]<span class='op'>&gt;</span>;
     <span class='kw'>type</span> <span class='ident'>Item</span>: <span class='ident'>Send</span> <span class='op'>+</span> <span class='lifetime'>&#39;data</span>;
 
     <span class='doccomment'>/// Returns a parallel iterator over at most `size` elements of</span>
@@ -562,7 +562,7 @@
     <span class='doccomment'>/// produce many chunks with fewer than `size` elements), but an</span>
     <span class='doccomment'>/// implementation should strive to maximize chunk size when</span>
     <span class='doccomment'>/// possible.</span>
-    <span class='kw'>fn</span> <span class='ident'>par_chunks_mut</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Iter</span>;
+    <span class='kw'>fn</span> <span class='ident'>par_chunks_mut</span>(<span class='kw-2'>&amp;</span><span class='lifetime'>&#39;data</span> <span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Iter</span>;
 }
 
 <span class='doccomment'>/// The `ParallelIterator` interface.</span>
@@ -579,7 +579,7 @@
     <span class='doccomment'>/// finest grained parallel execution posible. Tuning this value</span>
     <span class='doccomment'>/// should not affect correctness but can improve (or hurt)</span>
     <span class='doccomment'>/// performance.</span>
-    <span class='kw'>fn</span> <span class='ident'>weight</span>(<span class='self'>self</span>, <span class='ident'>scale</span>: <span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='ident'>Weight</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>weight</span>(<span class='self'>self</span>, <span class='ident'>scale</span>: <span class='ident'>f64</span>) <span class='op'>-&gt;</span> <span class='ident'>Weight</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
         <span class='ident'>Weight</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>scale</span>)
     }
 
@@ -587,29 +587,29 @@
     <span class='doccomment'>/// smallest granularity of parallel execution, which makes sense</span>
     <span class='doccomment'>/// when your parallel tasks are (potentially) very expensive to</span>
     <span class='doccomment'>/// execute.</span>
-    <span class='kw'>fn</span> <span class='ident'>weight_max</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Weight</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>weight_max</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Weight</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>weight</span>(<span class='ident'>f64</span>::<span class='ident'>INFINITY</span>)
     }
 
     <span class='doccomment'>/// Executes `OP` on each item produced by the iterator, in parallel.</span>
     <span class='kw'>fn</span> <span class='ident'>for_each</span><span class='op'>&lt;</span><span class='ident'>OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>op</span>: <span class='ident'>OP</span>)
-        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>+</span> <span class='ident'>Sync</span>
+        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>+</span> <span class='ident'>Sync</span>
     {
         <span class='ident'>for_each</span>::<span class='ident'>for_each</span>(<span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>op</span>)
     }
 
     <span class='doccomment'>/// Applies `map_op` to each item of this iterator, producing a new</span>
     <span class='doccomment'>/// iterator with the results.</span>
-    <span class='kw'>fn</span> <span class='ident'>map</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span>,<span class='ident'>R</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>map_op</span>: <span class='ident'>MAP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>MapFn</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span><span class='op'>&gt;&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>MAP_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='ident'>Sync</span>
+    <span class='kw'>fn</span> <span class='ident'>map</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span>,<span class='ident'>R</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>map_op</span>: <span class='ident'>MAP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>MapFn</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span><span class='op'>&gt;&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>MAP_OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>R</span> <span class='op'>+</span> <span class='ident'>Sync</span>
     {
         <span class='ident'>Map</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>MapFn</span>(<span class='ident'>map_op</span>))
     }
 
     <span class='doccomment'>/// Creates an iterator which clones all of its elements.  This may be</span>
     <span class='doccomment'>/// useful when you have an iterator over `&amp;T`, but you need `T`.</span>
-    <span class='kw'>fn</span> <span class='ident'>cloned</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>MapCloned</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>T</span>: <span class='lifetime'>&#39;a</span> <span class='op'>+</span> <span class='ident'>Clone</span>, <span class='kw'>Self</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>cloned</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>MapCloned</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>T</span>: <span class='lifetime'>&#39;a</span> <span class='op'>+</span> <span class='ident'>Clone</span>, <span class='self'>Self</span>: <span class='ident'>ParallelIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span>
     {
         <span class='ident'>Map</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>MapCloned</span>)
     }
@@ -617,32 +617,32 @@
     <span class='doccomment'>/// Applies `inspect_op` to a reference to each item of this iterator,</span>
     <span class='doccomment'>/// producing a new iterator passing through the original items.  This is</span>
     <span class='doccomment'>/// often useful for debugging to see what&#39;s happening in iterator stages.</span>
-    <span class='kw'>fn</span> <span class='ident'>inspect</span><span class='op'>&lt;</span><span class='ident'>INSPECT_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>inspect_op</span>: <span class='ident'>INSPECT_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>MapInspect</span><span class='op'>&lt;</span><span class='ident'>INSPECT_OP</span><span class='op'>&gt;&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>INSPECT_OP</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>+</span> <span class='ident'>Sync</span>
+    <span class='kw'>fn</span> <span class='ident'>inspect</span><span class='op'>&lt;</span><span class='ident'>INSPECT_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>inspect_op</span>: <span class='ident'>INSPECT_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Map</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>MapInspect</span><span class='op'>&lt;</span><span class='ident'>INSPECT_OP</span><span class='op'>&gt;&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>INSPECT_OP</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>+</span> <span class='ident'>Sync</span>
     {
         <span class='ident'>Map</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>MapInspect</span>(<span class='ident'>inspect_op</span>))
     }
 
     <span class='doccomment'>/// Applies `filter_op` to each item of this iterator, producing a new</span>
     <span class='doccomment'>/// iterator with only the items that gave `true` results.</span>
-    <span class='kw'>fn</span> <span class='ident'>filter</span><span class='op'>&lt;</span><span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>: <span class='ident'>FILTER_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Filter</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>FILTER_OP</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> <span class='op'>+</span> <span class='ident'>Sync</span>
+    <span class='kw'>fn</span> <span class='ident'>filter</span><span class='op'>&lt;</span><span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>: <span class='ident'>FILTER_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Filter</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>FILTER_OP</span>: <span class='ident'>Fn</span>(<span class='kw-2'>&amp;</span><span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> <span class='op'>+</span> <span class='ident'>Sync</span>
     {
         <span class='ident'>Filter</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>)
     }
 
     <span class='doccomment'>/// Applies `filter_op` to each item of this iterator to get an `Option`,</span>
     <span class='doccomment'>/// producing a new iterator with only the items from `Some` results.</span>
-    <span class='kw'>fn</span> <span class='ident'>filter_map</span><span class='op'>&lt;</span><span class='ident'>FILTER_OP</span>,<span class='ident'>R</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>: <span class='ident'>FILTER_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>FilterMap</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>FILTER_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Sync</span>
+    <span class='kw'>fn</span> <span class='ident'>filter_map</span><span class='op'>&lt;</span><span class='ident'>FILTER_OP</span>,<span class='ident'>R</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>: <span class='ident'>FILTER_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>FilterMap</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>FILTER_OP</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>FILTER_OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>R</span><span class='op'>&gt;</span> <span class='op'>+</span> <span class='ident'>Sync</span>
     {
         <span class='ident'>FilterMap</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>filter_op</span>)
     }
 
     <span class='doccomment'>/// Applies `map_op` to each item of this iterator to get nested iterators,</span>
     <span class='doccomment'>/// producing a new iterator that flattens these back into one.</span>
-    <span class='kw'>fn</span> <span class='ident'>flat_map</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span>,<span class='ident'>PI</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>map_op</span>: <span class='ident'>MAP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>FlatMap</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>MAP_OP</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>MAP_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>PI</span> <span class='op'>+</span> <span class='ident'>Sync</span>, <span class='ident'>PI</span>: <span class='ident'>IntoParallelIterator</span>
+    <span class='kw'>fn</span> <span class='ident'>flat_map</span><span class='op'>&lt;</span><span class='ident'>MAP_OP</span>,<span class='ident'>PI</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>map_op</span>: <span class='ident'>MAP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>FlatMap</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>MAP_OP</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>MAP_OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>PI</span> <span class='op'>+</span> <span class='ident'>Sync</span>, <span class='ident'>PI</span>: <span class='ident'>IntoParallelIterator</span>
     {
         <span class='ident'>FlatMap</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>map_op</span>)
     }
@@ -655,8 +655,8 @@
     <span class='doccomment'>/// will be applied to reduce the result is not specified. So `op`</span>
     <span class='doccomment'>/// should be commutative and associative or else the results will</span>
     <span class='doccomment'>/// be non-deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>reduce_with</span><span class='op'>&lt;</span><span class='ident'>OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>op</span>: <span class='ident'>OP</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
-        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>, <span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+    <span class='kw'>fn</span> <span class='ident'>reduce_with</span><span class='op'>&lt;</span><span class='ident'>OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>op</span>: <span class='ident'>OP</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>, <span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>.<span class='ident'>map</span>(<span class='prelude-val'>Some</span>), <span class='kw-2'>&amp;</span><span class='ident'>ReduceWithOp</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>op</span>))
     }
@@ -676,9 +676,9 @@
     <span class='doccomment'>/// should be commutative and associative or else the results will</span>
     <span class='doccomment'>/// be non-deterministic. And of course `identity` should be a</span>
     <span class='doccomment'>/// true identity.</span>
-    <span class='kw'>fn</span> <span class='ident'>reduce_with_identity</span><span class='op'>&lt;</span><span class='ident'>OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>identity</span>: <span class='ident'>Self</span>::<span class='ident'>Item</span>, <span class='ident'>op</span>: <span class='ident'>OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='ident'>Self</span>::<span class='ident'>Item</span>, <span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
-              <span class='ident'>Self</span>::<span class='ident'>Item</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+    <span class='kw'>fn</span> <span class='ident'>reduce_with_identity</span><span class='op'>&lt;</span><span class='ident'>OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>identity</span>: <span class='self'>Self</span>::<span class='ident'>Item</span>, <span class='ident'>op</span>: <span class='ident'>OP</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>OP</span>: <span class='ident'>Fn</span>(<span class='self'>Self</span>::<span class='ident'>Item</span>, <span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+              <span class='self'>Self</span>::<span class='ident'>Item</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='kw-2'>&amp;</span><span class='ident'>ReduceWithIdentityOp</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>identity</span>, <span class='kw-2'>&amp;</span><span class='ident'>op</span>))
     }
@@ -739,7 +739,7 @@
                                  <span class='ident'>fold_op</span>: <span class='ident'>FOLD_OP</span>,
                                  <span class='ident'>reduce_op</span>: <span class='ident'>REDUCE_OP</span>)
                                  <span class='op'>-&gt;</span> <span class='ident'>I</span>
-        <span class='kw'>where</span> <span class='ident'>FOLD_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>I</span>, <span class='ident'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>I</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
+        <span class='kw'>where</span> <span class='ident'>FOLD_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>I</span>, <span class='self'>Self</span>::<span class='ident'>Item</span>) <span class='op'>-&gt;</span> <span class='ident'>I</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
               <span class='ident'>REDUCE_OP</span>: <span class='ident'>Fn</span>(<span class='ident'>I</span>, <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>I</span> <span class='op'>+</span> <span class='ident'>Sync</span>,
               <span class='ident'>I</span>: <span class='ident'>Clone</span> <span class='op'>+</span> <span class='ident'>Sync</span> <span class='op'>+</span> <span class='ident'>Send</span>,
     {
@@ -752,8 +752,8 @@
     <span class='doccomment'>/// so if the `+` operator is not truly commutative and</span>
     <span class='doccomment'>/// associative (as is the case for floating point numbers), then</span>
     <span class='doccomment'>/// the results are not fully deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>sum</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>SumOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>sum</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>SumOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>SUM</span>)
     }
@@ -764,8 +764,8 @@
     <span class='doccomment'>/// so if the `*` operator is not truly commutative and</span>
     <span class='doccomment'>/// associative (as is the case for floating point numbers), then</span>
     <span class='doccomment'>/// the results are not fully deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>MulOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>mul</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>MulOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>MUL</span>)
     }
@@ -776,8 +776,8 @@
     <span class='doccomment'>/// so if the `Ord` impl is not truly commutative and associative</span>
     <span class='doccomment'>/// (as is the case for floating point numbers), then the results</span>
     <span class='doccomment'>/// are not deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>min</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>MinOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>min</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>MinOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>MIN</span>)
     }
@@ -788,8 +788,8 @@
     <span class='doccomment'>/// so if the `Ord` impl is not truly commutative and associative</span>
     <span class='doccomment'>/// (as is the case for floating point numbers), then the results</span>
     <span class='doccomment'>/// are not deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>max</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>MaxOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>max</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>MaxOp</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>MAX</span>)
     }
@@ -800,8 +800,8 @@
     <span class='doccomment'>/// Note that the order in items will be reduced is not specified,</span>
     <span class='doccomment'>/// so if the `reduce_op` impl is not truly commutative and</span>
     <span class='doccomment'>/// associative, then the results are not deterministic.</span>
-    <span class='kw'>fn</span> <span class='ident'>reduce</span><span class='op'>&lt;</span><span class='ident'>REDUCE_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>reduce_op</span>: <span class='kw-2'>&amp;</span><span class='ident'>REDUCE_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>Self</span>::<span class='ident'>Item</span>
-        <span class='kw'>where</span> <span class='ident'>REDUCE_OP</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>reduce</span><span class='op'>&lt;</span><span class='ident'>REDUCE_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>reduce_op</span>: <span class='kw-2'>&amp;</span><span class='ident'>REDUCE_OP</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Item</span>
+        <span class='kw'>where</span> <span class='ident'>REDUCE_OP</span>: <span class='ident'>ReduceOp</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
     {
         <span class='ident'>reduce</span>(<span class='self'>self</span>, <span class='ident'>reduce_op</span>)
     }
@@ -810,7 +810,7 @@
     <span class='doccomment'>/// iterator. You should not need to call this directly.</span>
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>drive_unindexed</span><span class='op'>&lt;</span><span class='ident'>C</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>consumer</span>: <span class='ident'>C</span>) <span class='op'>-&gt;</span> <span class='ident'>C</span>::<span class='prelude-ty'>Result</span>
-        <span class='kw'>where</span> <span class='ident'>C</span>: <span class='ident'>UnindexedConsumer</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
+        <span class='kw'>where</span> <span class='ident'>C</span>: <span class='ident'>UnindexedConsumer</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>;
 }
 
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>ParallelIterator</span><span class='op'>&gt;</span> <span class='ident'>IntoParallelIterator</span> <span class='kw'>for</span> <span class='ident'>T</span> {
@@ -831,7 +831,7 @@
     <span class='doccomment'>/// Internal method used to define the behavior of this parallel</span>
     <span class='doccomment'>/// iterator. You should not need to call this directly.</span>
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>drive</span><span class='op'>&lt;</span><span class='lifetime'>&#39;c</span>, <span class='ident'>C</span>: <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;&gt;</span>(<span class='self'>self</span>,
+    <span class='kw'>fn</span> <span class='ident'>drive</span><span class='op'>&lt;</span><span class='lifetime'>&#39;c</span>, <span class='ident'>C</span>: <span class='ident'>Consumer</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;&gt;</span>(<span class='self'>self</span>,
                                                    <span class='ident'>consumer</span>: <span class='ident'>C</span>)
                                                    <span class='op'>-&gt;</span> <span class='ident'>C</span>::<span class='prelude-ty'>Result</span>;
 
@@ -855,7 +855,7 @@
     <span class='doccomment'>/// vector. The vector is always truncated before execution</span>
     <span class='doccomment'>/// begins. If possible, reusing the vector across calls can lead</span>
     <span class='doccomment'>/// to better performance since it reuses the same backing buffer.</span>
-    <span class='kw'>fn</span> <span class='ident'>collect_into</span>(<span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>) {
+    <span class='kw'>fn</span> <span class='ident'>collect_into</span>(<span class='self'>self</span>, <span class='ident'>target</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>) {
         <span class='ident'>collect_into</span>(<span class='self'>self</span>, <span class='ident'>target</span>);
     }
 }
@@ -868,21 +868,21 @@
     <span class='doccomment'>/// producer that can be used to request the items. Users of the</span>
     <span class='doccomment'>/// API never need to know about this fn.</span>
     <span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>with_producer</span><span class='op'>&lt;</span><span class='ident'>CB</span>: <span class='ident'>ProducerCallback</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;&gt;</span>(<span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>CB</span>) <span class='op'>-&gt;</span> <span class='ident'>CB</span>::<span class='ident'>Output</span>;
+    <span class='kw'>fn</span> <span class='ident'>with_producer</span><span class='op'>&lt;</span><span class='ident'>CB</span>: <span class='ident'>ProducerCallback</span><span class='op'>&lt;</span><span class='self'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;&gt;</span>(<span class='self'>self</span>, <span class='ident'>callback</span>: <span class='ident'>CB</span>) <span class='op'>-&gt;</span> <span class='ident'>CB</span>::<span class='ident'>Output</span>;
 
     <span class='doccomment'>/// Iterate over tuples `(A, B)`, where the items `A` are from</span>
     <span class='doccomment'>/// this iterator and `B` are from the iterator given as argument.</span>
     <span class='doccomment'>/// Like the `zip` method on ordinary iterators, if the two</span>
     <span class='doccomment'>/// iterators are of unequal length, you only get the items they</span>
     <span class='doccomment'>/// have in common.</span>
-    <span class='kw'>fn</span> <span class='ident'>zip</span><span class='op'>&lt;</span><span class='ident'>ZIP_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>zip_op</span>: <span class='ident'>ZIP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>ZipIter</span><span class='op'>&lt;</span><span class='kw'>Self</span>, <span class='ident'>ZIP_OP</span>::<span class='ident'>Iter</span><span class='op'>&gt;</span>
+    <span class='kw'>fn</span> <span class='ident'>zip</span><span class='op'>&lt;</span><span class='ident'>ZIP_OP</span><span class='op'>&gt;</span>(<span class='self'>self</span>, <span class='ident'>zip_op</span>: <span class='ident'>ZIP_OP</span>) <span class='op'>-&gt;</span> <span class='ident'>ZipIter</span><span class='op'>&lt;</span><span class='self'>Self</span>, <span class='ident'>ZIP_OP</span>::<span class='ident'>Iter</span><span class='op'>&gt;</span>
         <span class='kw'>where</span> <span class='ident'>ZIP_OP</span>: <span class='ident'>IntoParallelIterator</span>, <span class='ident'>ZIP_OP</span>::<span class='ident'>Iter</span>: <span class='ident'>IndexedParallelIterator</span>
     {
         <span class='ident'>ZipIter</span>::<span class='ident'>new</span>(<span class='self'>self</span>, <span class='ident'>zip_op</span>.<span class='ident'>into_par_iter</span>())
     }
 
     <span class='doccomment'>/// Yields an index along with each item.</span>
-    <span class='kw'>fn</span> <span class='ident'>enumerate</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Enumerate</span><span class='op'>&lt;</span><span class='kw'>Self</span><span class='op'>&gt;</span> {
+    <span class='kw'>fn</span> <span class='ident'>enumerate</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Enumerate</span><span class='op'>&lt;</span><span class='self'>Self</span><span class='op'>&gt;</span> {
         <span class='ident'>Enumerate</span>::<span class='ident'>new</span>(<span class='self'>self</span>)
     }
 }
@@ -911,6 +911,8 @@
                     <dd>Move down in search results</dd>
                     <dt>&#9166;</dt>
                     <dd>Go to active search result</dd>
+                    <dt>+</dt>
+                    <dd>Collapse/expand all sections</dd>
                 </dl>
             </div>
 
