@@ -230,6 +230,6 @@ pub mod chain;
 pub mod data;
 
 
-pub use chain::{NodeBlock, create_link_descriptor, BlockIdentifier, DataChain};
+pub use chain::{BlockIdentifier, DataChain, NodeBlock, create_link_descriptor};
 
-pub use data::{Data, DataIdentifier, MAX_BYTES, StructuredData, PlainData, ImmutableData};
+pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, PlainData, StructuredData};

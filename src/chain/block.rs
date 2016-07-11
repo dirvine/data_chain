@@ -19,7 +19,7 @@ use sodiumoxide::crypto;
 use maidsafe_utilities::serialisation;
 use error::Error;
 use chain::block_identifier::BlockIdentifier;
-use chain::node_block::{Proof, NodeBlock};
+use chain::node_block::{NodeBlock, Proof};
 /// Used to validate chain
 /// Block can be a data item or
 /// a chain link.

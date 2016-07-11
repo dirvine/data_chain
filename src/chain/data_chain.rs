@@ -21,7 +21,7 @@ use std::slice::{RSplitN, RSplitNMut, Split, SplitMut, SplitN, SplitNMut};
 use std::mem;
 use std::path::{Path, PathBuf};
 use error::Error;
-use std::io::{self, Write, Read};
+use std::io::{self, Read, Write};
 use std::fs;
 use fs2::FileExt;
 use maidsafe_utilities::serialisation;
@@ -735,9 +735,9 @@ mod tests {
                 assert!(chain.add_node_block(link1_3.unwrap()).is_some());
                 assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
                 assert_eq!(chain.len(), 1);
-// ########################################################################################
-// pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
-// ########################################################################################
+                // ###############################################################################
+                // pune_and_validate will prune any invalid data, In first link all data is valid
+                // ##############################################################################
                 assert!(chain.validate_ownership(&pub1));
                 assert!(!chain.validate_ownership(&pub3));
                 assert_eq!(chain.len(), 1);
