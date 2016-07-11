@@ -15,16 +15,14 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-
-
 use sodiumoxide::crypto::hash::sha256::Digest;
 
 /// structured Data name
 pub type SdName = Digest;
 
-/// Ledger type (delee or keep)
+/// Ledger type (delete or keep)
 pub type Ledger = bool;
-/// Represents the xored close group for the new grou on churn etc.
+/// Represents the xored close group for the new group on churn etc.
 /// This is signed by each group member.
 pub type LinkDescriptor = [u8; 32];
 

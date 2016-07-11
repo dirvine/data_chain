@@ -20,4 +20,6 @@ optional = true
 version = "~0.0.64"
 
 [dev-dependencies]
+rand = "0.3.14"
 tempdir = "0.3.4"
+unwrap = "1.1.0"

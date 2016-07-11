@@ -176,27 +176,6 @@
 //!
 //! ```
 //!
-//! # Panics
-//!
-//! If index is beyond length of chain
-//!
-//! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)
-//!
-//! # Errors
-//!
-//! A chain is usize in length. Passing from 32 -> 64 bit machine may cause an ooverflow error.
-//!
-//! # Safety
-//!
-//! There is no use of unsafe blocks.
-//!
-//! # Aborts
-//!
-//! There are no aborts in this crate.
-//!
-//! # Undefined Behaviour
-//!
-//! None known of.
 //! [1]: https://github.com/dirvine/data_chain/tree/master
 //! [3]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md
 
@@ -234,25 +213,31 @@ extern crate fs2;
 
 #[cfg(test)]
 extern crate tempdir;
+#[cfg(test)]
+#[macro_use]
+extern crate unwrap;
+#[cfg(test)]
+extern crate rand;
 
 /// Error types for this crate
 pub mod error;
 
 /// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or
 /// links
-pub mod block;
+pub mod chain;
 
-/// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
-pub mod data_chain;
+/// Data types 
+pub mod data;
 
-/// A node block is a partial block, sent by group members to each other to create a `Block`
-pub mod node_block;
+// /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
+// pub mod data_chain;
 
-/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
-pub mod block_identifier;
+// /// A node block is a partial block, sent by group members to each other to create a `Block`
+// pub mod node_block;
 
-pub use node_block::{NodeBlock, create_link_descriptor};
+// /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
+// pub mod block_identifier;
 
-pub use block_identifier::BlockIdentifier;
+pub use chain::{NodeBlock, create_link_descriptor, BlockIdentifier, DataChain};
 
-pub use data_chain::DataChain;
+pub use data::{Data, DataIdentifier, MAX_BYTES, StructuredData, PlainData, ImmutableData};

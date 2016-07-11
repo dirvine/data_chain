@@ -15,13 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-
 use sodiumoxide::crypto;
 use maidsafe_utilities::serialisation;
-use block_identifier::BlockIdentifier;
-use node_block::{NodeBlock, Proof};
 use error::Error;
-
+use chain::block_identifier::BlockIdentifier;
+use chain::node_block::{Proof, NodeBlock};
 /// Used to validate chain
 /// Block can be a data item or
 /// a chain link.

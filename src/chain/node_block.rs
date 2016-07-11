@@ -15,13 +15,12 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-
-
 use maidsafe_utilities::serialisation;
 use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
 use sodiumoxide::crypto;
-use block_identifier::{BlockIdentifier, LinkDescriptor};
 use error::Error;
+use chain::block_identifier::LinkDescriptor;
+use chain::block_identifier::BlockIdentifier;
 
 /// Descriptor is the xored group members starting with base of 0000..:32
 /// This process is faster than hash and means group can be unordered
@@ -125,7 +124,7 @@ impl NodeBlock {
 
 mod tests {
     use super::*;
-    use block_identifier::BlockIdentifier;
+    use chain::block_identifier::BlockIdentifier;
     use sodiumoxide::crypto;
     use sodiumoxide::crypto::hash::sha256;
 

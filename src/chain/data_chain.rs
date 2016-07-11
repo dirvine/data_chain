@@ -27,11 +27,10 @@ use fs2::FileExt;
 use maidsafe_utilities::serialisation;
 use std::borrow::Cow;
 use itertools::Itertools;
-use block::Block;
-use block_identifier::BlockIdentifier;
-use node_block::NodeBlock;
-use node_block;
 use sodiumoxide::crypto::sign::PublicKey;
+use chain::block::Block;
+use chain::block_identifier::BlockIdentifier;
+use chain::node_block::{self, NodeBlock};
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -436,10 +435,10 @@ mod tests {
     use sodiumoxide::crypto;
     use sodiumoxide::crypto::hash::sha256;
     use itertools::Itertools;
-    use node_block;
-    use node_block::NodeBlock;
-    use block::Block;
-    use block_identifier::BlockIdentifier;
+    use chain::node_block;
+    use chain::node_block::NodeBlock;
+    use chain::block::Block;
+    use chain::block_identifier::BlockIdentifier;
     use tempdir::TempDir;
 
     #[test]
