@@ -277,6 +277,10 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -299,7 +303,8 @@
 
 <span class='doccomment'>//! #data_chain</span>
 <span class='doccomment'>//! Data blocks can be chained to provide verifiable assuredness that they contain network valid</span>
-<span class='doccomment'>//! data and not injected.</span>
+<span class='doccomment'>//! data and that the data has been validly put onto the network by a previous consensus. This</span>
+<span class='doccomment'>//! consensus is validated from the data chain itslf through analysis of the chain links.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! A chain may look like</span>
 <span class='doccomment'>//!</span>
@@ -490,7 +495,8 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>maidsafe_utilities</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>fs2</span>;
-
+<span class='comment'>// #[macro_use]</span>
+<span class='comment'>// extern crate quick_error;</span>
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tempdir</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
@@ -509,6 +515,8 @@
 <span class='doccomment'>/// Data types</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data</span>;
 
+<span class='doccomment'>/// Persistant store on disk of Keys and large values</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>chunk_store</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>, <span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>};
 

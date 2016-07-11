@@ -47,11 +47,12 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#20-235' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#20-239' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data_chain' class='section-header'><a href='#data_chain'>data_chain</a></h1>
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
-data and not injected.</p>
+data and that the data has been validly put onto the network by a previous consensus. This
+consensus is validated from the data chain itslf through analysis of the chain links.</p>
 
 <p>A chain may look like</p>
 
@@ -216,6 +217,13 @@ links</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class='mod' href='chunk_store/index.html'
+                                  title='data_chain::chunk_store'>chunk_store</a></td>
+                           <td class='docblock short'>
+                                <p>Persistant store on disk of Keys and large values</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class='mod' href='data/index.html'
                                   title='data_chain::data'>data</a></td>
                            <td class='docblock short'>
@@ -234,7 +242,9 @@ links</p>
                            <td><a class='enum' href='enum.BlockIdentifier.html'
                                   title='data_chain::BlockIdentifier'>BlockIdentifier</a></td>
                            <td class='docblock short'>
-                                <p>Dummy data identifiers for this crate</p>
+                                <p>Data identifiers for use in a data Chain.
+The hash of each data type is available to ensure there is no confusion 
+over the validity of any data presented by this chain </p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
