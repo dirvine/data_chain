@@ -30,6 +30,7 @@
 //!
 //! TBD
 //!
+//! [Github repository](https://github.com/dirvine/data_chain)
 
 
 
