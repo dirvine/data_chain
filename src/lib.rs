@@ -232,6 +232,7 @@ pub mod chain;
 pub mod data;
 
 /// Persistant store on disk of Keys and large values
+//TODO should not be public
 pub mod chunk_store;
 
 pub use chain::{BlockIdentifier, DataChain, NodeBlock, create_link_descriptor};

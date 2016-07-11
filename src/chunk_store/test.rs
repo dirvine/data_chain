@@ -32,9 +32,8 @@ mod test {
     use rand::{self, Rng};
     use tempdir::TempDir;
 
-    #[cfg_attr(feature="clippy", allow(cast_possible_truncation))]
-    fn generate_random_bytes(size: u64) -> Vec<u8> {
-        rand::thread_rng().gen_iter().take(size as usize).collect()
+    fn generate_random_bytes(size: usize) -> Vec<u8> {
+        rand::thread_rng().gen_iter().take(size).collect()
     }
 
     struct Chunks {
@@ -52,8 +51,8 @@ mod test {
         let chunk_count: u8 = rand::random();
         for _ in 0..chunk_count {
             let size: u8 = rand::random();
-            let data = generate_random_bytes(size as u64);
-            let serialised_size = unwrap_result!(serialisation::serialise(&data)).len() as u64;
+            let data = generate_random_bytes(size as usize);
+            let serialised_size = unwrap!(serialisation::serialise(&data)).len() as u64;
             chunks.total_size += serialised_size;
             chunks.data_and_sizes.push((data, serialised_size));
         }
@@ -64,35 +63,35 @@ mod test {
     fn create_multiple_instances_in_the_same_root() {
         // root already exists
         {
-            let root = unwrap_result!(TempDir::new("test"));
+            let root = unwrap!(TempDir::new("test"));
 
-            let _1 = unwrap_result!(ChunkStore::<u64, u64>::new(root.path().join("store-1"), 64));
-            let _2 = unwrap_result!(ChunkStore::<u64, u64>::new(root.path().join("store-2"), 64));
+            let _1 = unwrap!(ChunkStore::<u64, u64>::new(root.path().join("store-1"), 64));
+            let _2 = unwrap!(ChunkStore::<u64, u64>::new(root.path().join("store-2"), 64));
         }
 
         // root doesn't exist yet
         {
-            let root = unwrap_result!(TempDir::new("test"));
+            let root = unwrap!(TempDir::new("test"));
             let root_path = root.path().join("foo").join("bar");
 
-            let _1 = unwrap_result!(ChunkStore::<u64, u64>::new(root_path.join("store-1"), 64));
-            let _2 = unwrap_result!(ChunkStore::<u64, u64>::new(root_path.join("store-2"), 64));
+            let _1 = unwrap!(ChunkStore::<u64, u64>::new(root_path.join("store-1"), 64));
+            let _2 = unwrap!(ChunkStore::<u64, u64>::new(root_path.join("store-2"), 64));
         }
     }
 
     #[test]
     fn storedir_should_cleanup() {
-        let tempdir = unwrap_result!(TempDir::new("test"));
+        let tempdir = unwrap!(TempDir::new("test"));
         let storedir = tempdir.path().join("test");
 
         {
-            let mut store = unwrap_result!(ChunkStore::<u64, u64>::new(storedir.clone(), 64));
+            let mut store = unwrap!(ChunkStore::<u64, u64>::new(storedir.clone(), 64));
             assert!(storedir.exists());
-            unwrap_result!(store.put(&3, &4));
+            unwrap!(store.put(&3, &4));
             // Creating another instance with the same directory should fail.
             assert!(ChunkStore::<u64, u64>::new(storedir.clone(), 64).is_err());
             // The failed attempt should not interfere with the existing chunk store.
-            assert_eq!(4, unwrap_result!(store.get(&3)));
+            assert_eq!(4, unwrap!(store.get(&3)));
             assert!(storedir.exists());
         }
 
@@ -102,14 +101,14 @@ mod test {
     #[test]
     fn successful_put() {
         let chunks = generate_random_chunks();
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut chunk_store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(),
-                                                             chunks.total_size));
+        let root = unwrap!(TempDir::new("test"));
+        let mut chunk_store = unwrap!(ChunkStore::new(root.path().to_path_buf(),
+                                                      chunks.total_size));
         {
             let mut put = |key, value, size| {
                 let size_before_insert = chunk_store.used_space();
                 assert!(!chunk_store.has(&key));
-                unwrap_result!(chunk_store.put(&key, value));
+                unwrap!(chunk_store.put(&key, value));
                 assert_eq!(chunk_store.used_space(), size + size_before_insert);
                 assert!(chunk_store.has(&key));
                 assert!(chunk_store.used_space() <= chunks.total_size);
@@ -131,9 +130,9 @@ mod test {
 
     #[test]
     fn failed_put_when_not_enough_space() {
-        let k_disk_size = 32;
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(), k_disk_size));
+        let k_disk_size = 32usize;
+        let root = unwrap!(TempDir::new("test"));
+        let mut store = unwrap!(ChunkStore::new(root.path().to_path_buf(), k_disk_size as u64));
         let key: u8 = rand::random();
         let data = generate_random_bytes(k_disk_size + 1);
 
@@ -143,14 +142,14 @@ mod test {
     #[test]
     fn delete() {
         let chunks = generate_random_chunks();
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut chunk_store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(),
-                                                             chunks.total_size));
+        let root = unwrap!(TempDir::new("test"));
+        let mut chunk_store = unwrap!(ChunkStore::new(root.path().to_path_buf(),
+                                                      chunks.total_size));
         let mut put_and_delete = |key, value, size| {
-            unwrap_result!(chunk_store.put(&key, value));
+            unwrap!(chunk_store.put(&key, value));
             assert_eq!(chunk_store.used_space(), size);
             assert!(chunk_store.has(&key));
-            unwrap_result!(chunk_store.delete(&key));
+            unwrap!(chunk_store.delete(&key));
             assert!(!chunk_store.has(&key));
             assert_eq!(chunk_store.used_space(), 0);
         };
@@ -163,14 +162,14 @@ mod test {
     #[test]
     fn put_and_get_value_should_be_same() {
         let chunks = generate_random_chunks();
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut chunk_store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(),
-                                                             chunks.total_size));
+        let root = unwrap!(TempDir::new("test"));
+        let mut chunk_store = unwrap!(ChunkStore::new(root.path().to_path_buf(),
+                                                      chunks.total_size));
         for (index, &(ref data, _)) in chunks.data_and_sizes.iter().enumerate() {
-            unwrap_result!(chunk_store.put(&(index as u32), data));
+            unwrap!(chunk_store.put(&(index as u32), data));
         }
         for (index, &(ref data, _)) in chunks.data_and_sizes.iter().enumerate() {
-            let retrieved_value = unwrap_result!(chunk_store.get(&(index as u32)));
+            let retrieved_value = unwrap!(chunk_store.get(&(index as u32)));
             assert!(*data == retrieved_value);
         }
     }
@@ -178,21 +177,21 @@ mod test {
     #[test]
     fn overwrite_value() {
         let chunks = generate_random_chunks();
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut chunk_store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(),
-                                                             chunks.total_size));
+        let root = unwrap!(TempDir::new("test"));
+        let mut chunk_store = unwrap!(ChunkStore::new(root.path().to_path_buf(),
+                                                      chunks.total_size));
         for (ref data, ref size) in chunks.data_and_sizes {
-            unwrap_result!(chunk_store.put(&0, data));
+            unwrap!(chunk_store.put(&0, data));
             assert_eq!(chunk_store.used_space(), *size);
-            let retrieved_value = unwrap_result!(chunk_store.get(&0));
+            let retrieved_value = unwrap!(chunk_store.get(&0));
             assert!(*data == retrieved_value);
         }
     }
 
     #[test]
     fn get_fails_when_key_does_not_exist() {
-        let root = unwrap_result!(TempDir::new("test"));
-        let chunk_store = unwrap_result!(ChunkStore::<u8, u8>::new(root.path().to_path_buf(), 64));
+        let root = unwrap!(TempDir::new("test"));
+        let chunk_store = unwrap!(ChunkStore::<u8, u8>::new(root.path().to_path_buf(), 64));
         let key = rand::random();
         assert_err!(chunk_store.get(&key), Error::NoFile);
     }
@@ -200,20 +199,20 @@ mod test {
     #[test]
     fn keys() {
         let chunks = generate_random_chunks();
-        let root = unwrap_result!(TempDir::new("test"));
-        let mut chunk_store = unwrap_result!(ChunkStore::new(root.path().to_path_buf(),
-                                                             chunks.total_size));
+        let root = unwrap!(TempDir::new("test"));
+        let mut chunk_store = unwrap!(ChunkStore::new(root.path().to_path_buf(),
+                                                      chunks.total_size));
 
         for (index, &(ref data, _)) in chunks.data_and_sizes.iter().enumerate() {
             assert!(!chunk_store.keys().contains(&index));
-            unwrap_result!(chunk_store.put(&index, data));
+            unwrap!(chunk_store.put(&index, data));
             assert!(chunk_store.keys().contains(&index));
             assert_eq!(chunk_store.keys().len(), index + 1);
         }
 
         for (index, _) in chunks.data_and_sizes.iter().enumerate() {
             assert!(chunk_store.keys().contains(&index));
-            unwrap_result!(chunk_store.delete(&index));
+            unwrap!(chunk_store.delete(&index));
             assert!(!chunk_store.keys().contains(&index));
             assert_eq!(chunk_store.keys().len(),
                        chunks.data_and_sizes.len() - index - 1);
