@@ -27,7 +27,9 @@ pub type Ledger = bool;
 pub type LinkDescriptor = [u8; 32];
 
 
-/// Dummy data identifiers for this crate
+/// Data identifiers for use in a data Chain. 
+/// The hash of each data type is available to ensure there is no confusion 
+/// over the validity of any data presented by this chain 
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub enum BlockIdentifier {
@@ -35,12 +37,13 @@ pub enum BlockIdentifier {
     ImmutableData(Digest),
     ///           hash     name (identity + tag) (stored localy as name in data store)
     StructuredData(Digest, SdName, Ledger),
-    /// This array represents **this nodes** current close roup
+    /// This array represents **this nodes** current close group
     /// The array is all nodes xored together
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
     Link(LinkDescriptor), // hash of group (all current close group id's)
-}
+
+  }
 
 impl BlockIdentifier {
     /// Define a name getter as data identifiers may contain more info that does

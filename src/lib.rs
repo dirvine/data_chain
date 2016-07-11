@@ -19,7 +19,8 @@
 
 //! #data_chain
 //! Data blocks can be chained to provide verifiable assuredness that they contain network valid
-//! data and not injected.
+//! data and that the data has been validly put onto the network by a previous consensus. This
+//! consensus is validated from the data chain itslf through analysis of the chain links.
 //!
 //! A chain may look like
 //!
@@ -210,7 +211,8 @@ extern crate rustc_serialize;
 extern crate maidsafe_utilities;
 extern crate itertools;
 extern crate fs2;
-
+// #[macro_use]
+// extern crate quick_error;
 #[cfg(test)]
 extern crate tempdir;
 #[cfg(test)]
@@ -229,6 +231,8 @@ pub mod chain;
 /// Data types
 pub mod data;
 
+/// Persistant store on disk of Keys and large values
+pub mod chunk_store;
 
 pub use chain::{BlockIdentifier, DataChain, NodeBlock, create_link_descriptor};
 
