@@ -42,246 +42,98 @@
         </form>
     </nav>
 
-    <section id='main' class="content source"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
-<span id="100">100</span>
-<span id="101">101</span>
-<span id="102">102</span>
-<span id="103">103</span>
-<span id="104">104</span>
-<span id="105">105</span>
-<span id="106">106</span>
-<span id="107">107</span>
-<span id="108">108</span>
-<span id="109">109</span>
-<span id="110">110</span>
-<span id="111">111</span>
-<span id="112">112</span>
-<span id="113">113</span>
-<span id="114">114</span>
-<span id="115">115</span>
-<span id="116">116</span>
-<span id="117">117</span>
-<span id="118">118</span>
-<span id="119">119</span>
-<span id="120">120</span>
-<span id="121">121</span>
-<span id="122">122</span>
-<span id="123">123</span>
-<span id="124">124</span>
-<span id="125">125</span>
-<span id="126">126</span>
-<span id="127">127</span>
-<span id="128">128</span>
-<span id="129">129</span>
-<span id="130">130</span>
-<span id="131">131</span>
-<span id="132">132</span>
-<span id="133">133</span>
-<span id="134">134</span>
-<span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-<span id="139">139</span>
-<span id="140">140</span>
-<span id="141">141</span>
-<span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
-<span id="157">157</span>
-<span id="158">158</span>
-<span id="159">159</span>
-<span id="160">160</span>
-<span id="161">161</span>
-<span id="162">162</span>
-<span id="163">163</span>
-<span id="164">164</span>
-<span id="165">165</span>
-<span id="166">166</span>
-<span id="167">167</span>
-<span id="168">168</span>
-<span id="169">169</span>
-<span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
-<span id="173">173</span>
-<span id="174">174</span>
-<span id="175">175</span>
-<span id="176">176</span>
-<span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
-<span id="180">180</span>
-<span id="181">181</span>
-<span id="182">182</span>
-<span id="183">183</span>
-<span id="184">184</span>
-<span id="185">185</span>
-<span id="186">186</span>
-<span id="187">187</span>
-<span id="188">188</span>
-<span id="189">189</span>
-<span id="190">190</span>
-<span id="191">191</span>
-<span id="192">192</span>
-<span id="193">193</span>
-<span id="194">194</span>
-<span id="195">195</span>
-<span id="196">196</span>
-<span id="197">197</span>
-<span id="198">198</span>
-<span id="199">199</span>
-<span id="200">200</span>
-<span id="201">201</span>
-<span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
-<span id="205">205</span>
-<span id="206">206</span>
-<span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
+    <section id='main' class="content source"><pre class="line-numbers"><span id="1"> 1</span>
+<span id="2"> 2</span>
+<span id="3"> 3</span>
+<span id="4"> 4</span>
+<span id="5"> 5</span>
+<span id="6"> 6</span>
+<span id="7"> 7</span>
+<span id="8"> 8</span>
+<span id="9"> 9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -300,170 +152,23 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
+<span class='doccomment'>//! # Data Chain</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! This crate holds three modules that together allow nodes in a decentralised network to manage</span>
+<span class='doccomment'>//! data and history of data and nodes in a container that in itself is decentralised.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! The modules here include the ability to cryptographically lock history of data and nodes</span>
+<span class='doccomment'>//! in a chain. There also exists the mechnism o persist these chains over sessions along with</span>
+<span class='doccomment'>//! a copy of the data itself (the `ChuinkStore`). The data representation is via the `Data` module.</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! # Example</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! Basic usage</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! TBD</span>
+<span class='doccomment'>//!</span>
 
 
-<span class='doccomment'>//! #data_chain</span>
-<span class='doccomment'>//! Data blocks can be chained to provide verifiable assuredness that they contain network valid</span>
-<span class='doccomment'>//! data and that the data has been validly put onto the network by a previous consensus. This</span>
-<span class='doccomment'>//! consensus is validated from the data chain itslf through analysis of the chain links.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! A chain may look like</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```norun</span>
-<span class='doccomment'>//! `link` - all current group members - cryptographically secured as valid</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  data - DataIdentifiers interspersed in a chain of links</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  data - each block signed by a majority of previous link</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  ....</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! `link` - As churn events occur new links are created</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! `link` - each link will have a majority</span>
-<span class='doccomment'>//!          (usually n - 1 actually) members of previous link</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  The chain, when presented to the current close group (the group identified in last link)</span>
-<span class='doccomment'>//!  can be validated as holding data that has been agreed by the network over time to exist,</span>
-<span class='doccomment'>//!  A chain provides cryptographic proofs of data and group memberships over time.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! The link is a group agreement chain component which is created by sorting the closest nodes</span>
-<span class='doccomment'>//! to a network node (Address) and sending this hash, signed to that node.</span>
-<span class='doccomment'>//! The recipient will then receive these, `NodeBlocks` and create the chain link.</span>
-<span class='doccomment'>//! This link will allow the agreed members of the group so sign `DataBlocks` for the chain</span>
-<span class='doccomment'>//! If a majority of the link members sign the data, it is validly in the chain.</span>
-<span class='doccomment'>//! On group membership changes, a new link is constructed in the chain and the process repeats.</span>
-<span class='doccomment'>//! A chain can split and nodes will maintain several chains, dependent on data overlaps with</span>
-<span class='doccomment'>//! the chains links.</span>
-<span class='doccomment'>//! The link identifier is the hash of all group members that contains the current node.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Containers of Chain Links only may also be maintained in groups to prove historic memberships</span>
-<span class='doccomment'>//! of a network. It is not well enough understoof the validity of this action, but it may prove</span>
-<span class='doccomment'>//! valuable in the event of network restarts.</span>
-<span class='doccomment'>//! Please also see [github repository][1],</span>
-<span class='doccomment'>//! and</span>
-<span class='doccomment'>//! [RFC][3]</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Examples</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! Basic usage:</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```rust</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!    extern crate sodiumoxide;</span>
-<span class='doccomment'>//!    extern crate data_chain;</span>
-<span class='doccomment'>//!    extern crate itertools;</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  fn main() {</span>
-<span class='doccomment'>//!    use sodiumoxide::crypto;</span>
-<span class='doccomment'>//!    use sodiumoxide::crypto::hash::sha256;</span>
-<span class='doccomment'>//!    use itertools::Itertools;</span>
-<span class='doccomment'>//!    use data_chain::{NodeBlock, BlockIdentifier, DataChain, create_link_descriptor};</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ::sodiumoxide::init();</span>
-<span class='doccomment'>//! let keys = (0..50)</span>
-<span class='doccomment'>//!     .map(|_| crypto::sign::gen_keypair())</span>
-<span class='doccomment'>//!     .collect_vec();</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! // create groups of keys to resemble close_groups</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();</span>
-<span class='doccomment'>//! let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();</span>
-<span class='doccomment'>//! let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();</span>
-<span class='doccomment'>//! assert!(pub1 != pub2);</span>
-<span class='doccomment'>//! assert!(pub1 != pub3);</span>
-<span class='doccomment'>//! assert!(pub1.len() == 3);</span>
-<span class='doccomment'>//! assert!(pub2.len() == 3);</span>
-<span class='doccomment'>//! assert!(pub3.len() == 3);</span>
-<span class='doccomment'>//! let link_desc1 = create_link_descriptor(&amp;pub1[..]);</span>
-<span class='doccomment'>//! let identifier1 = BlockIdentifier::Link(link_desc1);</span>
-<span class='doccomment'>//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
-<span class='doccomment'>//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
-<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd1name&quot;),</span>
-<span class='doccomment'>//!                                                 false);</span>
-<span class='doccomment'>//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
-<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd2name&quot;),</span>
-<span class='doccomment'>//!                                                 true);</span>
-<span class='doccomment'>//! assert!(identifier1 != id_ident);</span>
-<span class='doccomment'>//! assert!(identifier1 != sd1_ident);</span>
-<span class='doccomment'>//! assert!(id_ident != sd1_ident);</span>
-<span class='doccomment'>//! assert!(sd1_ident != sd2_ident);</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! // Create NodeBlocks, these are what nodes send to each other</span>
-<span class='doccomment'>//! // Here they are all links only. For Put Delete Post</span>
-<span class='doccomment'>//! // these would be Identifiers for the data types that includes a hash of the serialised data</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! let link1_1 = NodeBlock::new(&amp;keys[0].0, &amp;keys[0].1, identifier1.clone());</span>
-<span class='doccomment'>//! let link1_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, identifier1.clone());</span>
-<span class='doccomment'>//! let link1_3 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, identifier1);</span>
-<span class='doccomment'>//! let sd1_1 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, sd1_ident.clone());</span>
-<span class='doccomment'>//! let sd1_2 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, sd1_ident.clone());</span>
-<span class='doccomment'>//! let sd1_3 = NodeBlock::new(&amp;keys[3].0, &amp;keys[3].1, sd1_ident);</span>
-<span class='doccomment'>//! let id_1 = NodeBlock::new(&amp;keys[2].0, &amp;keys[2].1, id_ident.clone());</span>
-<span class='doccomment'>//! let id_2 = NodeBlock::new(&amp;keys[1].0, &amp;keys[1].1, id_ident.clone()); // fail w/wrong keys</span>
-<span class='doccomment'>//! let id_3 = NodeBlock::new(&amp;keys[4].0, &amp;keys[4].1, id_ident); // fail w/wrong keys</span>
-<span class='doccomment'>//! // #################### Create chain ########################</span>
-<span class='doccomment'>//! let mut chain = DataChain::default();</span>
-<span class='doccomment'>//! assert!(chain.is_empty());</span>
-<span class='doccomment'>//! // ############# start adding link #####################</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(link1_1.unwrap()).is_none());</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(link1_2.unwrap()).is_some());</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(link1_3.unwrap()).is_some());</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1)); // 1 link - all OK</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK</span>
-<span class='doccomment'>//! // ########################################################################################</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub1));</span>
-<span class='doccomment'>//! assert!(!chain.validate_ownership(&amp;pub3));</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 0);</span>
-<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(sd1_1.unwrap()).is_none());</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(sd1_2.unwrap()).is_some());</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//! assert_eq!(chain.valid_len(), 2);</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub2)); // Ok as now 2 is in majority</span>
-<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(sd1_3.unwrap()).is_some());</span>
-<span class='doccomment'>//! assert!(chain.validate_ownership(&amp;pub2));</span>
-<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//! // the call below will not add any links</span>
-<span class='doccomment'>//! let id1 = id_1.unwrap();</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(id_3.unwrap()).is_some());</span>
-<span class='doccomment'>//! assert_eq!(chain.links_len(), 1);</span>
-<span class='doccomment'>//! assert_eq!(chain.blocks_len(), 2);</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//! chain.prune();</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//! assert_eq!(chain.valid_len(), 3);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none());</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//! assert_eq!(chain.valid_len(), 3);</span>
-<span class='doccomment'>//! chain.remove(id1.identifier());</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 2);</span>
-<span class='doccomment'>//! assert!(chain.add_node_block(id1.clone()).is_none());</span>
-<span class='doccomment'>//! assert_eq!(chain.len(), 3);</span>
-<span class='doccomment'>//! assert_eq!(chain.valid_len(), 2);</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//!  }</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! ```</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! [1]: https://github.com/dirvine/data_chain/tree/master</span>
-<span class='doccomment'>//! [3]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md</span>
 
 <span class='attribute'>#<span class='op'>!</span>[<span class='ident'>doc</span>(<span class='ident'>html_logo_url</span> <span class='op'>=</span>
            <span class='string'>&quot;https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png&quot;</span>,
@@ -496,8 +201,7 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>maidsafe_utilities</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>fs2</span>;
-<span class='comment'>// #[macro_use]</span>
-<span class='comment'>// extern crate quick_error;</span>
+
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tempdir</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
@@ -517,7 +221,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data</span>;
 
 <span class='doccomment'>/// Persistant store on disk of Keys and large values</span>
-<span class='comment'>//TODO should not be public</span>
+<span class='doccomment'>/// TODO should not be public</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>chunk_store</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>, <span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>};
