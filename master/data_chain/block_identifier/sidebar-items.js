@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["BlockIdentifier","Dummy data identifiers for this crate"]],"type":[["Ledger","Ledger type (delee or keep)"],["LinkDescriptor","Represents the xored close group for the new grou on churn etc. This is signed by each group member."],["SdName","structured Data name"]]});

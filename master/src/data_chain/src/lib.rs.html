@@ -285,21 +285,6 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -479,27 +464,6 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Panics</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! If index is beyond length of chain</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! [insert()](../data_chain/data_chain/struct.DataChain.html#method.insert)</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Errors</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! A chain is usize in length. Passing from 32 -&gt; 64 bit machine may cause an ooverflow error.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Safety</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! There is no use of unsafe blocks.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Aborts</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! There are no aborts in this crate.</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! # Undefined Behaviour</span>
-<span class='doccomment'>//!</span>
-<span class='doccomment'>//! None known of.</span>
 <span class='doccomment'>//! [1]: https://github.com/dirvine/data_chain/tree/master</span>
 <span class='doccomment'>//! [3]: https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md</span>
 
@@ -537,28 +501,34 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tempdir</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>unwrap</span>;
+<span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
 
 <span class='doccomment'>/// Error types for this crate</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>error</span>;
 
 <span class='doccomment'>/// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or</span>
 <span class='doccomment'>/// links</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>block</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>chain</span>;
 
-<span class='doccomment'>/// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data_chain</span>;
+<span class='doccomment'>/// Data types </span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data</span>;
 
-<span class='doccomment'>/// A node block is a partial block, sent by group members to each other to create a `Block`</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>node_block</span>;
+<span class='comment'>// /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)</span>
+<span class='comment'>// pub mod data_chain;</span>
 
-<span class='doccomment'>/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>block_identifier</span>;
+<span class='comment'>// /// A node block is a partial block, sent by group members to each other to create a `Block`</span>
+<span class='comment'>// pub mod node_block;</span>
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>node_block</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>};
+<span class='comment'>// /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.</span>
+<span class='comment'>// pub mod block_identifier;</span>
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>, <span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>};
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data_chain</span>::<span class='ident'>DataChain</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>MAX_BYTES</span>, <span class='ident'>StructuredData</span>, <span class='ident'>PlainData</span>, <span class='ident'>ImmutableData</span>};
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
