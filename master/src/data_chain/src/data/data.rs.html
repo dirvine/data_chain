@@ -300,11 +300,11 @@
 <span class='doccomment'>/// An identifier to address a data chunk.</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>DataIdentifier</span> {
     <span class='doccomment'>/// Data request, (Identifier, TypeTag) pair for name resolution, for StructuredData.</span>
-    <span class='ident'>Structured</span>([<span class='ident'>u8</span>;<span class='number'>32</span>], <span class='ident'>u64</span>),
+    <span class='ident'>Structured</span>([<span class='ident'>u8</span>; <span class='number'>32</span>], <span class='ident'>u64</span>),
     <span class='doccomment'>/// Data request, (Identifier), for `ImmutableData`.</span>
-    <span class='ident'>Immutable</span>([<span class='ident'>u8</span>;<span class='number'>32</span>]),
+    <span class='ident'>Immutable</span>([<span class='ident'>u8</span>; <span class='number'>32</span>]),
     <span class='doccomment'>/// Request for PlainData.</span>
-    <span class='ident'>Plain</span>([<span class='ident'>u8</span>;<span class='number'>32</span>]),
+    <span class='ident'>Plain</span>([<span class='ident'>u8</span>; <span class='number'>32</span>]),
 }
 
 <span class='kw'>impl</span> <span class='ident'>Debug</span> <span class='kw'>for</span> <span class='ident'>Data</span> {

@@ -277,14 +277,6 @@
 <span id="233">233</span>
 <span id="234">234</span>
 <span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -296,7 +288,7 @@
 <span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the</span>
 <span class='comment'>// Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed </span>
+<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed</span>
 <span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
 <span class='comment'>// KIND, either express or implied.</span>
 <span class='comment'>//</span>
@@ -514,21 +506,13 @@
 <span class='doccomment'>/// links</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>chain</span>;
 
-<span class='doccomment'>/// Data types </span>
+<span class='doccomment'>/// Data types</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data</span>;
 
-<span class='comment'>// /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)</span>
-<span class='comment'>// pub mod data_chain;</span>
 
-<span class='comment'>// /// A node block is a partial block, sent by group members to each other to create a `Block`</span>
-<span class='comment'>// pub mod node_block;</span>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>, <span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>};
 
-<span class='comment'>// /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.</span>
-<span class='comment'>// pub mod block_identifier;</span>
-
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>create_link_descriptor</span>, <span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>};
-
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>MAX_BYTES</span>, <span class='ident'>StructuredData</span>, <span class='ident'>PlainData</span>, <span class='ident'>ImmutableData</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>, <span class='ident'>ImmutableData</span>, <span class='ident'>MAX_BYTES</span>, <span class='ident'>PlainData</span>, <span class='ident'>StructuredData</span>};
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

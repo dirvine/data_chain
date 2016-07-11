@@ -97,7 +97,7 @@
 <span class='comment'>// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the</span>
 <span class='comment'>// Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.</span>
 <span class='comment'>//</span>
-<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed </span>
+<span class='comment'>// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed</span>
 <span class='comment'>// under the GPL Licence is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span>
 <span class='comment'>// KIND, either express or implied.</span>
 <span class='comment'>//</span>
@@ -105,14 +105,14 @@
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
 <span class='doccomment'>//! # Data types</span>
-<span class='doccomment'>//! </span>
-<span class='doccomment'>//! These data types fall into three categories </span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! - Immutable : This data type has fixed content and self validates. The name is derived from the </span>
-<span class='doccomment'>//!               hash of the content. </span>
+<span class='doccomment'>//! These data types fall into three categories</span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! - Immutable : This data type has fixed content and self validates. The name is derived from the</span>
+<span class='doccomment'>//!               hash of the content.</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! - Structured : This is `owned` data and reflects a location in the address space that contains</span>
-<span class='doccomment'>//!                content that may be altered by the owner(s). </span>
+<span class='doccomment'>//!                content that may be altered by the owner(s).</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! - Plain : This is data with no fixed content or name. It is currently unused in SAFE</span>
 <span class='doccomment'>//!</span>
@@ -120,7 +120,7 @@
 
 <span class='kw'>mod</span> <span class='ident'>data</span>;
 
-<span class='doccomment'>/// Data that will not change it&#39;s contents </span>
+<span class='doccomment'>/// Data that will not change it&#39;s contents</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>immutable_data</span>;
 <span class='doccomment'>/// Data that will retain it&#39;s name but allow dynamic content or transfer of ownership</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>structured_data</span>;
@@ -130,7 +130,8 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::{<span class='ident'>MAX_BYTES</span>, <span class='ident'>StructuredData</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>plain_data</span>::<span class='ident'>PlainData</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>immutable_data</span>::<span class='ident'>ImmutableData</span>;</pre>
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>immutable_data</span>::<span class='ident'>ImmutableData</span>;
+</pre>
 </section>
     <section id='search' class="content hidden"></section>
 
