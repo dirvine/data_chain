@@ -263,7 +263,6 @@
 <span id="219">219</span>
 <span id="220">220</span>
 <span id="221">221</span>
-<span id="222">222</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2016 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -299,9 +298,8 @@
     <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
     <span class='kw'>use</span> <span class='ident'>tempdir</span>::<span class='ident'>TempDir</span>;
 
-    <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>feature</span><span class='op'>=</span><span class='string'>&quot;clippy&quot;</span>, <span class='ident'>allow</span>(<span class='ident'>cast_possible_truncation</span>))]</span>
-    <span class='kw'>fn</span> <span class='ident'>generate_random_bytes</span>(<span class='ident'>size</span>: <span class='ident'>u64</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> {
-        <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>().<span class='ident'>gen_iter</span>().<span class='ident'>take</span>(<span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>usize</span>).<span class='ident'>collect</span>()
+    <span class='kw'>fn</span> <span class='ident'>generate_random_bytes</span>(<span class='ident'>size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> {
+        <span class='ident'>rand</span>::<span class='ident'>thread_rng</span>().<span class='ident'>gen_iter</span>().<span class='ident'>take</span>(<span class='ident'>size</span>).<span class='ident'>collect</span>()
     }
 
     <span class='kw'>struct</span> <span class='ident'>Chunks</span> {
@@ -319,8 +317,8 @@
         <span class='kw'>let</span> <span class='ident'>chunk_count</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
         <span class='kw'>for</span> _ <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>chunk_count</span> {
             <span class='kw'>let</span> <span class='ident'>size</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
-            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>generate_random_bytes</span>(<span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>u64</span>);
-            <span class='kw'>let</span> <span class='ident'>serialised_size</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>)).<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u64</span>;
+            <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>generate_random_bytes</span>(<span class='ident'>size</span> <span class='kw'>as</span> <span class='ident'>usize</span>);
+            <span class='kw'>let</span> <span class='ident'>serialised_size</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>)).<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>u64</span>;
             <span class='ident'>chunks</span>.<span class='ident'>total_size</span> <span class='op'>+=</span> <span class='ident'>serialised_size</span>;
             <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>push</span>((<span class='ident'>data</span>, <span class='ident'>serialised_size</span>));
         }
@@ -331,35 +329,35 @@
     <span class='kw'>fn</span> <span class='ident'>create_multiple_instances_in_the_same_root</span>() {
         <span class='comment'>// root already exists</span>
         {
-            <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+            <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
 
-            <span class='kw'>let</span> <span class='ident'>_1</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;store-1&quot;</span>), <span class='number'>64</span>));
-            <span class='kw'>let</span> <span class='ident'>_2</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;store-2&quot;</span>), <span class='number'>64</span>));
+            <span class='kw'>let</span> <span class='ident'>_1</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;store-1&quot;</span>), <span class='number'>64</span>));
+            <span class='kw'>let</span> <span class='ident'>_2</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;store-2&quot;</span>), <span class='number'>64</span>));
         }
 
         <span class='comment'>// root doesn&#39;t exist yet</span>
         {
-            <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+            <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
             <span class='kw'>let</span> <span class='ident'>root_path</span> <span class='op'>=</span> <span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;foo&quot;</span>).<span class='ident'>join</span>(<span class='string'>&quot;bar&quot;</span>);
 
-            <span class='kw'>let</span> <span class='ident'>_1</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root_path</span>.<span class='ident'>join</span>(<span class='string'>&quot;store-1&quot;</span>), <span class='number'>64</span>));
-            <span class='kw'>let</span> <span class='ident'>_2</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root_path</span>.<span class='ident'>join</span>(<span class='string'>&quot;store-2&quot;</span>), <span class='number'>64</span>));
+            <span class='kw'>let</span> <span class='ident'>_1</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root_path</span>.<span class='ident'>join</span>(<span class='string'>&quot;store-1&quot;</span>), <span class='number'>64</span>));
+            <span class='kw'>let</span> <span class='ident'>_2</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root_path</span>.<span class='ident'>join</span>(<span class='string'>&quot;store-2&quot;</span>), <span class='number'>64</span>));
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>storedir_should_cleanup</span>() {
-        <span class='kw'>let</span> <span class='ident'>tempdir</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>tempdir</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
         <span class='kw'>let</span> <span class='ident'>storedir</span> <span class='op'>=</span> <span class='ident'>tempdir</span>.<span class='ident'>path</span>().<span class='ident'>join</span>(<span class='string'>&quot;test&quot;</span>);
 
         {
-            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>storedir</span>.<span class='ident'>clone</span>(), <span class='number'>64</span>));
+            <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>storedir</span>.<span class='ident'>clone</span>(), <span class='number'>64</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>storedir</span>.<span class='ident'>exists</span>());
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>, <span class='kw-2'>&amp;</span><span class='number'>4</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>, <span class='kw-2'>&amp;</span><span class='number'>4</span>));
             <span class='comment'>// Creating another instance with the same directory should fail.</span>
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u64</span>, <span class='ident'>u64</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>storedir</span>.<span class='ident'>clone</span>(), <span class='number'>64</span>).<span class='ident'>is_err</span>());
             <span class='comment'>// The failed attempt should not interfere with the existing chunk store.</span>
-            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>)));
+            <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='number'>4</span>, <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>3</span>)));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>storedir</span>.<span class='ident'>exists</span>());
         }
 
@@ -369,14 +367,14 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>successful_put</span>() {
         <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>generate_random_chunks</span>();
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
-                                                             <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
+                                                      <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
         {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>put</span> <span class='op'>=</span> <span class='op'>|</span><span class='ident'>key</span>, <span class='ident'>value</span>, <span class='ident'>size</span><span class='op'>|</span> {
                 <span class='kw'>let</span> <span class='ident'>size_before_insert</span> <span class='op'>=</span> <span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>();
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chunk_store</span>.<span class='ident'>has</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
-                <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>, <span class='ident'>value</span>));
+                <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>, <span class='ident'>value</span>));
                 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>(), <span class='ident'>size</span> <span class='op'>+</span> <span class='ident'>size_before_insert</span>);
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>has</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
                 <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>() <span class='op'>&lt;=</span> <span class='ident'>chunks</span>.<span class='ident'>total_size</span>);
@@ -398,9 +396,9 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>failed_put_when_not_enough_space</span>() {
-        <span class='kw'>let</span> <span class='ident'>k_disk_size</span> <span class='op'>=</span> <span class='number'>32</span>;
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(), <span class='ident'>k_disk_size</span>));
+        <span class='kw'>let</span> <span class='ident'>k_disk_size</span> <span class='op'>=</span> <span class='number'>32usize</span>;
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(), <span class='ident'>k_disk_size</span> <span class='kw'>as</span> <span class='ident'>u64</span>));
         <span class='kw'>let</span> <span class='ident'>key</span>: <span class='ident'>u8</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
         <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='ident'>generate_random_bytes</span>(<span class='ident'>k_disk_size</span> <span class='op'>+</span> <span class='number'>1</span>);
 
@@ -410,14 +408,14 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>delete</span>() {
         <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>generate_random_chunks</span>();
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
-                                                             <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
+                                                      <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>put_and_delete</span> <span class='op'>=</span> <span class='op'>|</span><span class='ident'>key</span>, <span class='ident'>value</span>, <span class='ident'>size</span><span class='op'>|</span> {
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>, <span class='ident'>value</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>, <span class='ident'>value</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>(), <span class='ident'>size</span>);
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>has</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chunk_store</span>.<span class='ident'>has</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>(), <span class='number'>0</span>);
         };
@@ -430,14 +428,14 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>put_and_get_value_should_be_same</span>() {
         <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>generate_random_chunks</span>();
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
-                                                             <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
+                                                      <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
         <span class='kw'>for</span> (<span class='ident'>index</span>, <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>data</span>, _)) <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>index</span> <span class='kw'>as</span> <span class='ident'>u32</span>), <span class='ident'>data</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>index</span> <span class='kw'>as</span> <span class='ident'>u32</span>), <span class='ident'>data</span>));
         }
         <span class='kw'>for</span> (<span class='ident'>index</span>, <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>data</span>, _)) <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
-            <span class='kw'>let</span> <span class='ident'>retrieved_value</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>index</span> <span class='kw'>as</span> <span class='ident'>u32</span>)));
+            <span class='kw'>let</span> <span class='ident'>retrieved_value</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span>(<span class='ident'>index</span> <span class='kw'>as</span> <span class='ident'>u32</span>)));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>data</span> <span class='op'>==</span> <span class='ident'>retrieved_value</span>);
         }
     }
@@ -445,21 +443,21 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>overwrite_value</span>() {
         <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>generate_random_chunks</span>();
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
-                                                             <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
+                                                      <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
         <span class='kw'>for</span> (<span class='kw-2'>ref</span> <span class='ident'>data</span>, <span class='kw-2'>ref</span> <span class='ident'>size</span>) <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span> {
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='number'>0</span>, <span class='ident'>data</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='number'>0</span>, <span class='ident'>data</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>used_space</span>(), <span class='op'>*</span><span class='ident'>size</span>);
-            <span class='kw'>let</span> <span class='ident'>retrieved_value</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>0</span>));
+            <span class='kw'>let</span> <span class='ident'>retrieved_value</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='number'>0</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>data</span> <span class='op'>==</span> <span class='ident'>retrieved_value</span>);
         }
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>get_fails_when_key_does_not_exist</span>() {
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u8</span>, <span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(), <span class='number'>64</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='op'>&lt;</span><span class='ident'>u8</span>, <span class='ident'>u8</span><span class='op'>&gt;</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(), <span class='number'>64</span>));
         <span class='kw'>let</span> <span class='ident'>key</span> <span class='op'>=</span> <span class='ident'>rand</span>::<span class='ident'>random</span>();
         <span class='macro'>assert_err</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>get</span>(<span class='kw-2'>&amp;</span><span class='ident'>key</span>), <span class='ident'>Error</span>::<span class='ident'>NoFile</span>);
     }
@@ -467,20 +465,20 @@
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>keys</span>() {
         <span class='kw'>let</span> <span class='ident'>chunks</span> <span class='op'>=</span> <span class='ident'>generate_random_chunks</span>();
-        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
-                                                             <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
+        <span class='kw'>let</span> <span class='ident'>root</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>TempDir</span>::<span class='ident'>new</span>(<span class='string'>&quot;test&quot;</span>));
+        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>chunk_store</span> <span class='op'>=</span> <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>ChunkStore</span>::<span class='ident'>new</span>(<span class='ident'>root</span>.<span class='ident'>path</span>().<span class='ident'>to_path_buf</span>(),
+                                                      <span class='ident'>chunks</span>.<span class='ident'>total_size</span>));
 
         <span class='kw'>for</span> (<span class='ident'>index</span>, <span class='kw-2'>&amp;</span>(<span class='kw-2'>ref</span> <span class='ident'>data</span>, _)) <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>, <span class='ident'>data</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>put</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>, <span class='ident'>data</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>len</span>(), <span class='ident'>index</span> <span class='op'>+</span> <span class='number'>1</span>);
         }
 
         <span class='kw'>for</span> (<span class='ident'>index</span>, _) <span class='kw'>in</span> <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>() {
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
-            <span class='macro'>unwrap_result</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
+            <span class='macro'>unwrap</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>delete</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
             <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>index</span>));
             <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chunk_store</span>.<span class='ident'>keys</span>().<span class='ident'>len</span>(),
                        <span class='ident'>chunks</span>.<span class='ident'>data_and_sizes</span>.<span class='ident'>len</span>() <span class='op'>-</span> <span class='ident'>index</span> <span class='op'>-</span> <span class='number'>1</span>);
