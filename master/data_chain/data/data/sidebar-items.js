@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Data","This is the data types routing handles in the public interface"],["DataIdentifier","An identifier to address a data chunk."]]});
+initSidebarItems({"enum":[["Data","Data types handled in a SAFE"],["DataIdentifier","An identifier to address a data chunk."]]});

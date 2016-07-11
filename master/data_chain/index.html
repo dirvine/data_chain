@@ -204,7 +204,8 @@ and
 
  }
 </pre>
-</div><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use chain::{<a class='struct' href='../data_chain/chain/node_block/struct.NodeBlock.html' title='data_chain::chain::node_block::NodeBlock'>NodeBlock</a>, <a class='fn' href='../data_chain/chain/node_block/fn.create_link_descriptor.html' title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a>, <a class='struct' href='../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>};</code></td></tr><tr><td><code>pub use data::{MAX_BYTES, <a class='struct' href='../data_chain/data/structured_data/struct.StructuredData.html' title='data_chain::data::structured_data::StructuredData'>StructuredData</a>, <a class='struct' href='../data_chain/data/plain_data/struct.PlainData.html' title='data_chain::data::plain_data::PlainData'>PlainData</a>, <a class='struct' href='../data_chain/data/immutable_data/struct.ImmutableData.html' title='data_chain::data::immutable_data::ImmutableData'>ImmutableData</a>};</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='mod' href='chain/index.html'
@@ -227,54 +228,6 @@ links</p>
                            <td class='docblock short'>
                                 <p>Error types for this crate</p>
                            </td>
-                       </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.DataChain.html'
-                                  title='data_chain::DataChain'>DataChain</a></td>
-                           <td class='docblock short'>
-                                <p>Created by holder of chain, can be passed to others as proof of data held.
-This object is verifiable if :
-The last validation contains the majority of current close group
-OR on network restart the nodes all must try and restart on
-previous names. They can continue any validation of the holder of a chain.
-This requires nodes to always restart as last ID and if there was no restart they are rejected
-at vault level.
-If there was a restart then the nodes should validate and continue.
-N:B this means all nodes can use a named directory for data store and clear if they restart
-as a new id. This allows clean-up of old data cache directories.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.ImmutableData.html'
-                                  title='data_chain::ImmutableData'>ImmutableData</a></td>
-                           <td class='docblock short'>
-                                <p>An immutable chunk of data.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.NodeBlock.html'
-                                  title='data_chain::NodeBlock'>NodeBlock</a></td>
-                           <td class='docblock short'>
-                                <p>If data block then this is sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code>.
-If this is a link then it is sent with a <code>churn</code> event.
-A <code>Link</code> is a nodeblock that each member must send each other in times of churn.
-These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode</code> messages in the routing layer</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.PlainData.html'
-                                  title='data_chain::PlainData'>PlainData</a></td>
-                           <td class='docblock short'>
-                                <p>Plain data with a name and a value.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.StructuredData.html'
-                                  title='data_chain::StructuredData'>StructuredData</a></td>
-                           <td class='docblock short'>
-                                <p>Mutable structured data.</p>
-                           </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
                        <tr class=' module-item'>
@@ -288,7 +241,7 @@ These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode<
                            <td><a class='enum' href='enum.Data.html'
                                   title='data_chain::Data'>Data</a></td>
                            <td class='docblock short'>
-                                <p>This is the data types routing handles in the public interface</p>
+                                <p>Data types handled in a SAFE</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -296,24 +249,6 @@ These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode<
                                   title='data_chain::DataIdentifier'>DataIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>An identifier to address a data chunk.</p>
-                           </td>
-                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='constant' href='constant.MAX_BYTES.html'
-                                  title='data_chain::MAX_BYTES'>MAX_BYTES</a></td>
-                           <td class='docblock short'>
-                                <p>Maximum allowed size for a Structured Data to grow to</p>
-                           </td>
-                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='fn' href='fn.create_link_descriptor.html'
-                                  title='data_chain::create_link_descriptor'>create_link_descriptor</a></td>
-                           <td class='docblock short'>
-                                <p>Descriptor is the xored group members starting with base of 0000..:32
-This process is faster than hash and means group can be unordered
-which is beneficial under heavy churn and out of order links being sent.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

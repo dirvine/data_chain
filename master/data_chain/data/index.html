@@ -47,29 +47,41 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-791' class='srclink' href='../../src/data_chain/src/data/mod.rs.html#18-29' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-791' class='srclink' href='../../src/data_chain/src/data/mod.rs.html#18-44' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Data types</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+
+<h1 id='data-types' class='section-header'><a href='#data-types'>Data types</a></h1>
+<p>These data types fall into three categories </p>
+
+<ul>
+<li><p>Immutable : This data type has fixed content and self validates. The name is derived from the 
+          hash of the content. </p></li>
+<li><p>Structured : This is <code>owned</code> data and reflects a location in the address space that contains
+           content that may be altered by the owner(s). </p></li>
+<li><p>Plain : This is data with no fixed content or name. It is currently unused in SAFE</p></li>
+</ul>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use data::structured_data::{MAX_BYTES, <a class='struct' href='../../data_chain/data/structured_data/struct.StructuredData.html' title='data_chain::data::structured_data::StructuredData'>StructuredData</a>};</code></td></tr><tr><td><code>pub use data::plain_data::<a class='struct' href='../../data_chain/data/plain_data/struct.PlainData.html' title='data_chain::data::plain_data::PlainData'>PlainData</a>;</code></td></tr><tr><td><code>pub use data::immutable_data::<a class='struct' href='../../data_chain/data/immutable_data/struct.ImmutableData.html' title='data_chain::data::immutable_data::ImmutableData'>ImmutableData</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.ImmutableData.html'
-                                  title='data_chain::data::ImmutableData'>ImmutableData</a></td>
+                           <td><a class='mod' href='immutable_data/index.html'
+                                  title='data_chain::data::immutable_data'>immutable_data</a></td>
                            <td class='docblock short'>
-                                <p>An immutable chunk of data.</p>
+                                <p>Data that will not change it&#39;s contents</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.PlainData.html'
-                                  title='data_chain::data::PlainData'>PlainData</a></td>
+                           <td><a class='mod' href='plain_data/index.html'
+                                  title='data_chain::data::plain_data'>plain_data</a></td>
                            <td class='docblock short'>
-                                <p>Plain data with a name and a value.</p>
+                                <p>Flexible and insecure data type with no fixed invarients. The name and content are not related.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.StructuredData.html'
-                                  title='data_chain::data::StructuredData'>StructuredData</a></td>
+                           <td><a class='mod' href='structured_data/index.html'
+                                  title='data_chain::data::structured_data'>structured_data</a></td>
                            <td class='docblock short'>
-                                <p>Mutable structured data.</p>
+                                <p>Data that will retain it&#39;s name but allow dynamic content or transfer of ownership</p>
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -77,7 +89,7 @@
                            <td><a class='enum' href='enum.Data.html'
                                   title='data_chain::data::Data'>Data</a></td>
                            <td class='docblock short'>
-                                <p>This is the data types routing handles in the public interface</p>
+                                <p>Data types handled in a SAFE</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -85,14 +97,6 @@
                                   title='data_chain::data::DataIdentifier'>DataIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>An identifier to address a data chunk.</p>
-                           </td>
-                       </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='constant' href='constant.MAX_BYTES.html'
-                                  title='data_chain::data::MAX_BYTES'>MAX_BYTES</a></td>
-                           <td class='docblock short'>
-                                <p>Maximum allowed size for a Structured Data to grow to</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

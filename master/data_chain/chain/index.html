@@ -50,32 +50,21 @@
                </span><a id='src-68' class='srclink' href='../../src/data_chain/src/chain/mod.rs.html#18-34' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
 links</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+</div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
+<table><tr><td><code>pub use chain::node_block::{<a class='struct' href='../../data_chain/chain/node_block/struct.NodeBlock.html' title='data_chain::chain::node_block::NodeBlock'>NodeBlock</a>, <a class='fn' href='../../data_chain/chain/node_block/fn.create_link_descriptor.html' title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a>};</code></td></tr><tr><td><code>pub use chain::data_chain::<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.DataChain.html'
-                                  title='data_chain::chain::DataChain'>DataChain</a></td>
+                           <td><a class='mod' href='data_chain/index.html'
+                                  title='data_chain::chain::data_chain'>data_chain</a></td>
                            <td class='docblock short'>
-                                <p>Created by holder of chain, can be passed to others as proof of data held.
-This object is verifiable if :
-The last validation contains the majority of current close group
-OR on network restart the nodes all must try and restart on
-previous names. They can continue any validation of the holder of a chain.
-This requires nodes to always restart as last ID and if there was no restart they are rejected
-at vault level.
-If there was a restart then the nodes should validate and continue.
-N:B this means all nodes can use a named directory for data store and clear if they restart
-as a new id. This allows clean-up of old data cache directories.</p>
+                                <p>A container of <code>links</code> (validated group membership blocks) and normal <code>blocks</code> (data elements)</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
-                           <td><a class='struct' href='struct.NodeBlock.html'
-                                  title='data_chain::chain::NodeBlock'>NodeBlock</a></td>
+                           <td><a class='mod' href='node_block/index.html'
+                                  title='data_chain::chain::node_block'>node_block</a></td>
                            <td class='docblock short'>
-                                <p>If data block then this is sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code>.
-If this is a link then it is sent with a <code>churn</code> event.
-A <code>Link</code> is a nodeblock that each member must send each other in times of churn.
-These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode</code> messages in the routing layer</p>
+                                <p>A node block is a partial block, sent by group members to each other to create a <code>Block</code></p>
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -84,16 +73,6 @@ These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode<
                                   title='data_chain::chain::BlockIdentifier'>BlockIdentifier</a></td>
                            <td class='docblock short'>
                                 <p>Dummy data identifiers for this crate</p>
-                           </td>
-                       </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='fn' href='fn.create_link_descriptor.html'
-                                  title='data_chain::chain::create_link_descriptor'>create_link_descriptor</a></td>
-                           <td class='docblock short'>
-                                <p>Descriptor is the xored group members starting with base of 0000..:32
-This process is faster than hash and means group can be unordered
-which is beneficial under heavy churn and out of order links being sent.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>

@@ -71,6 +71,21 @@
 <span id="27">27</span>
 <span id="28">28</span>
 <span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -89,13 +104,28 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
+<span class='doccomment'>//! # Data types</span>
+<span class='doccomment'>//! </span>
+<span class='doccomment'>//! These data types fall into three categories </span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! - Immutable : This data type has fixed content and self validates. The name is derived from the </span>
+<span class='doccomment'>//!               hash of the content. </span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! - Structured : This is `owned` data and reflects a location in the address space that contains</span>
+<span class='doccomment'>//!                content that may be altered by the owner(s). </span>
+<span class='doccomment'>//!</span>
+<span class='doccomment'>//! - Plain : This is data with no fixed content or name. It is currently unused in SAFE</span>
+<span class='doccomment'>//!</span>
+
+
 <span class='kw'>mod</span> <span class='ident'>data</span>;
 
-<span class='kw'>mod</span> <span class='ident'>immutable_data</span>;
-
-<span class='kw'>mod</span> <span class='ident'>structured_data</span>;
-
-<span class='kw'>mod</span> <span class='ident'>plain_data</span>;
+<span class='doccomment'>/// Data that will not change it&#39;s contents </span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>immutable_data</span>;
+<span class='doccomment'>/// Data that will retain it&#39;s name but allow dynamic content or transfer of ownership</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>structured_data</span>;
+<span class='doccomment'>/// Flexible and insecure data type with no fixed invarients. The name and content are not related.</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>plain_data</span>;
 
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>};
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::{<span class='ident'>MAX_BYTES</span>, <span class='ident'>StructuredData</span>};
