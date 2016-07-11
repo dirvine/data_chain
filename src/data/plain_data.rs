@@ -24,13 +24,13 @@ use data::DataIdentifier;
 /// are left to the implementation.
 #[derive(Hash, Clone, RustcEncodable, RustcDecodable, PartialEq, Eq, PartialOrd, Ord)]
 pub struct PlainData {
-    name: [u8;32],
+    name: [u8; 32],
     value: Vec<u8>,
 }
 
 impl PlainData {
     /// Creates a new instance of `PlainData`.
-    pub fn new(name: [u8;32], value: Vec<u8>) -> PlainData {
+    pub fn new(name: [u8; 32], value: Vec<u8>) -> PlainData {
         PlainData {
             name: name,
             value: value,
@@ -44,7 +44,7 @@ impl PlainData {
 
 
     /// Returns the name.
-    pub fn name(&self) -> &[u8;32] {
+    pub fn name(&self) -> &[u8; 32] {
         &self.name
     }
 

@@ -8,7 +8,7 @@
 // bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
-// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed 
+// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
 // under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 //
@@ -80,8 +80,11 @@ impl<'a> DataChain<'a> {
     /// Write current data chain to supplied path
     pub fn write(&self) -> Result<(), Error> {
         if let Some(path) = self.path.to_owned() {
-        let mut file =
-            try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path.as_path()));
+            let mut file = try!(fs::OpenOptions::new()
+                .read(true)
+                .write(true)
+                .create(false)
+                .open(&path.as_path()));
             return Ok(try!(file.write_all(&try!(serialisation::serialise(&self.chain)))));
         }
         Err(Error::NoFile)
@@ -720,63 +723,62 @@ mod tests {
         let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
-        if let Ok(mut chain) = DataChain::create_in_path(&dir.path()) {
-        assert!(chain.is_empty());
-        // ############# start adding link #####################
-        assert!(chain.add_node_block(link1_1.unwrap()).is_none());
-        assert!(chain.validate_ownership(&pub1));
-        assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_2.unwrap()).is_some());
-        assert!(chain.validate_ownership(&pub1));
-        assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_3.unwrap()).is_some());
-        assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
-        assert_eq!(chain.len(), 1);
-        // ########################################################################################
-        // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
-        // ########################################################################################
-        assert!(chain.validate_ownership(&pub1));
-        assert!(!chain.validate_ownership(&pub3));
-        assert_eq!(chain.len(), 1);
-        assert_eq!(chain.blocks_len(), 0);
-        assert_eq!(chain.links_len(), 1);
-        assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
-        assert!(chain.add_node_block(sd1_2.unwrap()).is_some());
-        assert_eq!(chain.len(), 2);
-        assert_eq!(chain.valid_len(), 2);
-        assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
-        assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.blocks_len(), 1);
-        assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
-        assert!(chain.validate_ownership(&pub2));
-        assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.blocks_len(), 1);
-        assert_eq!(chain.len(), 2);
-        let id1 = id_1.unwrap();
-        assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature
-        assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
-        assert!(chain.add_node_block(id_3.unwrap()).is_some());
-        assert_eq!(chain.links_len(), 1);
-        assert_eq!(chain.blocks_len(), 2);
-        assert_eq!(chain.len(), 3);
-        chain.prune();
-        assert_eq!(chain.len(), 3);
-        assert_eq!(chain.valid_len(), 3);
-        assert!(chain.add_node_block(id1.clone()).is_none());
-        assert_eq!(chain.len(), 3);
-        assert_eq!(chain.valid_len(), 3);
-        chain.remove(id1.identifier());
-        assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(id1.clone()).is_none());
-        assert_eq!(chain.len(), 3);
-        assert_eq!(chain.valid_len(), 2);
-        assert!(chain.write().is_ok());
-        let chain2 = DataChain::from_path(&dir.path());
-        assert!(chain2.is_ok());
-        assert_eq!(chain2.unwrap(), chain);
+            if let Ok(mut chain) = DataChain::create_in_path(&dir.path()) {
+                assert!(chain.is_empty());
+                // ############# start adding link #####################
+                assert!(chain.add_node_block(link1_1.unwrap()).is_none());
+                assert!(chain.validate_ownership(&pub1));
+                assert_eq!(chain.len(), 1);
+                assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+                assert!(chain.validate_ownership(&pub1));
+                assert_eq!(chain.len(), 1);
+                assert!(chain.add_node_block(link1_3.unwrap()).is_some());
+                assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
+                assert_eq!(chain.len(), 1);
+// ########################################################################################
+// pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
+// ########################################################################################
+                assert!(chain.validate_ownership(&pub1));
+                assert!(!chain.validate_ownership(&pub3));
+                assert_eq!(chain.len(), 1);
+                assert_eq!(chain.blocks_len(), 0);
+                assert_eq!(chain.links_len(), 1);
+                assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
+                assert!(chain.add_node_block(sd1_2.unwrap()).is_some());
+                assert_eq!(chain.len(), 2);
+                assert_eq!(chain.valid_len(), 2);
+                assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
+                assert_eq!(chain.links_len(), 1);
+                assert_eq!(chain.blocks_len(), 1);
+                assert_eq!(chain.len(), 2);
+                assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+                assert!(chain.validate_ownership(&pub2));
+                assert_eq!(chain.links_len(), 1);
+                assert_eq!(chain.blocks_len(), 1);
+                assert_eq!(chain.len(), 2);
+                let id1 = id_1.unwrap();
+                assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st is valid signature
+                assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
+                assert!(chain.add_node_block(id_3.unwrap()).is_some());
+                assert_eq!(chain.links_len(), 1);
+                assert_eq!(chain.blocks_len(), 2);
+                assert_eq!(chain.len(), 3);
+                chain.prune();
+                assert_eq!(chain.len(), 3);
+                assert_eq!(chain.valid_len(), 3);
+                assert!(chain.add_node_block(id1.clone()).is_none());
+                assert_eq!(chain.len(), 3);
+                assert_eq!(chain.valid_len(), 3);
+                chain.remove(id1.identifier());
+                assert_eq!(chain.len(), 2);
+                assert!(chain.add_node_block(id1.clone()).is_none());
+                assert_eq!(chain.len(), 3);
+                assert_eq!(chain.valid_len(), 2);
+                assert!(chain.write().is_ok());
+                let chain2 = DataChain::from_path(&dir.path());
+                assert!(chain2.is_ok());
+                assert_eq!(chain2.unwrap(), chain);
+            }
         }
-}
     }
 }
-

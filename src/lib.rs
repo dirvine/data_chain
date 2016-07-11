@@ -8,7 +8,7 @@
 // bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
-// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed 
+// Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
 // under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
 // KIND, either express or implied.
 //
@@ -226,17 +226,9 @@ pub mod error;
 /// links
 pub mod chain;
 
-/// Data types 
+/// Data types
 pub mod data;
 
-// /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
-// pub mod data_chain;
-
-// /// A node block is a partial block, sent by group members to each other to create a `Block`
-// pub mod node_block;
-
-// /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
-// pub mod block_identifier;
 
 pub use chain::{NodeBlock, create_link_descriptor, BlockIdentifier, DataChain};
 

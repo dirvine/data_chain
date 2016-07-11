@@ -64,11 +64,11 @@ impl Data {
 /// An identifier to address a data chunk.
 pub enum DataIdentifier {
     /// Data request, (Identifier, TypeTag) pair for name resolution, for StructuredData.
-    Structured([u8;32], u64),
+    Structured([u8; 32], u64),
     /// Data request, (Identifier), for `ImmutableData`.
-    Immutable([u8;32]),
+    Immutable([u8; 32]),
     /// Request for PlainData.
-    Plain([u8;32]),
+    Plain([u8; 32]),
 }
 
 impl Debug for Data {

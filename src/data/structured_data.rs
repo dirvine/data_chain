@@ -33,7 +33,7 @@ pub const MAX_BYTES: usize = 102400;
 #[derive(Hash, Eq, PartialEq, PartialOrd, Ord, Clone, RustcDecodable, RustcEncodable)]
 pub struct StructuredData {
     type_tag: u64,
-    name: [u8;32],
+    name: [u8; 32],
     data: Vec<u8>,
     previous_owner_keys: Vec<PublicKey>,
     version: u64,
@@ -44,7 +44,7 @@ pub struct StructuredData {
 impl StructuredData {
     /// Creates a new `StructuredData` signed with `signing_key`.
     pub fn new(type_tag: u64,
-               name: [u8;32],
+               name: [u8; 32],
                version: u64,
                data: Vec<u8>,
                current_owner_keys: Vec<PublicKey>,
@@ -88,7 +88,7 @@ impl StructuredData {
     }
 
     /// Returns the name.
-    pub fn name(&self) -> &[u8;32] {
+    pub fn name(&self) -> &[u8; 32] {
         &self.name
     }
 
@@ -104,9 +104,7 @@ impl StructuredData {
     ///
     /// In case of an ownership transfer, the `previous_owner_keys` in `other` must match the
     /// `current_owner_keys` in `self`.
-    pub fn validate_self_against_successor(&self,
-                                           other: &StructuredData)
-                                           -> Result<(), Error> {
+    pub fn validate_self_against_successor(&self, other: &StructuredData) -> Result<(), Error> {
         let owner_keys_to_match = if other.previous_owner_keys.is_empty() {
             &other.current_owner_keys
         } else {
@@ -123,9 +121,7 @@ impl StructuredData {
     }
 
     /// Confirms *unique and valid* owner_signatures are more than 50% of total owners.
-    fn verify_previous_owner_signatures(&self,
-                                        owner_keys: &[PublicKey])
-                                        -> Result<(), Error> {
+    fn verify_previous_owner_signatures(&self, owner_keys: &[PublicKey]) -> Result<(), Error> {
         // Refuse any duplicate previous_owner_signatures (people can have many owner keys)
         // Any duplicates invalidates this type.
         for (i, sig) in self.previous_owner_signatures.iter().enumerate() {
@@ -246,7 +242,7 @@ impl Debug for StructuredData {
 #[derive(RustcEncodable)]
 struct SerialisableStructuredData<'a> {
     type_tag: Vec<u8>,
-    name: [u8;32],
+    name: [u8; 32],
     data: &'a [u8],
     previous_owner_keys: &'a [PublicKey],
     current_owner_keys: &'a [PublicKey],
@@ -265,12 +261,13 @@ mod test {
         let owner_keys = vec![keys.0];
 
         assert!(super::StructuredData::new(0,
-                                         rand::random(),
-                                         0,
-                                         vec![],
-                                         owner_keys.clone(),
-                                         vec![],
-                                         Some(&keys.1)).is_ok());
+                                           rand::random(),
+                                           0,
+                                           vec![],
+                                           owner_keys.clone(),
+                                           vec![],
+                                           Some(&keys.1))
+            .is_ok());
     }
 
     #[test]
@@ -279,12 +276,12 @@ mod test {
         let owner_keys = vec![keys.0];
 
         let structured_data = super::StructuredData::new(0,
-                                         rand::random(),
-                                         0,
-                                         vec![],
-                                         owner_keys.clone(),
-                                         vec![],
-                                         None);
+                                                         rand::random(),
+                                                         0,
+                                                         vec![],
+                                                         owner_keys.clone(),
+                                                         vec![],
+                                                         None);
         assert!(structured_data.is_ok());
         assert!(structured_data.expect("").verify_previous_owner_signatures(&owner_keys).is_err());
 
@@ -297,12 +294,12 @@ mod test {
         let other_keys = sign::gen_keypair();
 
         let structured_data = super::StructuredData::new(0,
-                                         rand::random(),
-                                         0,
-                                         vec![],
-                                         owner_keys.clone(),
-                                         vec![],
-                                         Some(&other_keys.1));
+                                                         rand::random(),
+                                                         0,
+                                                         vec![],
+                                                         owner_keys.clone(),
+                                                         vec![],
+                                                         Some(&other_keys.1));
 
         assert!(structured_data.is_ok());
         assert!(structured_data.expect("").verify_previous_owner_signatures(&owner_keys).is_err());
@@ -316,19 +313,19 @@ mod test {
         let other_keys = sign::gen_keypair();
 
         if let Ok(ref mut structured_data) = super::StructuredData::new(0,
-                                         rand::random(),
-                                         0,
-                                         vec![],
-                                         owner_keys.clone(),
-                                         vec![],
-                                         None) {
-                
-         assert!(structured_data.add_signature(&other_keys.1).is_ok());
-         assert!(structured_data.verify_previous_owner_signatures(&owner_keys).is_err());
+                                                                        rand::random(),
+                                                                        0,
+                                                                        vec![],
+                                                                        owner_keys.clone(),
+                                                                        vec![],
+                                                                        None) {
+
+            assert!(structured_data.add_signature(&other_keys.1).is_ok());
+            assert!(structured_data.verify_previous_owner_signatures(&owner_keys).is_err());
         } else {
             panic!("Test failed");
         }
-        
+
     }
 
     #[test]
@@ -399,7 +396,7 @@ mod test {
         let keys3 = sign::gen_keypair();
         let new_owner = sign::gen_keypair();
 
-        let identifier: [u8;32] = rand::random();
+        let identifier: [u8; 32] = rand::random();
 
         // Owned by keys1 keys2 and keys3
         match super::StructuredData::new(0,

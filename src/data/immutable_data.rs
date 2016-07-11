@@ -25,7 +25,7 @@ use data::DataIdentifier;
 /// An immutable chunk of data.
 #[derive(Hash, Clone, Eq, PartialEq, Ord, PartialOrd)]
 pub struct ImmutableData {
-    name: [u8;32],
+    name: [u8; 32],
     value: Vec<u8>,
 }
 
@@ -45,7 +45,7 @@ impl ImmutableData {
 
 
     /// Returns name ensuring invariant.
-    pub fn name(&self) -> &[u8;32] {
+    pub fn name(&self) -> &[u8; 32] {
         &self.name
     }
 
