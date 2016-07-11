@@ -15,13 +15,28 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+//! # Data types
+//! 
+//! These data types fall into three categories 
+//!
+//! - Immutable : This data type has fixed content and self validates. The name is derived from the 
+//!               hash of the content. 
+//!
+//! - Structured : This is `owned` data and reflects a location in the address space that contains
+//!                content that may be altered by the owner(s). 
+//!
+//! - Plain : This is data with no fixed content or name. It is currently unused in SAFE
+//!
+
+
 mod data;
 
-mod immutable_data;
-
-mod structured_data;
-
-mod plain_data;
+/// Data that will not change it's contents 
+pub mod immutable_data;
+/// Data that will retain it's name but allow dynamic content or transfer of ownership
+pub mod structured_data;
+/// Flexible and insecure data type with no fixed invarients. The name and content are not related.
+pub mod plain_data;
 
 pub use data::data::{Data, DataIdentifier};
 pub use data::structured_data::{MAX_BYTES, StructuredData};

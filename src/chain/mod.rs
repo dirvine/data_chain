@@ -20,10 +20,10 @@
 mod block;
 
 /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
-mod data_chain;
+pub mod data_chain;
 
 /// A node block is a partial block, sent by group members to each other to create a `Block`
-mod node_block;
+pub mod node_block;
 
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
 mod block_identifier;

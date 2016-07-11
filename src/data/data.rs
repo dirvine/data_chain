@@ -20,7 +20,7 @@ use data::structured_data::StructuredData;
 use data::immutable_data::ImmutableData;
 use data::plain_data::PlainData;
 
-/// This is the data types routing handles in the public interface
+/// Data types handled in a SAFE
 #[derive(Hash, PartialEq, Eq, PartialOrd, Ord, Clone, RustcEncodable, RustcDecodable)]
 pub enum Data {
     /// `StructuredData` data type.
