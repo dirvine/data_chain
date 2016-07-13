@@ -74,7 +74,7 @@ impl<'a> SecuredData<'a> {
     /// Add received data, return Result false if we do not have the corresponding
     /// **valid** NodeBlock for this data. Will return a BlockIDentifier from us
     /// that we must use to create a NodeBlock to send to peers. We also **must**
-    /// add this NodeBlock ourselves to this container. Thsi is done in this manner to
+    /// add this NodeBlock ourselves to this container. This is done in this manner to
     /// prevent coupling with keypairs etc.
     pub fn put_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
         unimplemented!();
@@ -94,8 +94,8 @@ impl<'a> SecuredData<'a> {
         unimplemented!();
     }
 
-    /// Return a chain for which we hold **all** of the data for
-    /// restricted to only where each block is valid
+    /// Return a chain for which we hold **all** of the data.
+    /// Restricted to data that has a corresponding valid `Block`.
     pub fn provable_chain(&self) -> DataChain {
         unimplemented!();
     }
