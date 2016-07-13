@@ -67,7 +67,7 @@ impl<'a> SecuredData<'a> {
     }
 
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
-    pub fn get(&self, data_id: &DataIdentifier) {
+    pub fn get(&self, _data_id: &DataIdentifier) {
         unimplemented!();
     }
     /// Add received data, return Result false if we do not have the corresponding
