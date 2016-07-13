@@ -19,6 +19,7 @@ use std::fs;
 use error::Error;
 use std::sync::{Arc, Mutex};
 use chunk_store::ChunkStore;
+use sodiumoxide::crypto::sign::PublicKey;
 use std::path::{Path, PathBuf};
 use data::{Data, DataIdentifier};
 use chain::{BlockIdentifier, DataChain, NodeBlock};
@@ -112,6 +113,11 @@ impl<'a> SecuredData<'a> {
         unimplemented!();
     }
 
+    /// How many churn events a given proover has been involved in (proover == node)
+    pub fn trust_level(&self, _node: &PublicKey) -> usize {
+        unimplemented!();
+        // return count of number of links this node is in from back of chain,
+    }
     /// Find any data we should have, given our current chain
     pub fn required_data(&self) -> Vec<DataIdentifier> {
         unimplemented!();
