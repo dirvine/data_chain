@@ -90,12 +90,12 @@
 //! assert!(pub3.len() == 3);
 //! let link_desc1 = create_link_descriptor(&pub1[..]);
 //! let identifier1 = BlockIdentifier::Link(link_desc1);
-//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
-//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
-//!                                                 sha256::hash(b"sd1name"),
+//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
+//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
+//!                                                 sha256::hash(b"sd1name").0,
 //!                                                 false);
-//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
-//!                                                 sha256::hash(b"sd2name"),
+//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash").0,
+//!                                                 sha256::hash(b"sd2name").0,
 //!                                                 true);
 //! assert!(identifier1 != id_ident);
 //! assert!(identifier1 != sd1_ident);
