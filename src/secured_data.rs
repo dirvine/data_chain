@@ -41,8 +41,10 @@ impl<'a> SecuredData<'a> {
     }
 
     /// Open an existing container from path
-    pub fn from_path(_path: &Path) -> Result<SecuredData, Error> {
-        unimplemented!();
+    pub fn from_path(path: &PathBuf, max_disk_space: u64) -> Result<SecuredData, Error> {
+        let cs = try!(ChunkStore::from_path(path.clone(), max_disk_space));
+        let dc = Arc::new(Mutex::new(try!(DataChain::from_path(path))));
+        Ok(SecuredData { cs: cs, dc: dc })
     }
 
     /// remove all disk based data
@@ -72,6 +74,7 @@ impl<'a> SecuredData<'a> {
         unimplemented!();
         // check valid in chain first. That gives the hash to find in cs
     }
+
     /// Add received data, return Result false if we do not have the corresponding
     /// **valid** NodeBlock for this data. Will return a BlockIDentifier from us
     /// that we must use to create a NodeBlock to send to peers. We also **must**
@@ -122,12 +125,14 @@ impl<'a> SecuredData<'a> {
     pub fn required_data(&self) -> Vec<DataIdentifier> {
         unimplemented!();
     }
+
     // ############ Dubious, should perhaps be private ###########
     /// Trim chain to previous common leading bits (previous vertice in binary tree)
     /// If our leading bits in group are 10111 then it will trim any 10110 data & links.
     pub fn trim_all_blocks_and_data(&mut self) {
         unimplemented!();
     }
+
     /// Remove oldest data we no longer have responsability for (this is to clear space)
     /// This call should be avoided if possible as it helps restart as an archive node.
     pub fn remove_old_data(&self) {
