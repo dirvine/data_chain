@@ -67,27 +67,35 @@ impl<'a> SecuredData<'a> {
     }
 
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
-    pub fn get(&self, _data_id: &DataIdentifier) {
+    pub fn get(&self, _data_id: &DataIdentifier) -> Result<Data, Error> {
         unimplemented!();
+        // check valid in chain first. That gives the hash to find in cs
     }
     /// Add received data, return Result false if we do not have the corresponding
-    /// NodeBlock for this data (regardless of the block currently being valid)
-    pub fn put_data(&mut self, _data: &Data) -> Result<(), Error> {
+    /// **valid** NodeBlock for this data. Will return a BlockIDentifier from us
+    /// that we must use to create a NodeBlock to send to peers. We also **must**
+    /// add this NodeBlock ourselves to this container. Thsi is done in this manner to
+    /// prevent coupling with keypairs etc.
+    pub fn put_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
         unimplemented!();
+        // Hash this data
+        // create BlockIdentifier to return
+        // add BlockIdentifier
     }
 
     /// Handle POST data
     /// This is a call that will only handle structured data
-    pub fn post_data(&mut self, _data: &Data) -> Result<(), Error> {
+    pub fn post_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
         unimplemented!();
     }
 
     /// Handle Delete data
-    pub fn delete_data(&mut self, _data_id: &DataIdentifier) -> Result<(), Error> {
+    pub fn delete_data(&mut self, _data_id: &DataIdentifier) -> Result<BlockIdentifier, Error> {
         unimplemented!();
     }
 
-    /// Return a chain for which we hold ALL of the data for and where each block is valid
+    /// Return a chain for which we hold **all** of the data for
+    /// restricted to only where each block is valid
     pub fn provable_chain(&self) -> DataChain {
         unimplemented!();
     }
@@ -112,6 +120,11 @@ impl<'a> SecuredData<'a> {
     /// Trim chain to previous common leading bits (previous vertice in binary tree)
     /// If our leading bits in group are 10111 then it will trim any 10110 data & links.
     pub fn trim_all_blocks_and_data(&mut self) {
+        unimplemented!();
+    }
+    /// Remove oldest data we no longer have responsability for (this is to clear space)
+    /// This call should be avoided if possible as it helps restart as an archive node.
+    pub fn remove_old_data(&self) {
         unimplemented!();
     }
 }
