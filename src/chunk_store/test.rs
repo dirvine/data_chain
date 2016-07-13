@@ -80,25 +80,6 @@ mod test {
     }
 
     #[test]
-    fn storedir_should_cleanup() {
-        let tempdir = unwrap!(TempDir::new("test"));
-        let storedir = tempdir.path().join("test");
-
-        {
-            let mut store = unwrap!(ChunkStore::<u64, u64>::new(storedir.clone(), 64));
-            assert!(storedir.exists());
-            unwrap!(store.put(&3, &4));
-            // Creating another instance with the same directory should fail.
-            assert!(ChunkStore::<u64, u64>::new(storedir.clone(), 64).is_err());
-            // The failed attempt should not interfere with the existing chunk store.
-            assert_eq!(4, unwrap!(store.get(&3)));
-            assert!(storedir.exists());
-        }
-
-        assert!(!storedir.exists());
-    }
-
-    #[test]
     fn successful_put() {
         let chunks = generate_random_chunks();
         let root = unwrap!(TempDir::new("test"));

@@ -89,6 +89,14 @@ impl<'a> DataChain<'a> {
         }
         Err(Error::NoFile)
     }
+    /// Unlock the lock file
+    pub fn unlock(&self) {
+        if let Some(ref path) = self.path.to_owned() {
+            if let Ok(file) = fs::File::open(path.as_path()) {
+                let _ = file.unlock();
+            }
+        }
+    }
     /// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
@@ -111,7 +119,7 @@ impl<'a> DataChain<'a> {
 
     /// Add a nodeblock received from a peer
     /// Uses  `lazy accumulation`
-    /// If block becomes or is valid, then it is returned
+    /// If block becomes valid, then it is returned
     pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
         if !block.validate() {
             return None;
@@ -163,7 +171,7 @@ impl<'a> DataChain<'a> {
     // get size of chain for storing on disk
     #[allow(unused)]
     fn size_of(&self) -> usize {
-        self.chain.capacity() * mem::size_of::<Block>() + (mem::size_of::<usize>() * 2)
+        self.chain.capacity() * (mem::size_of::<Block>() + (mem::size_of::<usize>() * 2))
 
     }
     /// find a block (user required to test for validity)

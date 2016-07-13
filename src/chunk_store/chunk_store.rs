@@ -191,11 +191,10 @@ impl<Key, Value> ChunkStore<Key, Value>
         let path_name = Path::new(&filename);
         Ok(self.rootdir.join(path_name))
     }
-}
-
-impl<Key, Value> Drop for ChunkStore<Key, Value> {
-    fn drop(&mut self) {
-        let _ = self.lock_file.take().iter().map(File::unlock);
-        let _ = fs::remove_dir_all(&self.rootdir);
+    /// Unlock the lock file
+    pub fn unlock(&self) {
+        if let Some(ref lck) = self.lock_file {
+            let _ = lck.unlock();
+        }
     }
 }

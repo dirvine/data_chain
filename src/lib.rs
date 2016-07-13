@@ -84,6 +84,8 @@ pub mod chain;
 /// Data types
 pub mod data;
 
+/// API
+pub mod secured_data;
 /// Persistant store on disk of Keys and large values
 /// TODO should not be public
 pub mod chunk_store;
