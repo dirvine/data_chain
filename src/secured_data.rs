@@ -20,6 +20,8 @@ use error::Error;
 use std::sync::{Arc, Mutex};
 use chunk_store::ChunkStore;
 use sodiumoxide::crypto::sign::PublicKey;
+use maidsafe_utilities::serialisation;
+use sodiumoxide::crypto::hash::sha256;
 use std::path::{Path, PathBuf};
 use data::{Data, DataIdentifier};
 use chain::{BlockIdentifier, DataChain, NodeBlock};
@@ -76,6 +78,7 @@ impl<'a> SecuredData<'a> {
             .unwrap()
             .chain()
             .iter()
+            .rev() // find first occurance (i.e. latest one, needs update for versions)
             .find(|x| {
                 x.valid &&
                 if let Some(y) = x.identifier().name() {
@@ -87,7 +90,6 @@ impl<'a> SecuredData<'a> {
             return Ok(try!(self.cs.get(&block_id.identifier().hash())));
         }
         Err(Error::NoFile)
-        // check valid in chain first. That gives the hash to find in cs
     }
 
     /// Add received data, return Result false if we do not have the corresponding
@@ -95,11 +97,16 @@ impl<'a> SecuredData<'a> {
     /// that we must use to create a NodeBlock to send to peers. We also **must**
     /// add this NodeBlock ourselves to this container. This is done in this manner to
     /// prevent coupling with keypairs etc.
-    pub fn put_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
-        unimplemented!();
-        // Hash this data
-        // create BlockIdentifier to return
-        // add BlockIdentifier
+    pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
+        let hash = sha256::hash(&try!(serialisation::serialise(&data)));
+        try!(self.cs.put(&hash.0, data));
+        Ok(match data {
+            &Data::Immutable(ref im) if *im.name() == hash.0 => {
+                BlockIdentifier::ImmutableData(hash.0)
+            }
+            &Data::Structured(ref sd) => BlockIdentifier::StructuredData(hash.0, *sd.name(), false),
+            _ => return Err(Error::BadIdentifier),
+        })
     }
 
     /// Handle POST data
