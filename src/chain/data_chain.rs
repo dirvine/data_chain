@@ -168,6 +168,10 @@ impl<'a> DataChain<'a> {
 
     }
 
+    /// getter
+    pub fn chain(&self) -> &Vec<Block> {
+        &self.chain
+    }
     // get size of chain for storing on disk
     #[allow(unused)]
     fn size_of(&self) -> usize {
@@ -312,7 +316,7 @@ impl<'a> DataChain<'a> {
         }
 
         let keys = link.proof().iter().cloned().map(|x| *x.key()).collect_vec();
-        node_block::create_link_descriptor(&keys[..]) == link.identifier().hash().0
+        node_block::create_link_descriptor(&keys[..]) == link.identifier().hash()
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures
@@ -464,7 +468,7 @@ mod tests {
         let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
-        let identifier3 = BlockIdentifier::ImmutableData(sha256::hash(b"a"));
+        let identifier3 = BlockIdentifier::ImmutableData(sha256::hash(b"a").0);
         let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
@@ -622,12 +626,12 @@ mod tests {
         assert!(pub3.len() == 3);
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
         let identifier1 = BlockIdentifier::Link(link_desc1);
-        let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
-        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
-                                                        sha256::hash(b"sd1name"),
+        let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
+        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
+                                                        sha256::hash(b"sd1name").0,
                                                         false);
-        let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash"),
-                                                        sha256::hash(b"sd2name"),
+        let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b"s21hash").0,
+                                                        sha256::hash(b"sd2name").0,
                                                         true);
         assert!(identifier1 != id_ident);
         assert!(identifier1 != sd1_ident);
@@ -716,9 +720,9 @@ mod tests {
         let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
         let identifier1 = BlockIdentifier::Link(link_desc1);
-        let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash"));
-        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash"),
-                                                        sha256::hash(b"sd1name"),
+        let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
+        let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
+                                                        sha256::hash(b"sd1name").0,
                                                         false);
         let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());

@@ -64,14 +64,29 @@ impl<'a> SecuredData<'a> {
     /// to represent whether we have the data when the block is valid
     pub fn add_node_block(&mut self, nb: NodeBlock) -> Option<(BlockIdentifier, bool)> {
         if let Some(ref ans) = self.dc.lock().unwrap().add_node_block(nb.clone()) {
-            return Some((ans.clone(), self.cs.has(&ans.hash().0)));
+            return Some((ans.clone(), self.cs.has(&ans.hash())));
         }
         None
     }
 
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
-    pub fn get(&self, _data_id: &DataIdentifier) -> Result<Data, Error> {
-        unimplemented!();
+    pub fn get(&self, data_id: &DataIdentifier) -> Result<Data, Error> {
+        if let Some(block_id) = self.dc
+            .lock()
+            .unwrap()
+            .chain()
+            .iter()
+            .find(|x| {
+                x.valid &&
+                if let Some(y) = x.identifier().name() {
+                    y == data_id.name()
+                } else {
+                    false
+                }
+            }) {
+            return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+        }
+        Err(Error::NoFile)
         // check valid in chain first. That gives the hash to find in cs
     }
 

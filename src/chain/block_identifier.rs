@@ -15,10 +15,8 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use sodiumoxide::crypto::hash::sha256::Digest;
-
 /// structured Data name
-pub type SdName = Digest;
+pub type SdName = [u8; 32];
 
 /// Ledger type (delete or keep)
 pub type Ledger = bool;
@@ -27,41 +25,40 @@ pub type Ledger = bool;
 pub type LinkDescriptor = [u8; 32];
 
 
-/// Data identifiers for use in a data Chain. 
-/// The hash of each data type is available to ensure there is no confusion 
-/// over the validity of any data presented by this chain 
+/// Data identifiers for use in a data Chain.
+/// The hash of each data type is available to ensure there is no confusion
+/// over the validity of any data presented by this chain
 #[allow(missing_docs)]
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
-    ImmutableData(Digest),
+    ImmutableData([u8; 32]),
     ///           hash     name (identity + tag) (stored localy as name in data store)
-    StructuredData(Digest, SdName, Ledger),
+    StructuredData([u8; 32], SdName, Ledger),
     /// This array represents **this nodes** current close group
     /// The array is all nodes xored together
     /// This is unique to this node, but known by all nodes connected to it
     /// in this group.
     Link(LinkDescriptor), // hash of group (all current close group id's)
-
-  }
+}
 
 impl BlockIdentifier {
     /// Define a name getter as data identifiers may contain more info that does
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn hash(&self) -> Digest {
+    pub fn hash(&self) -> [u8; 32] {
         match *self {
             BlockIdentifier::ImmutableData(hash) => hash,
             BlockIdentifier::StructuredData(hash, _name, _) => hash,
-            BlockIdentifier::Link(hash) => Digest(hash),
+            BlockIdentifier::Link(hash) => hash,
         }
     }
 
     /// structured data name != hash of the data or block
-    pub fn structured_data_name(&self) -> Option<SdName> {
+    pub fn name(&self) -> Option<[u8; 32]> {
         match *self {
-            BlockIdentifier::ImmutableData(_hash) => None,
+            BlockIdentifier::ImmutableData(hash) => Some(hash),
             BlockIdentifier::StructuredData(_hash, name, _) => Some(name),
             BlockIdentifier::Link(_hash) => None,
         }
@@ -94,29 +91,29 @@ mod tests {
 
         assert!(link.is_link());
         assert!(!link.is_block());
-        assert!(link.structured_data_name().is_none());
+        assert!(link.name().is_none());
     }
 
     #[test]
     fn create_validate_immutable_data_identifier() {
-        let id_block = BlockIdentifier::ImmutableData(sha256::hash(b"1"));
+        let id_block = BlockIdentifier::ImmutableData(sha256::hash(b"1").0);
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
-        assert_eq!(id_block.hash(), sha256::hash("1".as_bytes()));
-        assert!(id_block.structured_data_name().is_none());
+        assert_eq!(id_block.hash(), sha256::hash(b"1").0);
+        assert!(id_block.name().is_some());
     }
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block =
-            BlockIdentifier::StructuredData(sha256::hash(b"hash"), sha256::hash(b"name"), false);
+        let sd_block = BlockIdentifier::StructuredData(sha256::hash(b"hash").0,
+                                                       sha256::hash(b"name").0,
+                                                       false);
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
-        assert_eq!(sd_block.hash(), sha256::hash("hash".as_bytes()));
-        assert!(sd_block.structured_data_name().is_some());
-        assert_eq!(sd_block.structured_data_name().expect("sd name"),
-                   sha256::hash("name".as_bytes()))
+        assert_eq!(sd_block.hash(), sha256::hash(b"hash").0);
+        assert!(sd_block.name().is_some());
+        assert_eq!(sd_block.name().expect("sd name"), sha256::hash(b"name").0)
     }
 
 }
