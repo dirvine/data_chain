@@ -70,7 +70,7 @@ to represent whether we have the data when the block is valid</p>
 <div class='docblock'><p>Add received data, return Result false if we do not have the corresponding
 <strong>valid</strong> NodeBlock for this data. Will return a BlockIDentifier from us
 that we must use to create a NodeBlock to send to peers. We also <strong>must</strong>
-add this NodeBlock ourselves to this container. Thsi is done in this manner to
+add this NodeBlock ourselves to this container. This is done in this manner to
 prevent coupling with keypairs etc.</p>
 </div><h4 id='method.post_data' class='method'><code>fn <a href='#method.post_data' class='fnname'>post_data</a>(&amp;mut self, _data: &amp;<a class='enum' href='../../data_chain/enum.Data.html' title='data_chain::Data'>Data</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Handle POST data
@@ -78,8 +78,8 @@ This is a call that will only handle structured data</p>
 </div><h4 id='method.delete_data' class='method'><code>fn <a href='#method.delete_data' class='fnname'>delete_data</a>(&amp;mut self, _data_id: &amp;<a class='enum' href='../../data_chain/enum.DataIdentifier.html' title='data_chain::DataIdentifier'>DataIdentifier</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='enum' href='../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Handle Delete data</p>
 </div><h4 id='method.provable_chain' class='method'><code>fn <a href='#method.provable_chain' class='fnname'>provable_chain</a>(&amp;self) -&gt; <a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a></code></h4>
-<div class='docblock'><p>Return a chain for which we hold <strong>all</strong> of the data for
-restricted to only where each block is valid</p>
+<div class='docblock'><p>Return a chain for which we hold <strong>all</strong> of the data.
+Restricted to data that has a corresponding valid <code>Block</code>.</p>
 </div><h4 id='method.purge_disk' class='method'><code>fn <a href='#method.purge_disk' class='fnname'>purge_disk</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Remove any data on disk that we do not have a valid Block for</p>
 </div><h4 id='method.merge_chain' class='method'><code>fn <a href='#method.merge_chain' class='fnname'>merge_chain</a>(&amp;mut self, _chain: &amp;<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>)</code></h4>
