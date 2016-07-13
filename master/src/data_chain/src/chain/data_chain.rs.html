@@ -834,6 +834,10 @@
 <span id="790">790</span>
 <span id="791">791</span>
 <span id="792">792</span>
+<span id="793">793</span>
+<span id="794">794</span>
+<span id="795">795</span>
+<span id="796">796</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -1005,6 +1009,10 @@
 
     }
 
+    <span class='doccomment'>/// getter</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chain</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
+        <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>chain</span>
+    }
     <span class='comment'>// get size of chain for storing on disk</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>size_of</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
@@ -1149,7 +1157,7 @@
         }
 
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>.<span class='ident'>key</span>()).<span class='ident'>collect_vec</span>();
-        <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[..]) <span class='op'>==</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>().<span class='number'>0</span>
+        <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[..]) <span class='op'>==</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>()
     }
 
     <span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
@@ -1301,7 +1309,7 @@
         <span class='kw'>let</span> <span class='ident'>link_desc2</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub2</span>[..]);
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
         <span class='kw'>let</span> <span class='ident'>identifier2</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc2</span>);
-        <span class='kw'>let</span> <span class='ident'>identifier3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;a&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>identifier3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;a&quot;</span>).<span class='number'>0</span>);
         <span class='kw'>let</span> <span class='ident'>link1_1</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>0</span>].<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>0</span>].<span class='number'>1</span>, <span class='ident'>identifier1</span>.<span class='ident'>clone</span>());
         <span class='kw'>let</span> <span class='ident'>link1_2</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>1</span>].<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>1</span>].<span class='number'>1</span>, <span class='ident'>identifier1</span>.<span class='ident'>clone</span>());
         <span class='kw'>let</span> <span class='ident'>link1_3</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>2</span>].<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>2</span>].<span class='number'>1</span>, <span class='ident'>identifier1</span>);
@@ -1459,12 +1467,12 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>pub3</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>3</span>);
         <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
-        <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>),
-                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>),
+        <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>).<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>).<span class='number'>0</span>,
+                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>).<span class='number'>0</span>,
                                                         <span class='boolvalue'>false</span>);
-        <span class='kw'>let</span> <span class='ident'>sd2_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;s21hash&quot;</span>),
-                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd2name&quot;</span>),
+        <span class='kw'>let</span> <span class='ident'>sd2_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;s21hash&quot;</span>).<span class='number'>0</span>,
+                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd2name&quot;</span>).<span class='number'>0</span>,
                                                         <span class='boolvalue'>true</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>identifier1</span> <span class='op'>!=</span> <span class='ident'>id_ident</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>identifier1</span> <span class='op'>!=</span> <span class='ident'>sd1_ident</span>);
@@ -1553,9 +1561,9 @@
         <span class='kw'>let</span> <span class='ident'>pub3</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>skip</span>(<span class='number'>2</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
         <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
-        <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>));
-        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>),
-                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>),
+        <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>).<span class='number'>0</span>);
+        <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>).<span class='number'>0</span>,
+                                                        <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1name&quot;</span>).<span class='number'>0</span>,
                                                         <span class='boolvalue'>false</span>);
         <span class='kw'>let</span> <span class='ident'>link1_1</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>0</span>].<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>0</span>].<span class='number'>1</span>, <span class='ident'>identifier1</span>.<span class='ident'>clone</span>());
         <span class='kw'>let</span> <span class='ident'>link1_2</span> <span class='op'>=</span> <span class='ident'>NodeBlock</span>::<span class='ident'>new</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>1</span>].<span class='number'>0</span>, <span class='kw-2'>&amp;</span><span class='ident'>keys</span>[<span class='number'>1</span>].<span class='number'>1</span>, <span class='ident'>identifier1</span>.<span class='ident'>clone</span>());

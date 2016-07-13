@@ -329,12 +329,12 @@
 <span class='doccomment'>//! assert!(pub3.len() == 3);</span>
 <span class='doccomment'>//! let link_desc1 = create_link_descriptor(&amp;pub1[..]);</span>
 <span class='doccomment'>//! let identifier1 = BlockIdentifier::Link(link_desc1);</span>
-<span class='doccomment'>//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;));</span>
-<span class='doccomment'>//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;),</span>
-<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd1name&quot;),</span>
+<span class='doccomment'>//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;).0);</span>
+<span class='doccomment'>//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;).0,</span>
+<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd1name&quot;).0,</span>
 <span class='doccomment'>//!                                                 false);</span>
-<span class='doccomment'>//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;),</span>
-<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd2name&quot;),</span>
+<span class='doccomment'>//! let sd2_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;s21hash&quot;).0,</span>
+<span class='doccomment'>//!                                                 sha256::hash(b&quot;sd2name&quot;).0,</span>
 <span class='doccomment'>//!                                                 true);</span>
 <span class='doccomment'>//! assert!(identifier1 != id_ident);</span>
 <span class='doccomment'>//! assert!(identifier1 != sd1_ident);</span>
