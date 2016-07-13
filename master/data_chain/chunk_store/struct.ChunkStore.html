@@ -47,14 +47,14 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1876' class='srclink' href='../../src/data_chain/src/chunk_store/chunk_store.rs.html#41-47' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1951' class='srclink' href='../../src/data_chain/src/chunk_store/chunk_store.rs.html#41-47' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct ChunkStore&lt;Key, Value&gt; {
     // some fields omitted
 }</pre><div class='docblock'><p><code>ChunkStore</code> is a store of data held as serialised files on disk, implementing a maximum disk
 usage to restrict storage.</p>
 
 <p>The data chunks are deleted when the <code>ChunkStore</code> goes out of scope.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;Key, Value&gt; <a class='struct' href='../../data_chain/chunk_store/struct.ChunkStore.html' title='data_chain::chunk_store::ChunkStore'>ChunkStore</a>&lt;Key, Value&gt; <span class='where'>where Key: <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> + <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a>, Value: <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> + <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1884' class='srclink' href='../../src/data_chain/src/chunk_store/chunk_store.rs.html#49-194' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;Key, Value&gt; <a class='struct' href='../../data_chain/chunk_store/struct.ChunkStore.html' title='data_chain::chunk_store::ChunkStore'>ChunkStore</a>&lt;Key, Value&gt; <span class='where'>where Key: <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> + <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a>, Value: <a class='trait' href='../../rustc_serialize/serialize/trait.Decodable.html' title='rustc_serialize::serialize::Decodable'>Decodable</a> + <a class='trait' href='../../rustc_serialize/serialize/trait.Encodable.html' title='rustc_serialize::serialize::Encodable'>Encodable</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1959' class='srclink' href='../../src/data_chain/src/chunk_store/chunk_store.rs.html#49-200' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(root: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, max_space: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/chunk_store/struct.ChunkStore.html' title='data_chain::chunk_store::ChunkStore'>ChunkStore</a>&lt;Key, Value&gt;, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Creates a new <code>ChunkStore</code> with <code>max_space</code> allowed storage space.</p>
 
@@ -83,9 +83,8 @@ returns <code>Error::Io</code>.</p>
 <div class='docblock'><p>Returns the maximum amount of storage space available for this ChunkStore.</p>
 </div><h4 id='method.used_space' class='method'><code>fn <a href='#method.used_space' class='fnname'>used_space</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Returns the amount of storage space already used by this ChunkStore.</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;Key, Value&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../../data_chain/chunk_store/struct.ChunkStore.html' title='data_chain::chunk_store::ChunkStore'>ChunkStore</a>&lt;Key, Value&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1983' class='srclink' href='../../src/data_chain/src/chunk_store/chunk_store.rs.html#196-201' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.drop' class='method'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></h4>
-<div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
+</div><h4 id='method.unlock' class='method'><code>fn <a href='#method.unlock' class='fnname'>unlock</a>(&amp;self)</code></h4>
+<div class='docblock'><p>Unlock the lock file</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 

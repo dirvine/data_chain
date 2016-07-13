@@ -60,7 +60,7 @@ at vault level.
 If there was a restart then the nodes should validate and continue.
 N:B this means all nodes can use a named directory for data store and clear if they restart
 as a new id. This allows clean-up of old data cache directories.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-256' class='srclink' href='../../../src/data_chain/src/chain/data_chain.rs.html#53-431' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a&gt; <a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>&lt;'a&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-256' class='srclink' href='../../../src/data_chain/src/chain/data_chain.rs.html#53-439' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.create_in_path' class='method'><code>fn <a href='#method.create_in_path' class='fnname'>create_in_path</a>(path: &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.Path.html' title='std::path::Path'>Path</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>&gt;</code></h4>
 <div class='docblock'><p>Create a new chain backed up on disk
 Provide the directory to create the files in</p>
@@ -68,6 +68,8 @@ Provide the directory to create the files in</p>
 <div class='docblock'><p>Open from existing directory</p>
 </div><h4 id='method.write' class='method'><code>fn <a href='#method.write' class='fnname'>write</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>()</a>, <a class='enum' href='../../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Write current data chain to supplied path</p>
+</div><h4 id='method.unlock' class='method'><code>fn <a href='#method.unlock' class='fnname'>unlock</a>(&amp;self)</code></h4>
+<div class='docblock'><p>Unlock the lock file</p>
 </div><h4 id='method.validate_ownership' class='method'><code>fn <a href='#method.validate_ownership' class='fnname'>validate_ownership</a>(&amp;mut self, my_group: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Nodes always validate a chain before accepting it
 Validation takes place from start of chain to now.
@@ -77,7 +79,7 @@ This method will NOT purge</p>
 </div><h4 id='method.add_node_block' class='method'><code>fn <a href='#method.add_node_block' class='fnname'>add_node_block</a>(&amp;mut self, block: <a class='struct' href='../../../data_chain/chain/node_block/struct.NodeBlock.html' title='data_chain::chain::node_block::NodeBlock'>NodeBlock</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>&gt;</code></h4>
 <div class='docblock'><p>Add a nodeblock received from a peer
 Uses  <code>lazy accumulation</code>
-If block becomes or is valid, then it is returned</p>
+If block becomes valid, then it is returned</p>
 </div><h4 id='method.find' class='method'><code>fn <a href='#method.find' class='fnname'>find</a>(&amp;self, block_identifier: &amp;<a class='enum' href='../../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;Block&gt;</code></h4>
 <div class='docblock'><p>find a block (user required to test for validity)</p>
 </div><h4 id='method.as_slice' class='method'><code>fn <a href='#method.as_slice' class='fnname'>as_slice</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a>Block<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>

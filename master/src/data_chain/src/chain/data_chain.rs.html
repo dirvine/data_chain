@@ -826,6 +826,14 @@
 <span id="782">782</span>
 <span id="783">783</span>
 <span id="784">784</span>
+<span id="785">785</span>
+<span id="786">786</span>
+<span id="787">787</span>
+<span id="788">788</span>
+<span id="789">789</span>
+<span id="790">790</span>
+<span id="791">791</span>
+<span id="792">792</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -918,6 +926,14 @@
         }
         <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>NoFile</span>)
     }
+    <span class='doccomment'>/// Unlock the lock file</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>unlock</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>path</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>path</span>.<span class='ident'>to_owned</span>() {
+            <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>file</span>) <span class='op'>=</span> <span class='ident'>fs</span>::<span class='ident'>File</span>::<span class='ident'>open</span>(<span class='ident'>path</span>.<span class='ident'>as_path</span>()) {
+                <span class='kw'>let</span> _ <span class='op'>=</span> <span class='ident'>file</span>.<span class='ident'>unlock</span>();
+            }
+        }
+    }
     <span class='doccomment'>/// Nodes always validate a chain before accepting it</span>
     <span class='doccomment'>/// Validation takes place from start of chain to now.</span>
     <span class='doccomment'>/// Also confirm we can accept this chain, by comparing</span>
@@ -940,7 +956,7 @@
 
     <span class='doccomment'>/// Add a nodeblock received from a peer</span>
     <span class='doccomment'>/// Uses  `lazy accumulation`</span>
-    <span class='doccomment'>/// If block becomes or is valid, then it is returned</span>
+    <span class='doccomment'>/// If block becomes valid, then it is returned</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_node_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='ident'>NodeBlock</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span><span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>block</span>.<span class='ident'>validate</span>() {
             <span class='kw'>return</span> <span class='prelude-val'>None</span>;
@@ -992,7 +1008,7 @@
     <span class='comment'>// get size of chain for storing on disk</span>
     <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
     <span class='kw'>fn</span> <span class='ident'>size_of</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
-        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>capacity</span>() <span class='op'>*</span> <span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>() <span class='op'>+</span> (<span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>() <span class='op'>*</span> <span class='number'>2</span>)
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>capacity</span>() <span class='op'>*</span> (<span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span>() <span class='op'>+</span> (<span class='ident'>mem</span>::<span class='ident'>size_of</span>::<span class='op'>&lt;</span><span class='ident'>usize</span><span class='op'>&gt;</span>() <span class='op'>*</span> <span class='number'>2</span>))
 
     }
     <span class='doccomment'>/// find a block (user required to test for validity)</span>
