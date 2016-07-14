@@ -21,7 +21,6 @@ use std::io::{self, Read, Write};
 use std::marker::PhantomData;
 use std::path::{Path, PathBuf};
 
-use fs2::FileExt;
 use maidsafe_utilities::serialisation;
 use rustc_serialize::{Decodable, Encodable};
 use rustc_serialize::hex::{FromHex, ToHex};
@@ -29,9 +28,6 @@ use error::Error;
 
 /// The max name length for a chunk file.
 const MAX_CHUNK_FILE_NAME_LENGTH: usize = 104;
-/// The name of the lock file for the chunk directory.
-const LOCK_FILE_NAME: &'static str = "lock";
-
 
 
 /// `ChunkStore` is a store of data held as serialised files on disk, implementing a maximum disk
@@ -40,7 +36,6 @@ const LOCK_FILE_NAME: &'static str = "lock";
 /// The data chunks are deleted when the `ChunkStore` goes out of scope.
 pub struct ChunkStore<Key, Value> {
     rootdir: PathBuf,
-    lock_file: Option<File>,
     max_space: u64,
     used_space: u64,
     phantom: PhantomData<(Key, Value)>,
@@ -55,16 +50,13 @@ impl<Key, Value> ChunkStore<Key, Value>
     /// The data is stored in a root directory. If `root` doesn't exist, it will be created.
     pub fn new(root: PathBuf, max_space: u64) -> Result<ChunkStore<Key, Value>, Error> {
         try!(fs::create_dir_all(&root));
-        let lock_file_path = root.join(LOCK_FILE_NAME);
-        let lock_file = try!(File::create(&lock_file_path));
-        try!(lock_file.try_lock_exclusive());
+
         // Verify that chunk files can be created.
         let name: String = (0..MAX_CHUNK_FILE_NAME_LENGTH).map(|_| '0').collect();
         let _ = try!(File::create(&root.join(name.clone())));
         try!(fs::remove_file(&root.join(name)));
         Ok(ChunkStore {
             rootdir: root,
-            lock_file: Some(lock_file),
             max_space: max_space,
             used_space: 0,
             phantom: PhantomData,
@@ -75,12 +67,8 @@ impl<Key, Value> ChunkStore<Key, Value>
     ///
     /// The data is stored in a root directory.
     pub fn from_path(root: PathBuf, max_space: u64) -> Result<ChunkStore<Key, Value>, Error> {
-        let lock_file_path = root.join(LOCK_FILE_NAME);
-        let lock_file = try!(File::create(&lock_file_path));
-        try!(lock_file.try_lock_exclusive());
         Ok(ChunkStore {
             rootdir: root,
-            lock_file: Some(lock_file),
             max_space: max_space,
             used_space: 0,
             phantom: PhantomData,
@@ -191,11 +179,5 @@ impl<Key, Value> ChunkStore<Key, Value>
         let filename = try!(serialisation::serialise(key)).to_hex();
         let path_name = Path::new(&filename);
         Ok(self.rootdir.join(path_name))
-    }
-    /// Unlock the lock file
-    pub fn unlock(&self) {
-        if let Some(ref lck) = self.lock_file {
-            let _ = lck.unlock();
-        }
     }
 }

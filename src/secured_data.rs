@@ -51,7 +51,6 @@ impl SecuredData {
 
     /// remove all disk based data
     pub fn clear_disk(&self, path: &Path) -> Result<(), Error> {
-        self.cs.unlock();
         self.dc.lock().unwrap().unlock();
         Ok(try!(fs::remove_dir_all(&path)))
     }
