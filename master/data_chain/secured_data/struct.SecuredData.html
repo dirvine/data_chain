@@ -86,12 +86,12 @@ Restricted to data that has a corresponding valid <code>Block</code>.</p>
 <div class='docblock'><p>Confirm and merge a DataChain transmitted to us.
 This will trim (purge invalid) exsiting entries then merge valid entries.
 May be used to create a new chain from given chains on node startup.</p>
-</div><h4 id='method.trust_level' class='method'><code>fn <a href='#method.trust_level' class='fnname'>trust_level</a>(&amp;self, _node: &amp;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+</div><h4 id='method.trust_level' class='method'><code>fn <a href='#method.trust_level' class='fnname'>trust_level</a>(&amp;self, _node: &amp;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a></code></h4>
 <div class='docblock'><p>How many churn events a given proover has been involved in (proover == node)</p>
 
 <h6 id='-suggestion' class='section-header'><a href='#-suggestion'>## Suggestion</a></h6>
 <p>We subtract from this score, blocks where the node has not responded (yet)
-If trust goes negative then the node may be killed from the network </p>
+If trust goes negative then the node may be killed from the network</p>
 </div><h4 id='method.required_data' class='method'><code>fn <a href='#method.required_data' class='fnname'>required_data</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='enum' href='../../data_chain/enum.DataIdentifier.html' title='data_chain::DataIdentifier'>DataIdentifier</a>&gt;</code></h4>
 <div class='docblock'><p>Find any data we should have, given our current chain</p>
 </div><h4 id='method.trim_all_blocks_and_data' class='method'><code>fn <a href='#method.trim_all_blocks_and_data' class='fnname'>trim_all_blocks_and_data</a>(&amp;mut self)</code></h4>
