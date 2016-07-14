@@ -231,6 +231,8 @@
 <span id="187">187</span>
 <span id="188">188</span>
 <span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -331,6 +333,7 @@
     <span class='doccomment'>/// that we must use to create a NodeBlock to send to peers. We also **must**</span>
     <span class='doccomment'>/// add this NodeBlock ourselves to this container. This is done in this manner to</span>
     <span class='doccomment'>/// prevent coupling with keypairs etc.</span>
+    <span class='comment'>// #### Versioned ledger structured data will be Put and paid for #####</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>put_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='ident'>Data</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>hash</span> <span class='op'>=</span> <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>)));
         <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>data</span> {
@@ -348,6 +351,7 @@
 
     <span class='doccomment'>/// Handle POST data</span>
     <span class='doccomment'>/// This is a call that will only handle structured data</span>
+    <span class='doccomment'>/// #### Will not accept versioned ledger based structuredData !!! #####</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_data</span>: <span class='kw-2'>&amp;</span><span class='ident'>Data</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
     }
