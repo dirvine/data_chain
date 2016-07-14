@@ -144,8 +144,8 @@ impl<'a> SecuredData<'a> {
     /// How many churn events a given proover has been involved in (proover == node)
     /// ######## Suggestion ###########
     /// We subtract from this score, blocks where the node has not responded (yet)
-    /// If trust goes negative then the node may be killed from the network 
-    pub fn trust_level(&self, _node: &PublicKey) -> usize {
+    /// If trust goes negative then the node may be killed from the network
+    pub fn trust_level(&self, _node: &PublicKey) -> isize {
         unimplemented!();
         // return count of number of links this node is in from back of chain,
     }
