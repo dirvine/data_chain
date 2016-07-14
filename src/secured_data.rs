@@ -97,6 +97,7 @@ impl<'a> SecuredData<'a> {
     /// that we must use to create a NodeBlock to send to peers. We also **must**
     /// add this NodeBlock ourselves to this container. This is done in this manner to
     /// prevent coupling with keypairs etc.
+    // #### Versioned ledger structured data will be Put and paid for #####
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = sha256::hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
@@ -114,6 +115,7 @@ impl<'a> SecuredData<'a> {
 
     /// Handle POST data
     /// This is a call that will only handle structured data
+    /// #### Will not accept versioned ledger based structuredData !!! #####
     pub fn post_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
         unimplemented!();
     }
