@@ -78,7 +78,7 @@ impl<'a> SecuredData<'a> {
             .unwrap()
             .chain()
             .iter()
-            .rev() // find first occurance (i.e. latest one, needs update for versions)
+            .rev() // find first occurance (i.e. latest one, TODO needs update for versions)
             .find(|x| {
                 x.valid &&
                 if let Some(y) = x.identifier().name() {
@@ -100,11 +100,13 @@ impl<'a> SecuredData<'a> {
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = sha256::hash(&try!(serialisation::serialise(&data)));
         try!(self.cs.put(&hash.0, data));
-        Ok(match data {
-            &Data::Immutable(ref im) if *im.name() == hash.0 => {
+        Ok(match *data {
+            Data::Immutable(ref im) if *im.name() == hash.0 => {
                 BlockIdentifier::ImmutableData(hash.0)
             }
-            &Data::Structured(ref sd) => BlockIdentifier::StructuredData(hash.0, *sd.name(), false),
+            Data::Structured(ref sd) if sd.version() == 0 => {
+                BlockIdentifier::StructuredData(hash.0, *sd.name(), false)
+            }
             _ => return Err(Error::BadIdentifier),
         })
     }

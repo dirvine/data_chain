@@ -92,6 +92,10 @@ impl StructuredData {
         &self.name
     }
 
+    /// Version of SD, must == 0 for Put
+    pub fn version(&self) -> u64 {
+        self.version
+    }
     /// Returns `DataIdentifier` for this data element.
     pub fn identifier(&self) -> DataIdentifier {
         DataIdentifier::Structured(self.name, self.type_tag)
