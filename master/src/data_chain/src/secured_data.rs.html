@@ -228,6 +228,9 @@
 <span id="184">184</span>
 <span id="185">185</span>
 <span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -373,6 +376,9 @@
     }
 
     <span class='doccomment'>/// How many churn events a given proover has been involved in (proover == node)</span>
+    <span class='doccomment'>/// ######## Suggestion ###########</span>
+    <span class='doccomment'>/// We subtract from this score, blocks where the node has not responded (yet)</span>
+    <span class='doccomment'>/// If trust goes negative then the node may be killed from the network </span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>trust_level</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>_node</span>: <span class='kw-2'>&amp;</span><span class='ident'>PublicKey</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
         <span class='comment'>// return count of number of links this node is in from back of chain,</span>
