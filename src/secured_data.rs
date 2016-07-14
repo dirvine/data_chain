@@ -99,8 +99,7 @@ impl<'a> SecuredData<'a> {
     /// prevent coupling with keypairs etc.
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = sha256::hash(&try!(serialisation::serialise(&data)));
-        try!(self.cs.put(&hash.0, data));
-        Ok(match *data {
+        let id = match *data {
             Data::Immutable(ref im) if *im.name() == hash.0 => {
                 BlockIdentifier::ImmutableData(hash.0)
             }
@@ -108,7 +107,9 @@ impl<'a> SecuredData<'a> {
                 BlockIdentifier::StructuredData(hash.0, *sd.name(), false)
             }
             _ => return Err(Error::BadIdentifier),
-        })
+        };
+        try!(self.cs.put(&hash.0, data));
+        Ok(id)
     }
 
     /// Handle POST data
