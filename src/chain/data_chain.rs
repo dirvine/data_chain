@@ -19,13 +19,12 @@
 
 use std::slice::{RSplitN, RSplitNMut, Split, SplitMut, SplitN, SplitNMut};
 use std::mem;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use error::Error;
 use std::io::{self, Read, Write};
 use std::fs;
 use fs2::FileExt;
 use maidsafe_utilities::serialisation;
-use std::borrow::Cow;
 use itertools::Itertools;
 use sodiumoxide::crypto::sign::PublicKey;
 use chain::block::Block;
@@ -43,28 +42,28 @@ use chain::node_block::{self, NodeBlock};
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
 #[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
-pub struct DataChain<'a> {
+pub struct DataChain {
     chain: Vec<Block>,
-    path: Option<Cow<'a, PathBuf>>,
+    path: Option<PathBuf>,
 }
 
 type Blocks = Vec<Block>;
 
-impl<'a> DataChain<'a> {
+impl DataChain {
     /// Create a new chain backed up on disk
     /// Provide the directory to create the files in
-    pub fn create_in_path(path: &Path) -> io::Result<DataChain> {
+    pub fn create_in_path(path: PathBuf) -> io::Result<DataChain> {
         let path = path.join("data_chain");
         let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path));
         // hold a lock on the file for the whole session
         try!(file.lock_exclusive());
         Ok(DataChain {
             chain: Blocks::default(),
-            path: Some(Cow::Owned(path)),
+            path: Some(path),
         })
     }
     /// Open from existing directory
-    pub fn from_path(path: &Path) -> Result<DataChain, Error> {
+    pub fn from_path(path: PathBuf) -> Result<DataChain, Error> {
         let path = path.join("data_chain");
         let mut file =
             try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path));
@@ -74,7 +73,7 @@ impl<'a> DataChain<'a> {
         let _ = try!(file.read_to_end(&mut buf));
         Ok(DataChain {
             chain: try!(serialisation::deserialise::<Blocks>(&buf[..])),
-            path: Some(Cow::Owned(path)),
+            path: Some(path),
         })
     }
     /// Write current data chain to supplied path
@@ -735,7 +734,7 @@ mod tests {
         let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
-            if let Ok(mut chain) = DataChain::create_in_path(&dir.path()) {
+            if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf()) {
                 assert!(chain.is_empty());
                 // ############# start adding link #####################
                 assert!(chain.add_node_block(link1_1.unwrap()).is_none());
@@ -787,7 +786,7 @@ mod tests {
                 assert_eq!(chain.len(), 3);
                 assert_eq!(chain.valid_len(), 2);
                 assert!(chain.write().is_ok());
-                let chain2 = DataChain::from_path(&dir.path());
+                let chain2 = DataChain::from_path(dir.path().to_path_buf());
                 assert!(chain2.is_ok());
                 assert_eq!(chain2.unwrap(), chain);
             }

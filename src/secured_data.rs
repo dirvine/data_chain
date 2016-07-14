@@ -29,21 +29,21 @@ use chain::{BlockIdentifier, DataChain, NodeBlock};
 
 /// API for data based operations.
 #[allow(unused)]
-pub struct SecuredData<'a> {
+pub struct SecuredData {
     cs: ChunkStore<[u8; 32], Data>,
-    dc: Arc<Mutex<DataChain<'a>>>,
+    dc: Arc<Mutex<DataChain>>,
 }
 
-impl<'a> SecuredData<'a> {
+impl SecuredData {
     /// Construct new data container
-    pub fn create_in_path(path: &PathBuf, max_disk_space: u64) -> Result<SecuredData, Error> {
+    pub fn create_in_path(path: PathBuf, max_disk_space: u64) -> Result<SecuredData, Error> {
         let cs = try!(ChunkStore::new(path.clone(), max_disk_space));
         let dc = Arc::new(Mutex::new(try!(DataChain::create_in_path(path))));
         Ok(SecuredData { cs: cs, dc: dc })
     }
 
     /// Open an existing container from path
-    pub fn from_path(path: &PathBuf, max_disk_space: u64) -> Result<SecuredData, Error> {
+    pub fn from_path(path: PathBuf, max_disk_space: u64) -> Result<SecuredData, Error> {
         let cs = try!(ChunkStore::from_path(path.clone(), max_disk_space));
         let dc = Arc::new(Mutex::new(try!(DataChain::from_path(path))));
         Ok(SecuredData { cs: cs, dc: dc })
@@ -57,7 +57,7 @@ impl<'a> SecuredData<'a> {
     }
 
     /// Access to DataChain
-    pub fn chain(&self) -> Arc<Mutex<DataChain<'a>>> {
+    pub fn chain(&self) -> Arc<Mutex<DataChain>> {
         self.dc.clone()
     }
 
@@ -182,10 +182,10 @@ mod test {
         let tempdir = unwrap!(TempDir::new("test"));
         let storedir = tempdir.path().join("test");
 
-        let store = unwrap!(SecuredData::create_in_path(&storedir, 64));
-        assert!(storedir.exists());
+        let store = unwrap!(SecuredData::create_in_path(storedir.clone(), 64));
+        assert!(&storedir.clone().exists());
         // Should fail to create existing dir
-        assert!(SecuredData::create_in_path(&storedir.clone(), 64).is_err());
+        assert!(SecuredData::create_in_path(storedir.clone(), 64).is_err());
         assert!(storedir.exists());
         assert!(store.clear_disk(&storedir).is_ok());
         assert!(!storedir.exists());
