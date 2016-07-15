@@ -153,8 +153,16 @@ impl SecuredData {
     /// Return a chain for which we hold **all** of the data.
     /// Restricted to data that has a corresponding valid `Block`.
     pub fn provable_chain(&self) -> DataChain {
-
-        unimplemented!();
+        let keys = self.cs.keys();
+        DataChain::from_blocks(self.dc
+            .lock()
+            .unwrap()
+            .chain()
+            .iter()
+            .cloned()
+            .filter(|x| x.valid)
+            .filter(|x| x.identifier().is_link() || keys.contains(&x.identifier().hash()))
+            .collect_vec())
     }
 
     /// Remove any data on disk that we do not have a valid Block for
@@ -197,8 +205,17 @@ impl SecuredData {
         // return count of number of links this node is in from back of chain,
     }
     /// Find any data we should have, given our current chain
-    pub fn required_data(&self) -> Vec<DataIdentifier> {
-        unimplemented!();
+    pub fn required_data(&self) -> Vec<BlockIdentifier> {
+        let keys = self.cs.keys();
+        self.dc
+            .lock()
+            .unwrap()
+            .chain()
+            .iter()
+            .filter(|x| !x.identifier().is_link() && x.valid)
+            .filter(|x| !keys.contains(&x.identifier().hash()))
+            .map(|x| x.identifier().clone())
+            .collect_vec()
     }
 
     // ############ Dubious, should perhaps be private ###########

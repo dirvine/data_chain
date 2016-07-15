@@ -76,6 +76,14 @@ impl DataChain {
             path: Some(path),
         })
     }
+    
+    /// Create chain in memory from vector of blocks 
+    pub fn from_blocks(blocks : Vec<Block>) -> DataChain {
+        DataChain {
+            chain : blocks,
+            path: None,
+        }
+    }
     /// Write current data chain to supplied path
     pub fn write(&self) -> Result<(), Error> {
         if let Some(path) = self.path.to_owned() {
