@@ -80,7 +80,9 @@ impl SecuredData {
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-            return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+                if block_id.valid {
+                    return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+                }
         }
         Err(Error::NoFile)
     }
