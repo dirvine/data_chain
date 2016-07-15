@@ -245,6 +245,17 @@
 <span id="201">201</span>
 <span id="202">202</span>
 <span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -313,7 +324,11 @@
     <span class='doccomment'>/// to represent whether we have the data when the block is valid</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>add_node_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>nb</span>: <span class='ident'>NodeBlock</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>(<span class='ident'>BlockIdentifier</span>, <span class='ident'>bool</span>)<span class='op'>&gt;</span> {
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>ans</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dc</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>add_node_block</span>(<span class='ident'>nb</span>.<span class='ident'>clone</span>()) {
+            <span class='kw'>if</span> <span class='ident'>ans</span>.<span class='ident'>is_link</span>() {
+                <span class='kw'>return</span> <span class='prelude-val'>None</span>;
+            }
             <span class='kw'>return</span> <span class='prelude-val'>Some</span>((<span class='ident'>ans</span>.<span class='ident'>clone</span>(), <span class='self'>self</span>.<span class='ident'>cs</span>.<span class='ident'>has</span>(<span class='kw-2'>&amp;</span><span class='ident'>ans</span>.<span class='ident'>hash</span>())));
+
         }
         <span class='prelude-val'>None</span>
     }
@@ -354,7 +369,7 @@
     <span class='doccomment'>/// Handle POST data</span>
     <span class='doccomment'>/// This is a call that will only handle structured data</span>
     <span class='doccomment'>///</span>
-    <span class='doccomment'>/// **Will not accept versioned ledger based structuredData !!!**</span>
+    <span class='doccomment'>/// **Will not accept versioned ledger based structuredData !**</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>post_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='ident'>Data</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>hash</span> <span class='op'>=</span> <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>)));
         <span class='kw'>let</span> <span class='ident'>id</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>data</span> {
@@ -380,9 +395,16 @@
         <span class='prelude-val'>Ok</span>(<span class='ident'>id</span>)
     }
 
-    <span class='doccomment'>/// Handle Delete data</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>_data_id</span>: <span class='kw-2'>&amp;</span><span class='ident'>DataIdentifier</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='macro'>unimplemented</span><span class='macro'>!</span>();
+    <span class='doccomment'>/// Handle Delete data :- will ignore the ledger bit</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>delete_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>data_id</span>: <span class='kw-2'>&amp;</span><span class='ident'>DataIdentifier</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>BlockIdentifier</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>ref</span> <span class='ident'>block_id</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dc</span>
+            .<span class='ident'>lock</span>()
+            .<span class='ident'>unwrap</span>()
+            .<span class='ident'>find_name</span>(<span class='ident'>data_id</span>.<span class='ident'>name</span>()) {
+            <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>cs</span>.<span class='ident'>delete</span>(<span class='ident'>block_id</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>());
+            <span class='self'>self</span>.<span class='ident'>dc</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>remove</span>(<span class='ident'>block_id</span>.<span class='ident'>identifier</span>());
+        }
+        <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>NoFile</span>)
     }
 
     <span class='doccomment'>/// Return a chain for which we hold **all** of the data.</span>
