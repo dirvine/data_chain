@@ -65,7 +65,11 @@ impl SecuredData {
     /// to represent whether we have the data when the block is valid
     pub fn add_node_block(&mut self, nb: NodeBlock) -> Option<(BlockIdentifier, bool)> {
         if let Some(ref ans) = self.dc.lock().unwrap().add_node_block(nb.clone()) {
+            if ans.is_link() {
+                return None;
+            }
             return Some((ans.clone(), self.cs.has(&ans.hash())));
+
         }
         None
     }
@@ -133,14 +137,15 @@ impl SecuredData {
     }
 
     /// Handle Delete data :- will ignore the ledger bit
-    pub fn delete_data(&mut self, _data_id: &DataIdentifier) -> Result<BlockIdentifier, Error> {
+    pub fn delete_data(&mut self, data_id: &DataIdentifier) -> Result<BlockIdentifier, Error> {
         if let Some(ref block_id) = self.dc
             .lock()
             .unwrap()
-            .find_name(data.name()) {
+            .find_name(data_id.name()) {
             let _ = self.cs.delete(block_id.identifier().hash());
             self.dc.lock().unwrap().remove(block_id.identifier());
         }
+        Err(Error::NoFile)
     }
 
     /// Return a chain for which we hold **all** of the data.
