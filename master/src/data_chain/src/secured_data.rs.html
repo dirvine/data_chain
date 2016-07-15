@@ -296,12 +296,6 @@
 <span id="252">252</span>
 <span id="253">253</span>
 <span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -502,7 +496,7 @@
     }
 
     <span class='doccomment'>/// How many network events a given proover has been involved in (proover == node)</span>
-    <span class='doccomment'>/// First missed event stops the count </span>
+    <span class='doccomment'>/// First missed event stops the count</span>
     <span class='doccomment'>/// ######## Suggestion ###########</span>
     <span class='doccomment'>/// We subtract from this score, blocks where the node has not responded (yet)</span>
     <span class='doccomment'>/// If trust goes negative then the node may be killed from the network</span>
@@ -534,12 +528,6 @@
     <span class='doccomment'>/// Trim chain to previous common leading bits (previous vertice in binary tree)</span>
     <span class='doccomment'>/// If our leading bits in group are 10111 then it will trim any 10110 data &amp; links.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>trim_all_blocks_and_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
-        <span class='macro'>unimplemented</span><span class='macro'>!</span>();
-    }
-
-    <span class='doccomment'>/// Remove oldest data we no longer have responsability for (this is to clear space)</span>
-    <span class='doccomment'>/// This call should be avoided if possible as it helps restart as an archive node.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>remove_old_data</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) {
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
     }
 }
