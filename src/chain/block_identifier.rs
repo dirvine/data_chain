@@ -55,6 +55,14 @@ impl BlockIdentifier {
         }
     }
 
+    /// Is this an identifier with ledger bit set
+    pub fn is_ledger(&self) -> bool {
+        match *self {
+            BlockIdentifier::StructuredData(ref _hash, _name, ledger) => ledger,
+            _ => false,
+        }
+    }
+
     /// structured data name != hash of the data or block
     pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {

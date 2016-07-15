@@ -117,13 +117,15 @@ impl SecuredData {
         };
         // Remove last element unless marked with ledger
         // TODO handle ledger bit
-        if let Some(block_id) = self.dc
+        if let Some(ref block_id) = self.dc
             .lock()
             .unwrap()
             .find_name(data.name()) {
-            let _ = self.cs.delete(block_id.identifier().hash());
+            if !block_id.identifier().is_ledger() {
+                let _ = self.cs.delete(block_id.identifier().hash());
+                self.dc.lock().unwrap().remove(block_id.identifier());
+            }
         }
-
 
         try!(self.cs.put(&hash.0, data));
 
