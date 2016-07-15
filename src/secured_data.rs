@@ -17,13 +17,14 @@
 
 use std::fs;
 use error::Error;
-use std::sync::{Arc, Mutex};
+use itertools::Itertools;
 use chunk_store::ChunkStore;
-use sodiumoxide::crypto::sign::PublicKey;
-use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto::hash::sha256;
+use std::sync::{Arc, Mutex};
 use std::path::{Path, PathBuf};
 use data::{Data, DataIdentifier};
+use maidsafe_utilities::serialisation;
+use sodiumoxide::crypto::hash::sha256;
+use sodiumoxide::crypto::sign::PublicKey;
 use chain::{BlockIdentifier, DataChain, NodeBlock};
 
 
@@ -152,12 +153,28 @@ impl SecuredData {
     /// Return a chain for which we hold **all** of the data.
     /// Restricted to data that has a corresponding valid `Block`.
     pub fn provable_chain(&self) -> DataChain {
+
         unimplemented!();
     }
 
     /// Remove any data on disk that we do not have a valid Block for
     pub fn purge_disk(&mut self) -> Result<(), Error> {
-        unimplemented!();
+        let keys = self.cs.keys();
+        let tbd = self.dc
+            .lock()
+            .unwrap()
+            .chain()
+            .iter()
+            .cloned()
+            .filter(|x| !x.identifier().is_link() && x.valid)
+            .filter(|x| keys.contains(&x.identifier().hash()))
+            .collect_vec();
+        for key in &tbd {
+            // only throws error on IO error not missing data
+            // TODO test this !!
+            try!(self.cs.delete(key.identifier().hash()));
+        }
+        Ok(())
     }
 
     /// Confirm and merge a DataChain transmitted to us.

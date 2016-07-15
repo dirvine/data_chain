@@ -376,7 +376,7 @@ impl DataChain {
 
     /// Return all links in chain
     /// Does not perform validation on links
-    pub fn get_all_links(&self) -> Vec<Block> {
+    pub fn all_links(&self) -> Vec<Block> {
         self.chain
             .iter()
             .cloned()
@@ -386,7 +386,18 @@ impl DataChain {
     }
 
     /// Validate and return all links in chain
-    pub fn get_all_valid_links(&mut self) -> Vec<Block> {
+    pub fn valid_data(&mut self) -> Vec<Block> {
+        self.mark_blocks_valid();
+        self.chain
+            .iter()
+            .cloned()
+            .filter(|x| !x.identifier().is_link() && x.valid)
+            .collect_vec()
+
+    }
+
+    /// Validate and return all links in chain
+    pub fn valid_links(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
         self.chain
             .iter()
@@ -604,9 +615,9 @@ mod tests {
         assert_eq!(chain.links_len(), 3);
         assert!(chain.validate_ownership(&pub3));
         assert!(!chain.validate_ownership(&pub1));
-        let chain_links = chain.get_all_links();
+        let chain_links = chain.all_links();
         assert_eq!(chain.chain, chain_links);
-        let chain_valid_links = chain.get_all_valid_links();
+        let chain_valid_links = chain.valid_links();
         assert_eq!(chain.chain, chain_valid_links);
         assert_eq!(chain.len(), 3);
         assert!(!chain.is_empty());
