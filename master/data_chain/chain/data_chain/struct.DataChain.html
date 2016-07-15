@@ -60,7 +60,7 @@ at vault level.
 If there was a restart then the nodes should validate and continue.
 N:B this means all nodes can use a named directory for data store and clear if they restart
 as a new id. This allows clean-up of old data cache directories.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-249' class='srclink' href='../../../src/data_chain/src/chain/data_chain.rs.html#52-454' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-249' class='srclink' href='../../../src/data_chain/src/chain/data_chain.rs.html#52-465' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.create_in_path' class='method'><code>fn <a href='#method.create_in_path' class='fnname'>create_in_path</a>(path: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>) -&gt; <a class='type' href='https://doc.rust-lang.org/nightly/std/io/error/type.Result.html' title='std::io::error::Result'>Result</a>&lt;<a class='struct' href='../../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>&gt;</code></h4>
 <div class='docblock'><p>Create a new chain backed up on disk
 Provide the directory to create the files in</p>
@@ -166,10 +166,12 @@ were from last known valid group.</p>
 <div class='docblock'><p>number of links</p>
 </div><h4 id='method.is_empty' class='method'><code>fn <a href='#method.is_empty' class='fnname'>is_empty</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
 <div class='docblock'><p>Contains no blocks that are not valid</p>
-</div><h4 id='method.get_all_links' class='method'><code>fn <a href='#method.get_all_links' class='fnname'>get_all_links</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
+</div><h4 id='method.all_links' class='method'><code>fn <a href='#method.all_links' class='fnname'>all_links</a>(&amp;self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
 <div class='docblock'><p>Return all links in chain
 Does not perform validation on links</p>
-</div><h4 id='method.get_all_valid_links' class='method'><code>fn <a href='#method.get_all_valid_links' class='fnname'>get_all_valid_links</a>(&amp;mut self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
+</div><h4 id='method.valid_data' class='method'><code>fn <a href='#method.valid_data' class='fnname'>valid_data</a>(&amp;mut self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
+<div class='docblock'><p>Validate and return all links in chain</p>
+</div><h4 id='method.valid_links' class='method'><code>fn <a href='#method.valid_links' class='fnname'>valid_links</a>(&amp;mut self) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
 <div class='docblock'><p>Validate and return all links in chain</p>
 </div><h4 id='method.valid_links_at_block_id' class='method'><code>fn <a href='#method.valid_links_at_block_id' class='fnname'>valid_links_at_block_id</a>(&amp;mut self, block_id: &amp;<a class='enum' href='../../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;Block&gt;</code></h4>
 <div class='docblock'><p>Validate and return all valid links in chain 4 before and after target</p>

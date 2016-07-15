@@ -261,6 +261,23 @@
 <span id="217">217</span>
 <span id="218">218</span>
 <span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -281,13 +298,14 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fs</span>;
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>Mutex</span>};
+<span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>chunk_store</span>::<span class='ident'>ChunkStore</span>;
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
-<span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::{<span class='ident'>Arc</span>, <span class='ident'>Mutex</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::{<span class='ident'>Path</span>, <span class='ident'>PathBuf</span>};
 <span class='kw'>use</span> <span class='ident'>data</span>::{<span class='ident'>Data</span>, <span class='ident'>DataIdentifier</span>};
+<span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>hash</span>::<span class='ident'>sha256</span>;
+<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
 <span class='kw'>use</span> <span class='ident'>chain</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>, <span class='ident'>NodeBlock</span>};
 
 
@@ -416,12 +434,28 @@
     <span class='doccomment'>/// Return a chain for which we hold **all** of the data.</span>
     <span class='doccomment'>/// Restricted to data that has a corresponding valid `Block`.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>provable_chain</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>DataChain</span> {
+
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
     }
 
     <span class='doccomment'>/// Remove any data on disk that we do not have a valid Block for</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>purge_disk</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>(), <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='macro'>unimplemented</span><span class='macro'>!</span>();
+        <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>cs</span>.<span class='ident'>keys</span>();
+        <span class='kw'>let</span> <span class='ident'>tbd</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dc</span>
+            .<span class='ident'>lock</span>()
+            .<span class='ident'>unwrap</span>()
+            .<span class='ident'>chain</span>()
+            .<span class='ident'>iter</span>()
+            .<span class='ident'>cloned</span>()
+            .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>!</span><span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>x</span>.<span class='ident'>valid</span>)
+            .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>keys</span>.<span class='ident'>contains</span>(<span class='kw-2'>&amp;</span><span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>()))
+            .<span class='ident'>collect_vec</span>();
+        <span class='kw'>for</span> <span class='ident'>key</span> <span class='kw'>in</span> <span class='kw-2'>&amp;</span><span class='ident'>tbd</span> {
+            <span class='comment'>// only throws error on IO error not missing data</span>
+            <span class='comment'>// TODO test this !!</span>
+            <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>cs</span>.<span class='ident'>delete</span>(<span class='ident'>key</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>()));
+        }
+        <span class='prelude-val'>Ok</span>(())
     }
 
     <span class='doccomment'>/// Confirm and merge a DataChain transmitted to us.</span>
