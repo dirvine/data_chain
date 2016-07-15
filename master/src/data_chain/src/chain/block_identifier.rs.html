@@ -220,10 +220,10 @@
     }
 
     <span class='doccomment'>/// structured data name != hash of the data or block</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>]<span class='op'>&gt;</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>]<span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>hash</span>),
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>_hash</span>, <span class='ident'>name</span>, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='kw-2'>ref</span> <span class='ident'>hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>hash</span>),
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>_hash</span>, <span class='kw-2'>ref</span> <span class='ident'>name</span>, _) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>),
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>_hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
         }
     }
@@ -277,7 +277,7 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>is_block</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>sd_block</span>.<span class='ident'>hash</span>(), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;hash&quot;</span>).<span class='number'>0</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>is_some</span>());
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>expect</span>(<span class='string'>&quot;sd name&quot;</span>), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>).<span class='number'>0</span>)
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>expect</span>(<span class='string'>&quot;sd name&quot;</span>), <span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>).<span class='number'>0</span>)
     }
 
 }
