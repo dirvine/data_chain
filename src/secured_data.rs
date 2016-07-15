@@ -106,7 +106,7 @@ impl SecuredData {
     /// Handle POST data
     /// This is a call that will only handle structured data
     ///
-    /// **Will not accept versioned ledger based structuredData !!!**
+    /// **Will not accept versioned ledger based structuredData !**
     pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = sha256::hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
@@ -132,9 +132,15 @@ impl SecuredData {
         Ok(id)
     }
 
-    /// Handle Delete data
+    /// Handle Delete data :- will ignore the ledger bit
     pub fn delete_data(&mut self, _data_id: &DataIdentifier) -> Result<BlockIdentifier, Error> {
-        unimplemented!();
+        if let Some(ref block_id) = self.dc
+            .lock()
+            .unwrap()
+            .find_name(data.name()) {
+            let _ = self.cs.delete(block_id.identifier().hash());
+            self.dc.lock().unwrap().remove(block_id.identifier());
+        }
     }
 
     /// Return a chain for which we hold **all** of the data.
