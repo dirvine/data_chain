@@ -28,7 +28,6 @@ use chain::{BlockIdentifier, DataChain, NodeBlock};
 
 
 /// API for data based operations.
-#[allow(unused)]
 pub struct SecuredData {
     cs: ChunkStore<[u8; 32], Data>,
     dc: Arc<Mutex<DataChain>>,
@@ -80,9 +79,9 @@ impl SecuredData {
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-                if block_id.valid {
-                    return Ok(try!(self.cs.get(&block_id.identifier().hash())));
-                }
+            if block_id.valid {
+                return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+            }
         }
         Err(Error::NoFile)
     }
