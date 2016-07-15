@@ -51,7 +51,7 @@
 <pre class='rust struct'>pub struct SecuredData {
     // some fields omitted
 }</pre><div class='docblock'><p>API for data based operations.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1898' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#37-233' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1898' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#37-240' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.create_in_path' class='method'><code>fn <a href='#method.create_in_path' class='fnname'>create_in_path</a>(path: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, max_disk_space: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Construct new data container</p>
 </div><h4 id='method.from_path' class='method'><code>fn <a href='#method.from_path' class='fnname'>from_path</a>(path: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, max_disk_space: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
@@ -90,8 +90,9 @@ Restricted to data that has a corresponding valid <code>Block</code>.</p>
 <div class='docblock'><p>Confirm and merge a DataChain transmitted to us.
 This will trim (purge invalid) exsiting entries then merge valid entries.
 May be used to create a new chain from given chains on node startup.</p>
-</div><h4 id='method.trust_level' class='method'><code>fn <a href='#method.trust_level' class='fnname'>trust_level</a>(&amp;self, _node: &amp;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.isize.html'>isize</a></code></h4>
-<div class='docblock'><p>How many churn events a given proover has been involved in (proover == node)</p>
+</div><h4 id='method.trust_level' class='method'><code>fn <a href='#method.trust_level' class='fnname'>trust_level</a>(&amp;self, node: &amp;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.PublicKey.html' title='sodiumoxide::crypto::sign::ed25519::PublicKey'>PublicKey</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a></code></h4>
+<div class='docblock'><p>How many network events a given proover has been involved in (proover == node)
+First missed event stops the count </p>
 
 <h6 id='-suggestion' class='section-header'><a href='#-suggestion'>## Suggestion</a></h6>
 <p>We subtract from this score, blocks where the node has not responded (yet)
