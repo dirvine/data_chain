@@ -197,7 +197,7 @@ impl SecuredData {
     }
 
     /// How many network events a given proover has been involved in (proover == node)
-    /// First missed event stops the count 
+    /// First missed event stops the count
     /// ######## Suggestion ###########
     /// We subtract from this score, blocks where the node has not responded (yet)
     /// If trust goes negative then the node may be killed from the network
@@ -229,12 +229,6 @@ impl SecuredData {
     /// Trim chain to previous common leading bits (previous vertice in binary tree)
     /// If our leading bits in group are 10111 then it will trim any 10110 data & links.
     pub fn trim_all_blocks_and_data(&mut self) {
-        unimplemented!();
-    }
-
-    /// Remove oldest data we no longer have responsability for (this is to clear space)
-    /// This call should be avoided if possible as it helps restart as an archive node.
-    pub fn remove_old_data(&self) {
         unimplemented!();
     }
 }
