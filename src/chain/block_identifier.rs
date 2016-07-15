@@ -56,10 +56,10 @@ impl BlockIdentifier {
     }
 
     /// structured data name != hash of the data or block
-    pub fn name(&self) -> Option<[u8; 32]> {
+    pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
-            BlockIdentifier::ImmutableData(hash) => Some(hash),
-            BlockIdentifier::StructuredData(_hash, name, _) => Some(name),
+            BlockIdentifier::ImmutableData(ref hash) => Some(hash),
+            BlockIdentifier::StructuredData(_hash, ref name, _) => Some(name),
             BlockIdentifier::Link(_hash) => None,
         }
     }
@@ -113,7 +113,7 @@ mod tests {
         assert!(sd_block.is_block());
         assert_eq!(*sd_block.hash(), sha256::hash(b"hash").0);
         assert!(sd_block.name().is_some());
-        assert_eq!(sd_block.name().expect("sd name"), sha256::hash(b"name").0)
+        assert_eq!(*sd_block.name().expect("sd name"), sha256::hash(b"name").0)
     }
 
 }

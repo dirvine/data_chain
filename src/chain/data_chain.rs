@@ -187,7 +187,7 @@ impl DataChain {
         self.chain.iter().rev().find(|x| {
             x.valid &&
             if let Some(y) = x.identifier().name() {
-                y == *name
+                y == name
             } else {
                 false
             }

@@ -117,7 +117,7 @@ impl SecuredData {
         };
         // Remove last element unless marked with ledger
         // TODO handle ledger bit
-        if let Some(ref block_id) = self.dc
+        if let Some(block_id) = self.dc
             .lock()
             .unwrap()
             .find_name(data.name()) {
