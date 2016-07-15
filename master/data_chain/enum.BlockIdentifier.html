@@ -62,12 +62,14 @@ over the validity of any data presented by this chain</p>
 The array is all nodes xored together
 This is unique to this node, but known by all nodes connected to it
 in this group.</p>
-</div></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='enum' href='../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-780' class='srclink' href='../src/data_chain/src/chain/block_identifier.rs.html#45-80' title='goto source code'>[src]</a></span></h3>
+</div></td><td></td></tr></table><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='enum' href='../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-780' class='srclink' href='../src/data_chain/src/chain/block_identifier.rs.html#45-88' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.hash' class='method'><code>fn <a href='#method.hash' class='fnname'>hash</a>(&amp;self) -&gt; &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 32]</a></code></h4>
 <div class='docblock'><p>Define a name getter as data identifiers may contain more info that does
 not change the name (such as with structured data and versions etc.)
 In this module we do not care about other info and any validation is outwith this area
 Therefore we will delete before insert etc. based on name alone of the data element</p>
+</div><h4 id='method.is_ledger' class='method'><code>fn <a href='#method.is_ledger' class='fnname'>is_ledger</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
+<div class='docblock'><p>Is this an identifier with ledger bit set</p>
 </div><h4 id='method.name' class='method'><code>fn <a href='#method.name' class='fnname'>name</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>[</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u8.html'>u8</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.array.html'>; 32]</a>&gt;</code></h4>
 <div class='docblock'><p>structured data name != hash of the data or block</p>
 </div><h4 id='method.is_link' class='method'><code>fn <a href='#method.is_link' class='fnname'>is_link</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.bool.html'>bool</a></code></h4>
