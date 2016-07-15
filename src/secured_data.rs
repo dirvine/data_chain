@@ -196,13 +196,20 @@ impl SecuredData {
         unimplemented!();
     }
 
-    /// How many churn events a given proover has been involved in (proover == node)
+    /// How many network events a given proover has been involved in (proover == node)
+    /// First missed event stops the count 
     /// ######## Suggestion ###########
     /// We subtract from this score, blocks where the node has not responded (yet)
     /// If trust goes negative then the node may be killed from the network
-    pub fn trust_level(&self, _node: &PublicKey) -> isize {
-        unimplemented!();
-        // return count of number of links this node is in from back of chain,
+    pub fn trust_level(&self, node: &PublicKey) -> usize {
+        self.dc
+            .lock()
+            .unwrap()
+            .chain()
+            .iter()
+            .rev()
+            .take_while(|x| x.proof().iter().map(|y| y.key()).any(|z| z == node))
+            .count()
     }
     /// Find any data we should have, given our current chain
     pub fn required_data(&self) -> Vec<BlockIdentifier> {
