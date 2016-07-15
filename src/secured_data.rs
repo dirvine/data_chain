@@ -163,7 +163,11 @@ impl SecuredData {
     /// Confirm and merge a DataChain transmitted to us.
     /// This will trim (purge invalid) exsiting entries then merge valid entries.
     /// May be used to create a new chain from given chains on node startup.
-    pub fn merge_chain(&mut self, _chain: &DataChain) {
+    pub fn merge_chain(&mut self, chain: &mut DataChain) {
+        // Clean chain
+        chain.mark_blocks_valid();
+        chain.prune();
+        // TODO - merge logic
         unimplemented!();
     }
 
