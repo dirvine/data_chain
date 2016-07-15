@@ -75,17 +75,7 @@ impl SecuredData {
         if let Some(block_id) = self.dc
             .lock()
             .unwrap()
-            .chain()
-            .iter()
-            .rev() // find first occurance (i.e. latest one, TODO needs update for versions)
-            .find(|x| {
-                x.valid &&
-                if let Some(y) = x.identifier().name() {
-                    y == data_id.name()
-                } else {
-                    false
-                }
-            }) {
+            .find_name(data_id.name()) {
             return Ok(try!(self.cs.get(&block_id.identifier().hash())));
         }
         Err(Error::NoFile)
@@ -117,8 +107,27 @@ impl SecuredData {
     /// This is a call that will only handle structured data
     ///
     /// **Will not accept versioned ledger based structuredData !!!**
-    pub fn post_data(&mut self, _data: &Data) -> Result<BlockIdentifier, Error> {
-        unimplemented!();
+    pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
+        let hash = sha256::hash(&try!(serialisation::serialise(&data)));
+        let id = match *data {
+            Data::Structured(ref sd) if sd.version() > 0 => {
+                BlockIdentifier::StructuredData(hash.0, *sd.name(), false)
+            }
+            _ => return Err(Error::BadIdentifier),
+        };
+        // Remove last element unless marked with ledger
+        // TODO handle ledger bit
+        if let Some(ref block_id) = self.dc
+            .lock()
+            .unwrap()
+            .find_name(data.name()) {
+            let _ = self.cs.delete(block_id.identifier().hash());
+        }
+
+
+        try!(self.cs.put(&hash.0, data));
+
+        Ok(id)
     }
 
     /// Handle Delete data

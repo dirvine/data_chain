@@ -182,6 +182,18 @@ impl DataChain {
         self.chain.iter().find(|x| x.identifier() == block_identifier)
     }
 
+    /// find block by name from top (only first occurance)
+    pub fn find_name(&self, name: &[u8]) -> Option<&Block> {
+        self.chain.iter().rev().find(|x| {
+            x.valid &&
+            if let Some(y) = x.identifier().name() {
+                y == *name
+            } else {
+                false
+            }
+        })
+    }
+
     /// Extract slice containing entire chain
     pub fn as_slice(&self) -> &[Block] {
         self.chain.as_slice()
@@ -315,7 +327,7 @@ impl DataChain {
         }
 
         let keys = link.proof().iter().cloned().map(|x| *x.key()).collect_vec();
-        node_block::create_link_descriptor(&keys[..]) == link.identifier().hash()
+        node_block::create_link_descriptor(&keys[..]) == *link.identifier().hash()
     }
 
     /// Validate an individual block. Will get latest link and confirm all signatures

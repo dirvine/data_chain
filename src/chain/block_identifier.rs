@@ -47,11 +47,11 @@ impl BlockIdentifier {
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn hash(&self) -> [u8; 32] {
+    pub fn hash(&self) -> &[u8; 32] {
         match *self {
-            BlockIdentifier::ImmutableData(hash) => hash,
-            BlockIdentifier::StructuredData(hash, _name, _) => hash,
-            BlockIdentifier::Link(hash) => hash,
+            BlockIdentifier::ImmutableData(ref hash) => hash,
+            BlockIdentifier::StructuredData(ref hash, _name, _) => hash,
+            BlockIdentifier::Link(ref hash) => hash,
         }
     }
 
@@ -99,7 +99,7 @@ mod tests {
         let id_block = BlockIdentifier::ImmutableData(sha256::hash(b"1").0);
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
-        assert_eq!(id_block.hash(), sha256::hash(b"1").0);
+        assert_eq!(*id_block.hash(), sha256::hash(b"1").0);
         assert!(id_block.name().is_some());
     }
 
@@ -111,7 +111,7 @@ mod tests {
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
-        assert_eq!(sd_block.hash(), sha256::hash(b"hash").0);
+        assert_eq!(*sd_block.hash(), sha256::hash(b"hash").0);
         assert!(sd_block.name().is_some());
         assert_eq!(sd_block.name().expect("sd name"), sha256::hash(b"name").0)
     }
