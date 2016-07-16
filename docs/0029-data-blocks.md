@@ -34,7 +34,7 @@ Such structures are cryptographically secured in lock step using a consensus of 
 signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7
 nodes) required to be considered valid (much like N of P sharing). In a decentralised network that
 has secured groups,these signatures are those closest to the holder of a `DataChain`. The
-`DataChain` will have a majority of existing group members if it is republished prior to more than
+`DataChain` will contain a majority of existing group members if it is republished prior to more than
 GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the
 data validity.
 
@@ -48,7 +48,7 @@ link is the xor result of that close_group.
 Data block entries are signed by an ever changing majority of pre-existing nodes.  As the chain
 grows, this rolling majority of different signatories can be cryptographically confirmed (via
 `links`).  This process continues to the very top of the chain which will contain entries signed by
-the majority of the current close group of nodes. This current group of nodes can then
+a majority of the current close group of nodes. This current group of nodes can then
 cryptographically validate the entire chain and every data element referred to within it.
 
 A data chain may look like
@@ -69,7 +69,7 @@ provides a provable sequence of data validity and also the sequence of such data
 network. It is assumed that a later project using graph analysis can provide analytics that may be
 subjected to deep learning algorithms that will improve network security and efficiency.
 
-It is through this basic recondition of chained majority agreements that assures the ability for a
+It is through this basic recognition of chained majority agreements that assures the ability for a
 `DataChain` to be validated and therefore allows data to be republished.
 
 The design described below will show a system where node capabilities are amortised across a
@@ -222,6 +222,15 @@ holding such data (`Archive Nodes`). This data is transferred with the lowest pr
 build a chain and now this restarting node has to join another group to begin the process again of
 building a data chain.
 
+6. Nodes will choose the sender of the data on `Get` requests. New nodes will only be expected 
+to have data that has appeared since they joined (each node knows this via it's own data chain"). 
+New nodes can and will try (if they have resources) to Get data from the group. When nodes have 
+this data they can request full membership of the group. At that time they can be chosen to respond
+to any Get request, thereby earning safecoin or rewards. Nodes may then continue to ask for data 
+from archive nodes that are outwith the current group data. This may allow them to restart as an 
+archive node, maximising their reward time as restarts are much faster since data does not need
+relocated.
+
 Nodes will build their chains to become more valuable to the network and therefore earn more
 safecoin. This process will encourage high capability nodes to spread evenly across the network.
 
@@ -267,14 +276,14 @@ in which case the priority is increased on such relocation messages.
 
 ## Chained chains
 
-As chains grow and nodes hold longer chains across many disparate groups, there will be commonalties
+As chains grow and nodes hold longer chains across many disparate groups, there will be commonalities
 on `DataBlocks` held. Such links across chains has not as yet been fully analysed, however, it is
 speculated that the ability to cross reference will enable a fuller picture of network data to be
 built up.
 
 ### Structured data first version
 
-To strengthen the validity of mutable data (StructuredData) the first version (version 0) may be
+To strengthen validity of mutable data (`StructuredData`) the first version (version 0) may be
 maintained in the chain. This will show age of such data, which may be particularly useful in types
 of mutable data that do not change ownership or indeed where network created elements (such as any
 currency) can be further validated.

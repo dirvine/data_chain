@@ -22,7 +22,7 @@
 //!
 //! The modules here include the ability to cryptographically lock history of data and nodes
 //! in a chain. There also exists the mechnism o persist these chains over sessions along with
-//! a copy of the data itself (the `ChuinkStore`). The data representation is via the `Data` module.
+//! a copy of the data itself (the `ChunkStore`). The data representation is via the `Data` module.
 //!
 //! # Example
 //!

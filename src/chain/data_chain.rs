@@ -76,11 +76,11 @@ impl DataChain {
             path: Some(path),
         })
     }
-    
-    /// Create chain in memory from vector of blocks 
-    pub fn from_blocks(blocks : Vec<Block>) -> DataChain {
+
+    /// Create chain in memory from vector of blocks
+    pub fn from_blocks(blocks: Vec<Block>) -> DataChain {
         DataChain {
-            chain : blocks,
+            chain: blocks,
             path: None,
         }
     }
@@ -95,6 +95,17 @@ impl DataChain {
             return Ok(try!(file.write_all(&try!(serialisation::serialise(&self.chain)))));
         }
         Err(Error::NoFile)
+    }
+    /// Write current data chain to supplied path
+    pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), Error> {
+        let mut file = try!(fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(false)
+            .open(path.as_path()));
+        try!(file.write_all(&try!(serialisation::serialise(&self.chain))));
+        self.path = Some(path);
+        Ok(try!(file.lock_exclusive()))
     }
     /// Unlock the lock file
     pub fn unlock(&self) {
