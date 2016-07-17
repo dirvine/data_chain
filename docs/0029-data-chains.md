@@ -168,7 +168,7 @@ This continual updating of the chain also provides a history of the network, bot
 and also groups. Each block will contain a list of the nodes that have been seen on the network as
 the chain evolved.
 
-## Chain
+## [DataChain]
 
 The chain itself is a very simple vector of blocks. The [API] of the [DataChain] allows for
 splitting, merging and validating chains. This allows chains to be exchanged and validated between
