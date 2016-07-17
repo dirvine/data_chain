@@ -79,8 +79,6 @@ network, providing a balance of resources that can be mixed evenly across a netw
 varying capabilities, from mass persistent data storage to node with very little, transient data
 storage.
 
-
-
 # Motivation
 
 In a fully decentralised network there are many problems to solve, two of these issues can be
@@ -94,7 +92,6 @@ Point 2 actually encompasses two large issues in itself. The ability to start a 
 data available is obviously required where we have large amounts of data to maintain. Another large
 advantage is the ability for such a network to recover from a full system outage (full network
 collapse, worldwide power outage etc.).
-
 
 # Detailed design
 
@@ -115,7 +112,6 @@ group members agree on something that they can sign to attest to this group havi
 network and in a manner they all agree on. To achieve this we again use `xor` and as described
 below the identifier for links is merely the xor of all group members in relation to individual
 nodes and not any data item itself.
-
 
 ## [BlockIdentifier]
 
@@ -155,7 +151,6 @@ The last valid link can also be tested to contain a majority of the current clos
 case the chain is valid right to the last link. This phenomenon allows all blocks to be shown to be
 valid.
 
-
 ## [NodeBlock]
 
 A [NodeBlock] consists of the [BlockIdentifier] and the [Proof]. Nodes will create these
@@ -193,8 +188,6 @@ validated, however the data up to the point of a common link (a link that holds 
 to provide a majority against a link we already know in our own chain) can be proven valid. This
 phenomenon allows even older data than we know to be collected and increase the length of the
 current chain. This allows the adding of "history" to an existing chain.
-
-
 
 ## Routing requirements
 
@@ -247,7 +240,6 @@ safecoin. This process will encourage high capability nodes to spread evenly acr
 
 Lower capability nodes will not attempt to build data history and will therefore have less earning
 potential. This is perfectly good though and possibly a requirement of such a network.
-
 
 # Additional observations
 
@@ -343,7 +335,6 @@ refreshed.
 - This pattern is at it's earliest of stages and will require significant testing to ensure integrity of data as well as safety.
 - Chain merging and data integrity checking is not well defined in this RFC and will require further analysis during implementation.
 
-
 # Alternatives
 
 None as of yet
@@ -352,9 +343,9 @@ None as of yet
 
 To be discovered during review.
 
-[DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
-[NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
+[NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
+[DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
 [BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/enum.BlockIdentifier.html
 [create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
