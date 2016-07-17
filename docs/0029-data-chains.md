@@ -341,7 +341,12 @@ None as of yet
 
 # Unresolved questions
 
-To be discovered during review.
+Not initially required, but should be considered in near future.
+
+- Effective handling of removed blocks from the chain. (A holder can remove blocks but not add them) 
+- Effective checkpoints of chains to reduce size.
+- Store efficiently on disk (disk based key value store of [DataChain])
+
 
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
