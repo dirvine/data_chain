@@ -26,7 +26,6 @@ validated by a node on a network, close to the data name, to contain valid data 
   described below) that also exist in the previous block.
 - Churn event, a change in the group, either by a node leaving or a node joining.
 
-
 # Abstract
 
 A mechanism to lock data descriptors in containers that may be held on a decentralised network.
@@ -50,6 +49,9 @@ grows, this rolling majority of different signatories can be cryptographically c
 `links`).  This process continues to the very top of the chain which will contain entries signed by
 a majority of the current close group of nodes. This current group of nodes can then
 cryptographically validate the entire chain and every data element referred to within it.
+
+[DataChain] links must be validated by previous group - 1 members. This stronger [Proof] secures
+membership in a way that ensures Links cannot be faked via a replacement attack on the chain. 
 
 A data chain may look like
 
