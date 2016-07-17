@@ -140,8 +140,7 @@ be used to further secure the data in question.
 
 A [Block][2] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
 is known as the proof. Each proof tuple can be used to verify the signature is that of the
-`BlockIdentifier` and that the `PublicKey` is the one used to sign this. These proofs are in fact
-[NodeBlockProof]s
+`BlockIdentifier` and that the `PublicKey` is the one used to sign this. [Proof] definition.
 
 A link block has the same `proof` vector. This block type is the glue that holds the chain together
 and provides the link of proofs right up until the current group can be identified. It is this
@@ -158,7 +157,7 @@ valid.
 
 ## NodeBlock
 
-A [NodeBlock] consists of the [BlockIdentifier] and the [NodeBlockProof]. Nodes will create these
+A [NodeBlock] consists of the [BlockIdentifier] and the [Proof]. Nodes will create these
 and send them as messages to group members when the network mutates. This will require that for
 every `Put` `Delete` or `Post` a new [BlockIdentifier] for that data item is created and sent to
 all group members. The proof is this nodes `PublicKey` and `Signature`, allowing the receiving node
@@ -355,6 +354,6 @@ To be discovered during review.
 [1]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/index.html
 [2]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
-[NodeBlockProof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlockProof.html
+[Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
 [BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/enum.BlockIdentifier.html
 [create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
