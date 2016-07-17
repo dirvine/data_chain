@@ -77,6 +77,8 @@ network, providing a balance of resources that can be mixed evenly across a netw
 varying capabilities, from mass persistent data storage to node with very little, transient data
 storage.
 
+
+
 # Motivation
 
 In a fully decentralised network there are many problems to solve, two of these issues can be
@@ -325,6 +327,13 @@ of chain length.
 If a restart has been detected, any node recognised in the last link of the chain will be allowed
 entry again.
 
+# Further work 
+
+The current implementation of `DataChains` is secure, but can be made extremely more efficient over
+time. Merkle tree's, checkpoints and more such as use an xored checkpoint that contains not only
+a signed checkpoint, but a checkpoint that can evaluate when all contained blocks are available 
+by xoring back to all zero's. This RFC does not attempt to include any such efficient mechanism,
+instead this is left for further design improvements and RFC's.
 
 # Drawbacks
 
