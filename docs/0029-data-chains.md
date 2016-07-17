@@ -343,7 +343,7 @@ None as of yet
 
 To be discovered during review.
 
-[Block]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
+[Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
 [Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
