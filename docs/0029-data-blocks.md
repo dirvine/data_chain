@@ -352,9 +352,9 @@ None as of yet
 
 To be discovered during review.
 
-[1]: https://dirvine.github.io/data_chain/master/data_chain/block_identifier/index.html
-[2]: https://dirvine.github.io/data_chain/master/data_chain/block/struct.Block.html
-[NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/node_block/struct.NodeBlock.html
-[NodeBlockProof]: https://dirvine.github.io/data_chain/master/data_chain/node_block/struct.NodeBlockProof.html
-[BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/block_identifier/enum.BlockIdentifier.html
-[create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/node_block/fn.create_link_descriptor.html
+[1]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/index.html
+[2]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
+[NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
+[NodeBlockProof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlockProof.html
+[BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/enum.BlockIdentifier.html
+[create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
