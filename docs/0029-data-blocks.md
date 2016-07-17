@@ -33,12 +33,12 @@ A mechanism to lock data descriptors in containers that may be held on a decentr
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
 signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7
 nodes) required to be considered valid (much like N of P sharing). In a decentralised network that
-has secured groups,these signatures are those closest to the holder of a `DataChain`. The
-`DataChain` will contain a majority of existing group members if it is republished prior to more than
+has secured groups,these signatures are those closest to the holder of a [DataChain]. The
+[DataChain] will contain a majority of existing group members if it is republished prior to more than
 GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the
 data validity.
 
-When a `DataChain` starts, the first item is probably a `link`. This is a block that uses the
+When a [DataChain] starts, the first item is probably a `link`. This is a block that uses the
 identity of a close group on the network. This `link` has an associated proof that is the
 `PublicKey` and a corresponding signature for each node. The `Signature` is the signed `link`
 block.  On each `churn` event a new link is created and again signed by all members of the
@@ -70,7 +70,7 @@ network. It is assumed that a later project using graph analysis can provide ana
 subjected to deep learning algorithms that will improve network security and efficiency.
 
 It is through this basic recognition of chained majority agreements that assures the ability for a
-`DataChain` to be validated and therefore allows data to be republished.
+[DataChain] to be validated and therefore allows data to be republished.
 
 The design described below will show a system where node capabilities are amortised across a
 network, providing a balance of resources that can be mixed evenly across a network of nodes with
@@ -116,9 +116,9 @@ nodes and not any data item itself.
 This will no doubt cause confusion to the reader, but it is assumed that this will become apparent
 as the design unfolds below.
 
-## BlockDentifier
+## [BlockDentifier]
 
-A [BlockIdentifier][1] is simple enumeration that represents, either a `Data` item (`structuredData`
+A [BlockIdentifier] is simple enumeration that represents, either a `Data` item (`structuredData`
 or `ImmutableData`).
 
 The other type that can be represented in the `enum` is a `Link`. A `Link` represents a valid group
@@ -128,8 +128,8 @@ representative of the address of the data or the node) is the Xor of all the cur
 members of the current node. All close group members will recognise the group of this node and this
 node will also know the close group of all of it's close nodes.
 
-The `blockIdentifier` that represents a data item contains the hash of that data item. This allows
-the `DataChain` to hold identifiers to data that can validate the data itself. This allows the data
+The [blockIdentifier] that represents a data item contains the hash of that data item. This allows
+the [DataChain to hold identifiers to data that can validate the data itself. This allows the data
 to be republished as certain to have been created on the network itself.
 
 To ensure there are no extension attacks possible the data size should also be maintained along
@@ -138,16 +138,16 @@ be used to further secure the data in question.
 
 ## Block
 
-A [Block][2] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
+A [Block] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
 is known as the proof. Each proof tuple can be used to verify the signature is that of the
-`BlockIdentifier` and that the `PublicKey` is the one used to sign this. [Proof] definition.
+[BlockIdentifier] and that the `PublicKey` is the one used to sign this. [Proof] definition.
 
-A link block has the same `proof` vector. This block type is the glue that holds the chain together
+A link block has the same [Proof] vector. This block type is the glue that holds the chain together
 and provides the link of proofs right up until the current group can be identified. It is this
 pattern that allow a series of links to be cryptographically secured. As each link is only valid if
 signed by the majority of the previous (valid) link then a detectable series is calculable.
 
-Blocks that have data as their `BlockIdentifer` part are merely slotted into the appropriate gap
+Blocks that have data as their [BlockIdentifer] part are merely slotted into the appropriate gap
 between links. A block of data is validated in the same manner as the connections between links.
 
 The last valid link can also be tested to contain a majority of the current close group. In this
@@ -161,10 +161,10 @@ A [NodeBlock] consists of the [BlockIdentifier] and the [Proof]. Nodes will crea
 and send them as messages to group members when the network mutates. This will require that for
 every `Put` `Delete` or `Post` a new [BlockIdentifier] for that data item is created and sent to
 all group members. The proof is this nodes `PublicKey` and `Signature`, allowing the receiving node
-to call the `DataChain`'s `fn add_nodeblock()` to try and add this to the data chain.
+to call the [DataChain]'s `fn add_nodeblock()` to try and add this to the data chain.
 
 In times of network churn a node will create a separate `LinkDescriptor` to create the
-`BlockIdentifier` for this nodeblock. This linkdescriptor is s created by calling the
+[BlockIdentifier] for this nodeblock. This linkdescriptor is s created by calling the
 [create_link_descriptor()] method and passing the close_group **to that node** as the input. Each
 node in the group will do the same and send the `NodeBlock` to that node.
 
@@ -174,7 +174,7 @@ the chain evolved.
 
 ## Chain
 
-The chain itself is a very simple vector of blocks. The [API] of the `DataChain` allows for
+The chain itself is a very simple vector of blocks. The [API] of the [DataChain] allows for
 splitting, merging and validating chains. This allows chains to be exchanged and validated between
 nodes. If a chain can be proven to be able to be owned (by calling the chain validate_ownership
 function) by a receiving node then it is considered fully valid.
@@ -211,9 +211,9 @@ routing table.
 
 1. A vault will allow majority - 1 nodes to join via the mechanism above.
 
-2. On receiving a join request for a node (from routing), vaults will request the nodes `DataChain`
+2. On receiving a join request for a node (from routing), vaults will request the nodes [DataChain]
 
-3. If this nodes `DataChain` is longer than an existing majority - 1 nodes, then nodes query the
+3. If this nodes [DataChain] is longer than an existing majority - 1 nodes, then nodes query the
 joining node for data from the chain and then it is allowed to join.
 
 4. All nodes that can hold a lot of data will try and build their data chain from existing nodes
@@ -252,7 +252,7 @@ potential. This is perfectly good though and possibly a requirement of such a ne
 
 ## Archive nodes
 
-Nodes that hold the longest `DataChains` may be considered to be archive nodes. Such nodes will be
+Nodes that hold the longest [DataChain]s may be considered to be archive nodes. Such nodes will be
 responsible for maintaining all network data for specific areas of the network address range. There
 will be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group
 and it would therefore require a minimum of 3 groups of archive nodes to collude against the
@@ -260,7 +260,7 @@ network. It is important to note that each group is chosen at random by the netw
 
 ### Archive node Datachain length
 
-The length of the `DataChain` should be as long as possible. Although a node may not require to hold
+The length of the [DataChain] should be as long as possible. Although a node may not require to hold
 data outwith it's current close group. It is prudent such nodes hold as much of the Chain as
 possible as this all allow quicker rebuild of a network on complete outage. Nodes may keep such
 structures and associated data in a container that prunes older blocks to make space for new blocks
@@ -271,9 +271,9 @@ as new blocks appear (FIFO or first in first out).
 If an archive node requests data that is outwith its current close group, it should receive a higher
 reward than usual.## Non Archive nodes
 
-All nodes in a group will build on their `DataChain`, whether an Archive node or simply attempting
+All nodes in a group will build on their [DataChain], whether an Archive node or simply attempting
 to become an archive node. Small nodes with little resources though may find it difficult to create
-a `DataChain`of any significance. In these cases these smaller less capable nodes will receive
+a [DataChain]of any significance. In these cases these smaller less capable nodes will receive
 limited rewards as they do not have the ability to respond to many data retrieval requests, if any
 at all. These small nodes though are still beneficial to the network to provide connectivity and
 lower level consensus at the routing level.
@@ -302,8 +302,8 @@ currency) can be further validated.
 
 The possibility for a group to not have an ability, even with Archive nodes to store all data may
 still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
-known larger nodes outwith their group, by passing data and also passing a `DtaChain` to prove
-validity. This can introduce an addition to the `DataChain` object to provide pointers to data. In
+known larger nodes outwith their group, by passing data and also passing a [DataChain] to prove
+validity. This can introduce an addition to the [DataChain] object to provide pointers to data. In
 such cases the larger nodes should receive a proportion of any reward for doing so. It is, however,
 doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed
 across groups as described above.
@@ -328,7 +328,7 @@ entry again.
 
 # Further work 
 
-The current implementation of `DataChains` is secure, but can be made extremely more efficient over
+The current implementation of [DataChain]s is secure, but can be made extremely more efficient over
 time. Merkle tree's, checkpoints and more such as use an xored checkpoint that contains not only
 a signed checkpoint, but a checkpoint that can evaluate when all contained blocks are available 
 by xoring back to all zero's. This RFC does not attempt to include any such efficient mechanism,
@@ -351,8 +351,8 @@ None as of yet
 
 To be discovered during review.
 
-[1]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/index.html
-[2]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
+[DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
+[Block]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
 [BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/enum.BlockIdentifier.html
