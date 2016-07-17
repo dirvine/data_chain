@@ -1,4 +1,4 @@
-- Feature Name: Data Blocks
+- Feature Name: Data Chains
 - Status: proposed
 - Type: new feature
 - Related components: (data, routing, vaults)

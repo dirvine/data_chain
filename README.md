@@ -13,5 +13,5 @@ network valid data that a secured network has previously accepted. .
 
 [API Documentation] (https://dirvine.github.io/data_chain/master/data_chain/)
 
-[Data Chain RFC] (https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md)
+[Data Chain RFC] (https://github.com/dirvine/data_chain/blob/master/docs/0029-data-chains.md)
 
