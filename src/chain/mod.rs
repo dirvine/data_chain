@@ -192,3 +192,4 @@ mod block_identifier;
 pub use chain::node_block::{NodeBlock, Proof, create_link_descriptor};
 pub use chain::block_identifier::BlockIdentifier;
 pub use chain::data_chain::DataChain;
+pub use chain::block::Block;

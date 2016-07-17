@@ -90,6 +90,6 @@ pub mod secured_data;
 /// TODO should not be public
 pub mod chunk_store;
 
-pub use chain::{BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
+pub use chain::{Block, BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
 
 pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, PlainData, StructuredData};
