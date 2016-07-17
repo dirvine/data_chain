@@ -231,6 +231,12 @@ from archive nodes that are outwith the current group data. This may allow them 
 archive node, maximising their reward time as restarts are much faster since data does not need
 relocated.
 
+7. On start a new node will ask 1 member for the group for the chain and all members for the genesis
+block only. This allows that node to verify the chain is current and is traverses back to genesis
+Ok. IF there is doubt over chain validity, other nodes may be asked for the `BlockIdentifiers` only
+, should any block be missing then the node that sent this (signed) will be reported to the group
+and this action will mean that node is expelled, immediately.
+
 Nodes will build their chains to become more valuable to the network and therefore earn more
 safecoin. This process will encourage high capability nodes to spread evenly across the network.
 
