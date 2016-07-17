@@ -294,6 +294,7 @@
 <span id="250">250</span>
 <span id="251">251</span>
 <span id="252">252</span>
+<span id="253">253</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -503,7 +504,7 @@
             .<span class='ident'>chain</span>()
             .<span class='ident'>iter</span>()
             .<span class='ident'>rev</span>()
-            .<span class='ident'>take_while</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>y</span><span class='op'>|</span> <span class='ident'>y</span>.<span class='ident'>key</span>()).<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>z</span><span class='op'>|</span> <span class='ident'>z</span> <span class='op'>==</span> <span class='ident'>node</span>))
+            .<span class='ident'>take_while</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>any</span>(<span class='op'>|</span><span class='ident'>z</span><span class='op'>|</span> <span class='ident'>z</span>.<span class='ident'>key</span>() <span class='op'>==</span> <span class='ident'>node</span>))
             .<span class='ident'>count</span>()
     }
     <span class='doccomment'>/// Find any data we should have, given our current chain</span>
@@ -523,6 +524,7 @@
     <span class='comment'>// ############ Dubious, should perhaps be private ###########</span>
     <span class='doccomment'>/// Trim chain to previous common leading bits (previous vertice in binary tree)</span>
     <span class='doccomment'>/// If our leading bits in group are 10111 then it will trim any 10110 data &amp; links.</span>
+    <span class='doccomment'>/// Note this does not trim the chain to Genesis, that is maintained.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>trim_all_blocks_and_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) {
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
     }
