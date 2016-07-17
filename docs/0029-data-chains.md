@@ -20,9 +20,7 @@ to have been correctly stored onto the network.
   the contents creates a new piece of immutable data).
 - Structured data, a data type that has a fixed name, but mutable contents.
 - GROUP_SIZE, the number of nodes surrounding a network address.
-- QUORUM, the number of the GROUP that is considered large enough that a decision is valid. In this
-  paper this number is considered a majority (i.e. (GROUP_SIZE / 2) + 1)
-- Chain consensus, the fact that QUORUM number of signatories exist in the next link (`DataBlock` as
+- Chain consensus, the fact that majority number of signatories exist in the next link (`DataBlock` as
   described below) that also exist in the previous block.
 - Churn event, a change in the group, either by a node leaving or a node joining.
 
@@ -222,7 +220,7 @@ relocated.
 
 7. On start a new node will ask 1 member for the group for the chain and all members for the genesis
 block only. This allows that node to verify the chain is current and is traverses back to genesis
-Ok. IF there is doubt over chain validity, other nodes may be asked for the `BlockIdentifiers` only
+Ok. If there is doubt over chain validity, other nodes may be asked for the `BlockIdentifiers` only
 , should any block be missing then the node that sent this (signed) will be reported to the group
 and this action will mean that node is expelled, immediately.
 
