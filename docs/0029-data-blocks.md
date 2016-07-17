@@ -50,8 +50,8 @@ grows, this rolling majority of different signatories can be cryptographically c
 a majority of the current close group of nodes. This current group of nodes can then
 cryptographically validate the entire chain and every data element referred to within it.
 
-[DataChain] links must be validated by previous group - 1 members. This stronger [Proof] secures
-membership in a way that ensures Links cannot be faked via a replacement attack on the chain. 
+*[DataChain] links must be validated by previous group - 1 members. This stronger [Proof] secures
+membership in a way that ensures Links cannot be faked via a replacement attack on the chain.* 
 
 A data chain may look like
 
