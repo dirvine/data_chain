@@ -237,6 +237,9 @@ Ok. IF there is doubt over chain validity, other nodes may be asked for the `Blo
 , should any block be missing then the node that sent this (signed) will be reported to the group
 and this action will mean that node is expelled, immediately.
 
+8. A node on startup may request eh genesis block from any group and store this locally. 
+
+
 Nodes will build their chains to become more valuable to the network and therefore earn more
 safecoin. This process will encourage high capability nodes to spread evenly across the network.
 
