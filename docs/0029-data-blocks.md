@@ -103,6 +103,7 @@ collapse, worldwide power outage etc.).
 This proposal is aimed at protecting data by confirming the nodes on the network that were the 
 closest to the data at that point in time. This data will have a  common number of leading bits 
 corresponding to the part of the network they currently are close to. This means any data that 
+
 can be validated by a majority of the current nodes close peers will be considered valid to push 
 into the chain. As a chain will be transferable (with the data) it will not have an identifier of 
 any particular address. Instead the identifiers for the groups will appear somewhat arbitrary,
