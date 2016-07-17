@@ -100,12 +100,12 @@ collapse, worldwide power outage etc.).
 
 ## Data covered by a data chain
 
-Nodes in a decentralised network may have many common groups (log2(n) - 1, actually, where n =
-address size in bits). These common groups will each hold exponentially less data than the closest
-group. This proposal is aimed at only the closest group to a node. This means any data that can be
-validated by a majority of the current nodes close peers will be considered valid to push into the
-chain. As a chain will be transferable (with the data) it will not have an identifier of any
-particular address. Instead the identifiers for the groups will appear somewhat arbitrary,
+This proposal is aimed at protecting data by confirming the nodes on the network that were the 
+closest to the data at that point in time. This data will have a  common number of leading bits 
+corresponding to the part of the network they currently are close to. This means any data that 
+can be validated by a majority of the current nodes close peers will be considered valid to push 
+into the chain. As a chain will be transferable (with the data) it will not have an identifier of 
+any particular address. Instead the identifiers for the groups will appear somewhat arbitrary,
 
 In fact the link identifiers to identify the group will not in fact identify any address in
 particular, at least in relation to the data space covered by the chain. This seems
@@ -115,8 +115,6 @@ network and in a manner they all agree on. To achieve this we again use `xor` an
 below the identifier for links is merely the xor of all group members in relation to individual
 nodes and not any data item itself.
 
-This will no doubt cause confusion to the reader, but it is assumed that this will become apparent
-as the design unfolds below.
 
 ## [BlockIdentifier]
 
