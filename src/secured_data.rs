@@ -167,20 +167,18 @@ impl SecuredData {
 
     /// Remove any data on disk that we do not have a valid Block for
     pub fn purge_disk(&mut self) -> Result<(), Error> {
-        let keys = self.cs.keys();
-        let tbd = self.dc
+        let cs_keys = self.cs.keys();
+        for dc_key in self.dc
             .lock()
             .unwrap()
             .chain()
             .iter()
             .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| keys.contains(&x.identifier().hash()))
-            .collect_vec();
-        for key in &tbd {
+            .filter(|x| cs_keys.contains(&x.identifier().hash())) {
             // only throws error on IO error not missing data
             // TODO test this !!
-            try!(self.cs.delete(key.identifier().hash()));
+            try!(self.cs.delete(dc_key.identifier().hash()));
         }
         Ok(())
     }
