@@ -99,7 +99,7 @@ collapse, worldwide power outage etc.).
 
 This proposal is aimed at protecting data by confirming the nodes on the network that were the 
 closest to the data at that point in time. This data will have a  common number of leading bits 
-corresponding to the part of the network they currently are close to. This means any data that 
+corresponding to the part of the network they currently are close to.
 
 can be validated by a majority of the current nodes close peers will be considered valid to push 
 into the chain. As a chain will be transferable (with the data) it will not have an identifier of 
@@ -344,8 +344,8 @@ None as of yet
 To be discovered during review.
 
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
-[Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
+[Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
 [BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/enum.BlockIdentifier.html
 [create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
