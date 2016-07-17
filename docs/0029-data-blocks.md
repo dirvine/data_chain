@@ -116,7 +116,7 @@ nodes and not any data item itself.
 This will no doubt cause confusion to the reader, but it is assumed that this will become apparent
 as the design unfolds below.
 
-## [BlockDentifier]
+## [BlockIdentifier]
 
 A [BlockIdentifier] is simple enumeration that represents, either a `Data` item (`structuredData`
 or `ImmutableData`).
@@ -136,7 +136,7 @@ To ensure there are no extension attacks possible the data size should also be m
 with any other identifying fields deemed required by the implementation. Additionally an HMAC can
 be used to further secure the data in question.
 
-## Block
+## [Block]
 
 A [Block] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
 is known as the proof. Each proof tuple can be used to verify the signature is that of the
@@ -155,7 +155,7 @@ case the chain is valid right to the last link. This phenomenon allows all block
 valid.
 
 
-## NodeBlock
+## [NodeBlock]
 
 A [NodeBlock] consists of the [BlockIdentifier] and the [Proof]. Nodes will create these
 and send them as messages to group members when the network mutates. This will require that for
