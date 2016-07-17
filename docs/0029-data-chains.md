@@ -8,9 +8,9 @@
 
 # Summary
 
-Data blocks are a container that allows large blocks of data to be maintained. These blocks can be
-validated by a node on a network, close to the data name, to contain valid data that was
- guaranteed to have been correctly stored onto the network.
+[DataChain]s are a container that allows large blocks of data to be maintained. These blocks can be
+validated by a node on a network, close to the data name, to contain valid data that was guaranteed 
+to have been correctly stored onto the network.
 
 # Definitions used
 
@@ -30,19 +30,17 @@ validated by a node on a network, close to the data name, to contain valid data 
 
 A mechanism to lock data descriptors in containers that may be held on a decentralised network.
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
-signatures. These signatures are of a certain size GROUP_SIZE (e.g. 12 nodes) with a QUORUM (e.g. 7
-nodes) required to be considered valid (much like N of P sharing). In a decentralised network that
-has secured groups,these signatures are those closest to the holder of a [DataChain]. The
-[DataChain] will contain a majority of existing group members if it is republished prior to more than
-GROUP_SIZE - QUORUM nodes changing. In this situation, there is a strong cryptographic proof of the
-data validity.
+signatures. These signatures are of a certain size (group size) with a majority required to be 
+considered valid (much like N of P sharing). In a decentralised network that has secured groups,
+these signatures are those closest to the holder of a [DataChain]. 
 
 When a [DataChain] starts, the first item is probably a `link`. This is a block that uses the
 identity of a close group on the network. This `link` has an associated proof that is the
 `PublicKey` and a corresponding signature for each node. The `Signature` is the signed `link`
 block.  On each `churn` event a new link is created and again signed by all members of the
 close_group. This link is the nodes close group as known by all members of that close_group. The
-link is the xor result of that close_group.
+link is the xor result of that close_group. The first link in a network may be referred to as the 
+*Genesis* block. 
 
 Data block entries are signed by an ever changing majority of pre-existing nodes.  As the chain
 grows, this rolling majority of different signatories can be cryptographically confirmed (via
@@ -53,13 +51,9 @@ cryptographically validate the entire chain and every data element referred to w
 *[DataChain] links must be validated by previous group - 1 members. This stronger [Proof] secures
 membership in a way that ensures Links cannot be faked via a replacement attack on the chain.* 
 
-A data chain may look like
+An example of a [DataChain] may look like this. 
 
-`link:data:data:data:data:link:link:data:data`
-
-or
-
-`link:link:link:data:link:link:link:data:link`
+![Chain](https://github.com/dirvine/data_chain/blob/master/docs/datachain_diagram.png)
 
 The `links` maintain group consensus and the data elements should individually validate all data
 blocks though the group consensus provided by the preceding `link`.
