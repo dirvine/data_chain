@@ -355,5 +355,5 @@ To be discovered during review.
 [2]: https://dirvine.github.io/data_chain/master/data_chain/block/chain/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
-[BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/chain/block_identifier/enum.BlockIdentifier.html
+[BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/enum.BlockIdentifier.html
 [create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
