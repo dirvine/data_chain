@@ -325,19 +325,8 @@ None as of yet
 
 # Unresolved questions
 
-- Should majority in Links be group/2 + 2. This allows several nodes to drop at a single time 
-  and the chain to remain intact? This count means larger groups than 8 so potentially 12 is 
-  required. This would require that 5 nodes together would have to go rouge. Perhaps with data chains
-  not requiring large data transfer on each churn event larger groups are possible? This does bring 
-  up an important questions that will require an immediate answer prior to implementation. 
-- On segmentation the next link may not hold the group_size - 1 previous nodes. In that event
-  several groups would have to agree, although the groups wil have a lower common leading bits and 
-  this would show a segmentation, such a segmentation would "fix" itself as the network did grow 
-  though. This is due to the chain growing over time and agreed by the current close_group.
-- Perhaps on inability to complete a link signature quorum the neighbor group can checkpoint the 
-  chain?
-- Solution to above is not accept any node not responding to Link changes, but accept a straight 
-  majority validation. 
+- At a checpoint (when a group splits) the majority will decrease significantly. Should there be 
+  a checkpoint link (that is identifiable) ten mark the chain, allowing this reduction? 
 
 Not initially required, but should be considered in near future.
 
