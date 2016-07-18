@@ -334,6 +334,8 @@ Not initially required, but should be considered in near future.
 - Effective checkpoints of chains to reduce size.
 - Store efficiently on disk (disk based key value store of [DataChain])
 - Calculate vote weights and ensure collusion is not possible in a group.
+- After a network segmentation all data blocks will be required to be signed again from the new 
+close group. Possibly a secondary genesis block is required here, or a special checkpoint. 
 
 [github]: https://github.com/dirvine/data_chain
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
