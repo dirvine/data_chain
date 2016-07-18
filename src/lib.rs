@@ -86,9 +86,9 @@ pub mod data;
 
 /// API
 pub mod secured_data;
+
 /// Persistant store on disk of Keys and large values
-/// TODO should not be public
-pub mod chunk_store;
+mod chunk_store;
 
 pub use chain::{Block, BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
 

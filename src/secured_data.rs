@@ -233,6 +233,18 @@ impl SecuredData {
             .collect_vec()
     }
 
+    /// Max space avilable for disk storage (as set by user)
+    pub fn max_space(&self) -> u64 {
+        self.cs.max_space()
+    }
+
+    /// Disk used so far.
+    pub fn used_space(&self) -> u64 {
+        self.cs.used_space()
+    }
+
+
+
     // ############ Dubious, should perhaps be private ###########
     /// Trim chain to previous common leading bits (previous vertice in binary tree)
     /// If our leading bits in group are 10111 then it will trim any 10110 data & links.
