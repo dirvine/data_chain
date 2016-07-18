@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["ChunkStore","`ChunkStore` is a store of data held as serialised files on disk, implementing a maximum disk usage to restrict storage."]]});
+initSidebarItems({});
