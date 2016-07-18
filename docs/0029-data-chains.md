@@ -90,36 +90,33 @@ collapse, worldwide power outage etc.).
 ## Data covered by a data chain
 
 This proposal is aimed at protecting data by confirming the nodes on the network that were the 
-closest to the data at that point in time. This data will have a  common number of leading bits 
-corresponding to the part of the network they currently are close to.
+closest to the data at that point in time. This data will have a common number of leading bits 
+corresponding to the part of the network they were close to.
 
-can be validated by a majority of the current nodes close peers will be considered valid to push 
-into the chain. As a chain will be transferable (with the data) it will not have an identifier of 
-any particular address. Instead the identifiers for the groups will appear somewhat arbitrary,
+[DataChain]s can be validated by a majority of the current nodes close peers. As a chain will be 
+transferable (with the data) it will not have an identifier of any particular address. 
+Instead the identifiers for the groups will appear somewhat arbitrary. Acceptance of a [DataChain]
+by a node will require that the current close nodes in a group have all signed the chain. 
 
-In fact the link identifiers to identify the group will not in fact identify any address in
-particular, at least in relation to the data space covered by the chain. This seems
-counter-intuitive, but is in fact important. What concerns us in this design is that at least all
-group members agree on something that they can sign to attest to this group having existed on the
-network and in a manner they all agree on. To achieve this we again use `xor` and as described
-below the identifier for links is merely the xor of all group members in relation to individual
-nodes and not any data item itself.
+What concerns us in this design is that at least all group members agree on something that they can 
+sign to attest to this group having existed on the network. To achieve this we again use `xor` and 
+as described below the identifier for links is merely the xor of all group members in relation to 
+individual nodes and not any data item itself.
 
 ## [BlockIdentifier]
 
-A [BlockIdentifier] is simple enumeration that represents, either a `Data` item (`structuredData`
+A [BlockIdentifier] is simple enumeration that represents a `Data` item such as  (`structuredData`
 or `ImmutableData`).
 
 The other type that can be represented in the `enum` is a `Link`. A `Link` represents a valid group
-of nodes that is close to a point in the Xor address space. This point changes with respect to
-changing nodes around any node. The representation of the link address in the chain (which is not
-representative of the address of the data or the node) is the Xor of all the current close group
-members of the current node. All close group members will recognise the group of this node and this
-node will also know the close group of all of it's close nodes.
+of nodes that are close to a point in the Xor address space. This point changes with respect to
+changing nodes around any address. The representation of the link address in the chain is the Xor 
+of all the current close group members of the current node. All close group members will recognise 
+the group of this node and this node will also know the close group of all of it's close nodes.
 
 The [blockIdentifier] that represents a data item contains the hash of that data item. This allows
-the [DataChain to hold identifiers to data that can validate the data itself. This allows the data
-to be republished as certain to have been created on the network itself.
+the [DataChain] to hold identifiers to data that can validate the data itself. This allows the data
+to be republished whilst being certain that data was created on the network itself.
 
 To ensure there are no extension attacks possible the data size should also be maintained along
 with any other identifying fields deemed required by the implementation. Additionally an HMAC can
@@ -128,43 +125,45 @@ be used to further secure the data in question.
 ## [Block]
 
 A [Block] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
-is known as the proof. Each proof tuple can be used to verify the signature is that of the
+is known as the [Proof]. Each [Proof] tuple can be used to verify the signature is that of the
 [BlockIdentifier] and that the `PublicKey` is the one used to sign this. [Proof] definition.
 
-A link block has the same [Proof] vector. This block type is the glue that holds the chain together
+A link [Block] has the same [Proof] vector. This [Block] type is the glue that holds the chain together
 and provides the link of proofs right up until the current group can be identified. It is this
-pattern that allow a series of links to be cryptographically secured. As each link is only valid if
-signed by the majority of the previous (valid) link then a detectable series is calculable.
+pattern that allows a series of links to be cryptographically secured. As each link is only valid if
+signed by all previous members minus 1 of the previous (valid) link then a detectable series is 
+calculable.
 
-Blocks that have data as their [BlockIdentifer] part are merely slotted into the appropriate gap
+[Block]s that have data as their [BlockIdentifer] part are merely slotted into the appropriate gap
 between links. A block of data is validated in the same manner as the connections between links.
 
-The last valid link can also be tested to contain a majority of the current close group. In this
+The last valid link can also be tested to contain the current close group (minus 1). In this
 case the chain is valid right to the last link. This phenomenon allows all blocks to be shown to be
-valid.
+valid. As a new node then a new link will be created that will contain all of the current close 
+group.
 
 ## [NodeBlock]
 
-A [NodeBlock] consists of the [BlockIdentifier] and the [Proof]. Nodes will create these
+A [NodeBlock] consists of the [BlockIdentifier] and a [Proof]. Nodes will create these
 and send them as messages to group members when the network mutates. This will require that for
 every `Put` `Delete` or `Post` a new [BlockIdentifier] for that data item is created and sent to
-all group members. The proof is this nodes `PublicKey` and `Signature`, allowing the receiving node
+all group members. The [Proof] is this nodes `PublicKey` and `Signature`, allowing the receiving node
 to call the [DataChain]'s `fn add_nodeblock()` to try and add this to the data chain.
 
 In times of network churn a node will create a separate `LinkDescriptor` to create the
-[BlockIdentifier] for this nodeblock. This linkdescriptor is s created by calling the
+[BlockIdentifier] for this nodeblock. This linkdescriptor is created by calling the
 [create_link_descriptor()] method and passing the close_group **to that node** as the input. Each
 node in the group will do the same and send the `NodeBlock` to that node.
 
-This continual updating of the chain also provides a history of the network, both in terms of data
-and also groups. Each block will contain a list of the nodes that have been seen on the network as
-the chain evolved.
+This continual updating of the chain also provides a history of part of the network, both in terms 
+of data and also groups. Each block will contain a list of the nodes that have been seen on the 
+network as the chain evolved.
 
 ## [DataChain]
 
-The chain itself is a very simple vector of blocks. The [API] of the [DataChain] allows for
+The chain itself is a very simple vector of [Block]s. The [API] of the [DataChain] allows for
 splitting, merging and validating chains. This allows chains to be exchanged and validated between
-nodes. If a chain can be proven to be able to be owned (by calling the chain validate_ownership
+nodes. If a chain can be proven to be owned (by calling the chain validate_ownership
 function) by a receiving node then it is considered fully valid.
 
 An interesting aspect though is the ability to "validate in history". This means that even if a
@@ -224,14 +223,15 @@ Ok. If there is doubt over chain validity, other nodes may be asked for the `Blo
 , should any block be missing then the node that sent this (signed) will be reported to the group
 and this action will mean that node is expelled, immediately.
 
-8. A node on startup may request eh genesis block from any group and store this locally. 
+8. A node on startup may request the genesis block from any group and store this locally. 
 
 
 Nodes will build their chains to become more valuable to the network and therefore earn more
 safecoin. This process will encourage high capability nodes to spread evenly across the network.
 
 Lower capability nodes will not attempt to build data history and will therefore have less earning
-potential. This is perfectly good though and possibly a requirement of such a network.
+potential. This is perfectly valid and possibly a requirement of such a network, to allow nodes of 
+varying capability (cpu/bandwidth/storage etc.) to exist.
 
 # Additional observations
 
@@ -239,9 +239,12 @@ potential. This is perfectly good though and possibly a requirement of such a ne
 
 Nodes that hold the longest [DataChain]s may be considered to be archive nodes. Such nodes will be
 responsible for maintaining all network data for specific areas of the network address range. There
-will be 3 archive nodes per group. These more reliable nodes have a vote weight of 2 within a group
-and it would therefore require a minimum of 3 groups of archive nodes to collude against the
-network. It is important to note that each group is chosen at random by the network.
+will be less than group_size/2 archive nodes per group. These more reliable nodes and will have a 
+vote weight higher than a less capable node within a group. There will still require to be a majority
+of group members who agree on votes though, regardless of these high weighted nodes. This is to 
+prevent attacks where nodes lasting for long periods in a group cannot collude via some out of 
+band method such as publishing ID's on a website and soliciting other nodes in the group to collude 
+and attack that group. 
 
 ### Archive node Datachain length
 
@@ -253,9 +256,6 @@ as new blocks appear (FIFO or first in first out).
 
 #### Additional requirements of Archive nodes
 
-If an archive node requests data that is outwith its current close group, it should receive a higher
-reward than usual.## Non Archive nodes
-
 All nodes in a group will build on their [DataChain], whether an Archive node or simply attempting
 to become an archive node. Small nodes with little resources though may find it difficult to create
 a [DataChain]of any significance. In these cases these smaller less capable nodes will receive
@@ -266,7 +266,7 @@ lower level consensus at the routing level.
 A non archive node can request old data from existing archive nodes in a group, but the rate should
 be limited in cases where there are already three such nodes in a group. These messages will be the
 lowest priority messages in the group. Thereby any attacker will require to become an archive node
-and this will take time, unless the group falls below three (or (group_size / 2) - 1 archive nodes
+and this will take time, unless the group falls below (group_size / 2) - 1 archive nodes
 in which case the priority is increased on such relocation messages.
 
 ## Chained chains
@@ -282,16 +282,6 @@ To strengthen validity of mutable data (`StructuredData`) the first version (ver
 maintained in the chain. This will show age of such data, which may be particularly useful in types
 of mutable data that do not change ownership or indeed where network created elements (such as any
 currency) can be further validated.
-
-## Archive node pointers
-
-The possibility for a group to not have an ability, even with Archive nodes to store all data may
-still exist in small imbalanced networks. Such groups may be able to delegate responsibility to
-known larger nodes outwith their group, by passing data and also passing a [DataChain] to prove
-validity. This can introduce an addition to the [DataChain] object to provide pointers to data. In
-such cases the larger nodes should receive a proportion of any reward for doing so. It is, however,
-doubtful this particular paradigm will have to be enforced if possible archive nodes are pushed
-across groups as described above.
 
 ###Network "difficulty"
 
@@ -338,6 +328,7 @@ Not initially required, but should be considered in near future.
 - Effective handling of removed blocks from the chain. (A holder can remove blocks but not add them) 
 - Effective checkpoints of chains to reduce size.
 - Store efficiently on disk (disk based key value store of [DataChain])
+- Calculate vote weights and ensure collusion is not possible in a group.
 
 
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
