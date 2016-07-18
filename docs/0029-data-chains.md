@@ -10,7 +10,7 @@
 
 [DataChain]s are a container that allows large blocks of data to be maintained. These blocks can be
 validated by a node on a network, close to the data name, to contain valid data that was guaranteed 
-to have been correctly stored onto the network.
+to have been correctly stored onto the network. Code for this RFC is available on [github]
 
 # Definitions used
 
@@ -330,7 +330,7 @@ Not initially required, but should be considered in near future.
 - Store efficiently on disk (disk based key value store of [DataChain])
 - Calculate vote weights and ensure collusion is not possible in a group.
 
-
+[github]: https://github.com/dirvine/data_chain
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
 [NodeBlock]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.NodeBlock.html
 [DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html

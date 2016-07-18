@@ -191,14 +191,14 @@ impl SecuredData {
         chain.mark_blocks_valid();
         chain.prune();
         // TODO - merge logic
+        // find members of a link, add blocks to chain after this link that will validate the
+        // block
         unimplemented!();
     }
 
     /// How many network events a given proover has been involved in (proover == node)
     /// First missed event stops the count
-    /// ######## Suggestion ###########
-    /// We subtract from this score, blocks where the node has not responded (yet)
-    /// If trust goes negative then the node may be killed from the network
+    // TODO this is very basic and requires some further discussion
     pub fn trust_level(&self, node: &PublicKey) -> usize {
         self.dc
             .lock()
