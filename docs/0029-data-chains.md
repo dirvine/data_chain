@@ -334,6 +334,8 @@ None as of yet
   though. This is due to the chain growing over time and agreed by the current close_group.
 - Perhaps on inability to complete a link signature quorum the neighbor group can checkpoint the 
   chain?
+- Solution to above is not accept any node not responding to Link changes, but accept a straight 
+  majority validation. 
 
 Not initially required, but should be considered in near future.
 
