@@ -331,7 +331,9 @@ None as of yet
 - On segmentation the next link may not hold the group_size - 1 previous nodes. In that event
   several groups would have to agree, although the groups wil have a lower common leading bits and 
   this would show a segmentation, such a segmentation would "fix" itself as the network did grow 
-  though. This is due to the chain growing over time and agreed by the current close_group. 
+  though. This is due to the chain growing over time and agreed by the current close_group.
+- Perhaps on inability to complete a link signature quorum the neighbor group can checkpoint the 
+  chain?
 
 Not initially required, but should be considered in near future.
 
