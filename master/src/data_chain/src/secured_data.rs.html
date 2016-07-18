@@ -311,12 +311,6 @@
 <span id="267">267</span>
 <span id="268">268</span>
 <span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -517,13 +511,7 @@
     <span class='doccomment'>/// This will trim (purge invalid) exsiting entries then merge valid entries.</span>
     <span class='doccomment'>/// May be used to create a new chain from given chains on node startup.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>merge_chain</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>chain</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>DataChain</span>) {
-        <span class='comment'>// Clean chain</span>
-        <span class='ident'>chain</span>.<span class='ident'>mark_blocks_valid</span>();
-        <span class='ident'>chain</span>.<span class='ident'>prune</span>();
-        <span class='comment'>// TODO - merge logic</span>
-        <span class='comment'>// find members of a link, add blocks to chain after this link that will validate the</span>
-        <span class='comment'>// block</span>
-        <span class='macro'>unimplemented</span><span class='macro'>!</span>();
+        <span class='self'>self</span>.<span class='ident'>dc</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>merge_chain</span>(<span class='ident'>chain</span>);
     }
 
     <span class='doccomment'>/// How many network events a given proover has been involved in (proover == node)</span>
