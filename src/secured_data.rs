@@ -197,13 +197,7 @@ impl SecuredData {
     /// This will trim (purge invalid) exsiting entries then merge valid entries.
     /// May be used to create a new chain from given chains on node startup.
     pub fn merge_chain(&mut self, chain: &mut DataChain) {
-        // Clean chain
-        chain.mark_blocks_valid();
-        chain.prune();
-        // TODO - merge logic
-        // find members of a link, add blocks to chain after this link that will validate the
-        // block
-        unimplemented!();
+        self.dc.lock().unwrap().merge_chain(chain);
     }
 
     /// How many network events a given proover has been involved in (proover == node)

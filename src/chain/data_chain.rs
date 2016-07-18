@@ -480,6 +480,29 @@ impl DataChain {
         }
     }
 
+    /// Merge any blocks from a given chain
+    pub fn merge_chain(&mut self, chain: &mut DataChain) {
+        chain.mark_blocks_valid();
+        chain.prune();
+        let mut start_pos = 0;
+        for new in chain.chain().iter().filter(|x| x.identifier().is_block()) {
+            let mut insert = false;
+            for (pos, val) in self.chain.iter().skip(start_pos).enumerate() {
+                if DataChain::validate_block_with_proof(&new, val, self.group_size) {
+                    start_pos = pos;
+                    insert = true;
+                    break;
+                }
+            }
+
+            if insert {
+                self.chain.insert(start_pos, new.clone());
+                start_pos += 1;
+            }
+
+        }
+    }
+
     fn validate_block_with_proof(block: &Block, proof: &Block, group_size: usize) -> bool {
         let p_len = proof.proof()
             .iter()
