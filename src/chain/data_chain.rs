@@ -476,18 +476,12 @@ impl DataChain {
     }
 
     fn validate_block_with_proof(block: &Block, proof: &Block) -> bool {
-        if block.identifier().is_block() {
+   
             proof.proof()
                 .iter()
                 .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
                 .count() * 2 > proof.proof().len()
-        } else {
-            proof.proof()
-                .iter()
-                .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
-                .count() >= proof.proof().len() - 1
-
-        }
+       
     }
 }
 

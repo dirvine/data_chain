@@ -46,8 +46,6 @@ grows, this rolling majority of different signatories can be cryptographically c
 a majority of the current close group of nodes. This current group of nodes can then
 cryptographically validate the entire chain and every data element referred to within it.
 
-*[DataChain] links must be validated by previous group - 1 members. This stronger [Proof] secures
-membership in a way that ensures Links cannot be faked via a replacement attack on the chain.* 
 
 An example of a [DataChain] may look like this. 
 
@@ -191,6 +189,10 @@ nodes attempting to join. If vaults agree the node is OK then routing will add t
 routing table.
 
 3. If vaults reject a node, then it will follow the normal joining process (secure join)
+
+4. Routing must punish nodes ASAP on failure to transmit a Link [NodeBlock] on a churn event. Links
+   will validate on majority, but routing will require to maintain security of the chain by ensuring
+   all nodes participate effectively. These messages should be high priority.
 
 ## Vault requirements
 
