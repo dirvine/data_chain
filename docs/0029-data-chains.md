@@ -237,6 +237,20 @@ varying capability (cpu/bandwidth/storage etc.) to exist.
 
 # Additional observations
 
+## Group size
+
+Whilst it was thought that a [DataChain] did not require the use of a magic number, there is a 
+requirement at this time for it to know the group size used in the network for group consensus. This 
+is unfortunate and hopefully will be factored out. Teh use of group size though is required on 
+groups splitting and the chain progressing. As this happens a link will potentially lose majority.
+In this case the data chain needs to us another factor to decide quorum has been met and this size 
+is the group size figure. 
+
+It is hoped that this can be eradicated by a more sophisticated checkpointing mechanism where both 
+sides of a split can sing the split link. This would be identifiable as the split happens at a common
+leading bits agreement of a number of the group. At this time using a naive algorithm though may 
+introduce unwanted and potentially insecure side effects. 
+
 ## Archive nodes
 
 Nodes that hold the longest [DataChain]s may be considered to be archive nodes. Such nodes will be
@@ -248,7 +262,7 @@ prevent attacks where nodes lasting for long periods in a group cannot collude v
 band method such as publishing ID's on a website and soliciting other nodes in the group to collude 
 and attack that group. 
 
-### Archive node Datachain length
+### Archive node [Datachain] length
 
 The length of the [DataChain] should be as long as possible. Although a node may not require to hold
 data outwith it's current close group. It is prudent such nodes hold as much of the Chain as
@@ -260,7 +274,7 @@ as new blocks appear (FIFO or first in first out).
 
 All nodes in a group will build on their [DataChain], whether an Archive node or simply attempting
 to become an archive node. Small nodes with little resources though may find it difficult to create
-a [DataChain]of any significance. In these cases these smaller less capable nodes will receive
+a [DataChain] of any significance. In these cases these smaller less capable nodes will receive
 limited rewards as they do not have the ability to respond to many data retrieval requests, if any
 at all. These small nodes though are still beneficial to the network to provide connectivity and
 lower level consensus at the routing level.
@@ -325,17 +339,12 @@ None as of yet
 
 # Unresolved questions
 
-- At a checkpoint (when a group splits) the majority will decrease significantly. Should there be 
-  a checkpoint link (that is identifiable) ten mark the chain, allowing this reduction? 
-
 Not initially required, but should be considered in near future.
 
 - Effective handling of removed blocks from the chain. (A holder can remove blocks but not add them) 
 - Effective checkpoints of chains to reduce size.
 - Store efficiently on disk (disk based key value store of [DataChain])
 - Calculate vote weights and ensure collusion is not possible in a group.
-- After a network segmentation all data blocks will be required to be signed again from the new 
-close group. Possibly a secondary genesis block is required here, or a special checkpoint. 
 
 [github]: https://github.com/dirvine/data_chain
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
