@@ -489,14 +489,14 @@
         <span class='ident'>chain</span>.<span class='ident'>mark_blocks_valid</span>();
         <span class='ident'>chain</span>.<span class='ident'>prune</span>();
         <span class='comment'>// TODO - merge logic</span>
+        <span class='comment'>// find members of a link, add blocks to chain after this link that will validate the</span>
+        <span class='comment'>// block</span>
         <span class='macro'>unimplemented</span><span class='macro'>!</span>();
     }
 
     <span class='doccomment'>/// How many network events a given proover has been involved in (proover == node)</span>
     <span class='doccomment'>/// First missed event stops the count</span>
-    <span class='doccomment'>/// ######## Suggestion ###########</span>
-    <span class='doccomment'>/// We subtract from this score, blocks where the node has not responded (yet)</span>
-    <span class='doccomment'>/// If trust goes negative then the node may be killed from the network</span>
+    <span class='comment'>// TODO this is very basic and requires some further discussion</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>trust_level</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>node</span>: <span class='kw-2'>&amp;</span><span class='ident'>PublicKey</span>) <span class='op'>-&gt;</span> <span class='ident'>usize</span> {
         <span class='self'>self</span>.<span class='ident'>dc</span>
             .<span class='ident'>lock</span>()
