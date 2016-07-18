@@ -325,7 +325,7 @@ None as of yet
 
 # Unresolved questions
 
-- At a checpoint (when a group splits) the majority will decrease significantly. Should there be 
+- At a checkpoint (when a group splits) the majority will decrease significantly. Should there be 
   a checkpoint link (that is identifiable) ten mark the chain, allowing this reduction? 
 
 Not initially required, but should be considered in near future.
