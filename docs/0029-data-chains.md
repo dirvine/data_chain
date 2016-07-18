@@ -126,7 +126,7 @@ be used to further secure the data in question.
 
 A [Block] is made up of a [BlockIdentifier] and a vector of `PublicKey` and `Signature`.This vector
 is known as the [Proof]. Each [Proof] tuple can be used to verify the signature is that of the
-[BlockIdentifier] and that the `PublicKey` is the one used to sign this. [Proof] definition.
+[BlockIdentifier] and that the `PublicKey` is the one used to sign this.
 
 A link [Block] has the same [Proof] vector. This [Block] type is the glue that holds the chain together
 and provides the link of proofs right up until the current group can be identified. It is this
