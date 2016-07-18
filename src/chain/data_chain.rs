@@ -44,6 +44,7 @@ use chain::node_block::{self, NodeBlock};
 #[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
+    group_size: usize,
     path: Option<PathBuf>,
 }
 
@@ -52,18 +53,19 @@ type Blocks = Vec<Block>;
 impl DataChain {
     /// Create a new chain backed up on disk
     /// Provide the directory to create the files in
-    pub fn create_in_path(path: PathBuf) -> io::Result<DataChain> {
+    pub fn create_in_path(path: PathBuf, group_size: usize) -> io::Result<DataChain> {
         let path = path.join("data_chain");
         let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path));
         // hold a lock on the file for the whole session
         try!(file.lock_exclusive());
         Ok(DataChain {
             chain: Blocks::default(),
+            group_size: group_size,
             path: Some(path),
         })
     }
     /// Open from existing directory
-    pub fn from_path(path: PathBuf) -> Result<DataChain, Error> {
+    pub fn from_path(path: PathBuf, group_size: usize) -> Result<DataChain, Error> {
         let path = path.join("data_chain");
         let mut file =
             try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path));
@@ -73,14 +75,16 @@ impl DataChain {
         let _ = try!(file.read_to_end(&mut buf));
         Ok(DataChain {
             chain: try!(serialisation::deserialise::<Blocks>(&buf[..])),
+            group_size: group_size,
             path: Some(path),
         })
     }
 
     /// Create chain in memory from vector of blocks
-    pub fn from_blocks(blocks: Vec<Block>) -> DataChain {
+    pub fn from_blocks(blocks: Vec<Block>, group_size: usize) -> DataChain {
         DataChain {
             chain: blocks,
+            group_size: group_size,
             path: None,
         }
     }
@@ -144,10 +148,11 @@ impl DataChain {
         }
         let len;
         let links;
+        let group_size;
         {
             links = self.valid_links_at_block_id(block.identifier());
             len = self.chain.len();
-
+            group_size = self.group_size;
             if self.chain.is_empty() {
                 if let Ok(blk) = Block::new(block.clone()) {
                     self.chain.push(blk);
@@ -169,7 +174,7 @@ impl DataChain {
                     if len == 1 ||
                        links.iter()
                         .filter(|x| x.identifier() != blk.identifier())
-                        .any(|y| Self::validate_block_with_proof(blk, y)) {
+                        .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
                         blk.valid = true;
                         return Some(blk.identifier().clone());
                     } else {
@@ -353,7 +358,7 @@ impl DataChain {
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
         for link in &self.valid_links_at_block_id(block.identifier()) {
-            if Self::validate_block_with_proof(block, link) {
+            if Self::validate_block_with_proof(block, link, self.group_size) {
                 return true;
             }
         }
@@ -461,7 +466,7 @@ impl DataChain {
             .find(|x| x.identifier().is_link()) {
             for block in &mut self.chain {
                 block.remove_invalid_signatures();
-                if Self::validate_block_with_proof(block, &first_link) {
+                if Self::validate_block_with_proof(block, &first_link, self.group_size) {
                     block.valid = true;
                     if block.identifier().is_link() {
                         first_link = block.clone();
@@ -475,13 +480,12 @@ impl DataChain {
         }
     }
 
-    fn validate_block_with_proof(block: &Block, proof: &Block) -> bool {
-   
-            proof.proof()
-                .iter()
-                .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
-                .count() * 2 > proof.proof().len()
-       
+    fn validate_block_with_proof(block: &Block, proof: &Block, group_size: usize) -> bool {
+        let p_len = proof.proof()
+            .iter()
+            .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
+            .count();
+        (p_len * 2 > proof.proof().len()) || (p_len == group_size)
     }
 }
 
@@ -527,18 +531,18 @@ mod tests {
         assert!(block1.add_proof(link1_3.unwrap().proof().clone()).is_ok());
 
         let mut block2 = Block::new(link2_1.unwrap()).unwrap();
-        assert!(!DataChain::validate_block_with_proof(&block2, &block1));
+        assert!(!DataChain::validate_block_with_proof(&block2, &block1, 999));
         assert!(block2.add_proof(link2_2.unwrap().proof().clone()).is_ok());
-        assert!(DataChain::validate_block_with_proof(&block2, &block1));
+        assert!(DataChain::validate_block_with_proof(&block2, &block1, 999));
         assert!(block2.add_proof(link2_3.unwrap().proof().clone()).is_ok());
-        assert!(DataChain::validate_block_with_proof(&block2, &block1));
+        assert!(DataChain::validate_block_with_proof(&block2, &block1, 999));
 
         let mut block3 = Block::new(id1.unwrap()).unwrap();
-        assert!(!DataChain::validate_block_with_proof(&block3, &block2));
+        assert!(!DataChain::validate_block_with_proof(&block3, &block2, 999));
         assert!(block3.add_proof(id2.unwrap().proof().clone()).is_ok());
-        assert!(DataChain::validate_block_with_proof(&block3, &block2));
+        assert!(DataChain::validate_block_with_proof(&block3, &block2, 999));
         assert!(block3.add_proof(id3.unwrap().proof().clone()).is_ok());
-        assert!(DataChain::validate_block_with_proof(&block3, &block2));
+        assert!(DataChain::validate_block_with_proof(&block3, &block2, 999));
     }
 
     #[test]
@@ -778,7 +782,7 @@ mod tests {
         let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
-            if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf()) {
+            if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf(), 999) {
                 assert!(chain.is_empty());
                 // ############# start adding link #####################
                 assert!(chain.add_node_block(link1_1.unwrap()).is_none());
@@ -830,7 +834,7 @@ mod tests {
                 assert_eq!(chain.len(), 3);
                 assert_eq!(chain.valid_len(), 2);
                 assert!(chain.write().is_ok());
-                let chain2 = DataChain::from_path(dir.path().to_path_buf());
+                let chain2 = DataChain::from_path(dir.path().to_path_buf(), 999);
                 assert!(chain2.is_ok());
                 assert_eq!(chain2.unwrap(), chain);
             }
