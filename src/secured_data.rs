@@ -236,16 +236,6 @@ impl SecuredData {
     pub fn used_space(&self) -> u64 {
         self.cs.used_space()
     }
-
-
-
-    // ############ Dubious, should perhaps be private ###########
-    /// Trim chain to previous common leading bits (previous vertice in binary tree)
-    /// If our leading bits in group are 10111 then it will trim any 10110 data & links.
-    /// Note this does not trim the chain to Genesis, that is maintained.
-    pub fn trim_all_blocks_and_data(&mut self) {
-        unimplemented!();
-    }
 }
 
 #[cfg(test)]

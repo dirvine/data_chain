@@ -30,9 +30,10 @@ A mechanism to lock data descriptors in containers that may be held on a decentr
 Such structures are cryptographically secured in lock step using a consensus of cryptographic
 signatures. These signatures are of a certain size (group size) with a majority required to be 
 considered valid (much like N of P sharing). In a decentralised network that has secured groups,
-these signatures are those closest to the holder of a [DataChain]. 
+these signatures are those closest to the holder of a [DataChain]. The implementation linked at
+[github] provides a mechanism to hold data as well as the [DataChain] of descriptors. 
 
-When a [DataChain] starts, the first item is probably a `link`. This is a block that uses the
+When a [DataChain] begins, the first item is likely a `link`. This is a block that uses the
 identity of a close group on the network. This `link` has an associated proof that is the
 `PublicKey` and a corresponding signature for each node. The `Signature` is the signed `link`
 block.  On each `churn` event a new link is created and again signed by all members of the
@@ -74,9 +75,9 @@ storage.
 In a fully decentralised network there are many problems to solve, two of these issues can be
 thought of as:
 
-1. How to handle transferring large amounts of data to replicant nodes on each churn event.
+1. Handling the transfer of large amounts of data to replicant nodes on each churn event.
 
-2. How to allow data to be republished in a secure manner.
+2. Allowing data to be **republished** in a secure manner.
 
 Point 2 actually encompasses two large issues in itself. The ability to start a node and make it's
 data available is obviously required where we have large amounts of data to maintain. Another large
