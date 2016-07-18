@@ -212,9 +212,9 @@ building a data chain.
 
 6. Nodes will choose the sender of the data on `Get` requests. New nodes will only be expected 
 to have data that has appeared since they joined (each node knows this via it's own data chain"). 
-New nodes can and will try (if they have resources) to Get data from the group. When nodes have 
+New nodes can and will try (if they have resources) to`Get`data from the group. When nodes have 
 this data they can request full membership of the group. At that time they can be chosen to respond
-to any Get request, thereby earning safecoin or rewards. Nodes may then continue to ask for data 
+to any`Get`request, thereby earning safecoin or rewards. Nodes may then continue to ask for data 
 from archive nodes that are outwith the current group data. This may allow them to restart as an 
 archive node, maximising their reward time as restarts are much faster since data does not need
 relocated.
