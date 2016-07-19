@@ -51,7 +51,7 @@
 <pre class='rust struct'>pub struct SecuredData {
     // some fields omitted
 }</pre><div class='docblock'><p>API for data based operations.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1940' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#37-249' title='goto source code'>[src]</a></span></h3>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1940' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#37-239' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.create_in_path' class='method'><code>fn <a href='#method.create_in_path' class='fnname'>create_in_path</a>(path: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, max_disk_space: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>, group_size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
 <div class='docblock'><p>Construct new data container</p>
 </div><h4 id='method.from_path' class='method'><code>fn <a href='#method.from_path' class='fnname'>from_path</a>(path: <a class='struct' href='https://doc.rust-lang.org/nightly/std/path/struct.PathBuf.html' title='std::path::PathBuf'>PathBuf</a>, max_disk_space: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a>, group_size: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../data_chain/secured_data/struct.SecuredData.html' title='data_chain::secured_data::SecuredData'>SecuredData</a>, <a class='enum' href='../../data_chain/error/enum.Error.html' title='data_chain::error::Error'>Error</a>&gt;</code></h4>
@@ -99,10 +99,6 @@ First missed event stops the count</p>
 <div class='docblock'><p>Max space avilable for disk storage (as set by user)</p>
 </div><h4 id='method.used_space' class='method'><code>fn <a href='#method.used_space' class='fnname'>used_space</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.u64.html'>u64</a></code></h4>
 <div class='docblock'><p>Disk used so far.</p>
-</div><h4 id='method.trim_all_blocks_and_data' class='method'><code>fn <a href='#method.trim_all_blocks_and_data' class='fnname'>trim_all_blocks_and_data</a>(&amp;mut self)</code></h4>
-<div class='docblock'><p>Trim chain to previous common leading bits (previous vertice in binary tree)
-If our leading bits in group are 10111 then it will trim any 10110 data &amp; links.
-Note this does not trim the chain to Genesis, that is maintained.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
 
