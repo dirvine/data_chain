@@ -113,7 +113,7 @@ changing nodes around any address. The representation of the link address in the
 of all the current close group members of the current node. All close group members will recognise 
 the group of this node and this node will also know the close group of all of it's close nodes.
 
-The [blockIdentifier] that represents a data item contains the hash of that data item. This allows
+The [BlockIdentifier] that represents a data item contains the hash of that data item. This allows
 the [DataChain] to hold identifiers to data that can validate the data itself. This allows the data
 to be republished whilst being certain that data was created on the network itself.
 
@@ -150,9 +150,9 @@ all group members. The [Proof] is this nodes `PublicKey` and `Signature`, allowi
 to call the [DataChain]'s `fn add_nodeblock()` to try and add this to the data chain.
 
 In times of network churn a node will create a separate `LinkDescriptor` to create the
-[BlockIdentifier] for this nodeblock. This linkdescriptor is created by calling the
+[BlockIdentifier] for this [NodeBlock]. This `LinkDescriptor` is created by calling the
 [create_link_descriptor()] method and passing the close_group **to that node** as the input. Each
-node in the group will do the same and send the `NodeBlock` to that node.
+node in the group will do the same and send the [NodeBlock] to that node.
 
 This continual updating of the chain also provides a history of part of the network, both in terms 
 of data and also groups. Each block will contain a list of the nodes that have been seen on the 
@@ -242,7 +242,7 @@ varying capability (cpu/bandwidth/storage etc.) to exist.
 
 Whilst it was thought that a [DataChain] did not require the use of a magic number, there is a 
 requirement at this time for it to know the group size used in the network for group consensus. This 
-is unfortunate and hopefully will be factored out. Teh use of group size though is required on 
+is unfortunate and hopefully will be factored out. The use of group size though, is required on 
 groups splitting and the chain progressing. As this happens a link will potentially lose majority.
 In this case the data chain needs to us another factor to decide quorum has been met and this size 
 is the group size figure. 
