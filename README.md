@@ -1,6 +1,6 @@
-[![Stories in Ready](https://badge.waffle.io/dirvine/data_chain.png?label=ready&title=Ready)](https://waffle.io/dirvine/data_chain)
-# data_chain
 
+# data_chain
+[![Stories in Ready](https://badge.waffle.io/dirvine/data_chain.png?label=ready&title=Ready)](https://waffle.io/dirvine/data_chain)
 [![](http://meritbadge.herokuapp.com/data_chain)](https://crates.io/crates/data_chain)
 [![Build Status](https://travis-ci.org/dirvine/data_chain.svg?branch=master)](https://travis-ci.org/dirvine/data_chain)
 [![Build status](https://ci.appveyor.com/api/projects/status/h0674wyk1sdovi2j?svg=true)](https://ci.appveyor.com/project/dirvine/data-chain)
