@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/dirvine/data_chain.png?label=ready&title=Ready)](https://waffle.io/dirvine/data_chain)
 # data_chain
 
 [![](http://meritbadge.herokuapp.com/data_chain)](https://crates.io/crates/data_chain)
