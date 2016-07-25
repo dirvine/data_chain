@@ -15,9 +15,6 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-
-
-use std::slice::{RSplitN, RSplitNMut, Split, SplitMut, SplitN, SplitNMut};
 use std::mem;
 use std::path::PathBuf;
 use error::Error;
@@ -218,16 +215,6 @@ impl DataChain {
         })
     }
 
-    /// Extract slice containing entire chain
-    pub fn as_slice(&self) -> &[Block] {
-        self.chain.as_slice()
-    }
-
-    /// Extract mutable slice containing entire chain
-    pub fn as_mut_slice(&mut self) -> &[Block] {
-        self.chain.as_mut_slice()
-    }
-
     /// Remove a block, will ignore Links
     pub fn remove(&mut self, data_id: &BlockIdentifier) {
         self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
@@ -264,84 +251,6 @@ impl DataChain {
     pub fn insert(&mut self, index: usize, block: Block) {
         self.chain.insert(index, block)
     }
-
-    /// Returns an iterator over subslices separated by elements that match pred.
-    /// The matched element is not contained in the subslices.
-    pub fn split<F>(&self, pred: F) -> Split<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.split(pred)
-    }
-
-    /// Returns an iterator over subslices separated by elements that match pred.
-    /// The matched element is not contained in the subslices.
-    pub fn split_mut<F>(&mut self, pred: F) -> SplitMut<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.split_mut(pred)
-    }
-
-    /// Returns an iterator over subslices separated by elements that match pred,
-    /// limited to returning at most n items. The matched element is not contained in the subslices.
-    /// The last element returned, if any, will contain the remainder of the slice.
-    /// # Panics
-    ///
-    /// Panics if index is greater than the chains length.
-    pub fn splitn<F>(&self, n: usize, pred: F) -> SplitN<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.splitn(n, pred)
-    }
-
-    /// Returns an iterator over subslices separated by elements that match pred,
-    /// limited to returning at most n items. The matched element is not contained in the subslices.
-    /// The last element returned, if any, will contain the remainder of the slice.
-    /// # Panics
-    ///
-    /// Panics if index is greater than the chains length.
-    pub fn splitn_mut<F>(&mut self, n: usize, pred: F) -> SplitNMut<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.splitn_mut(n, pred)
-    }
-
-    /// Splits the chain into two at the given index.
-    /// Returns a newly allocated Self. chain contains elements [0, at), and the returned
-    /// chain contains elements [at, len).
-    /// Note that the capacity of chain does not change.]]
-    /// # Panics
-    ///
-    /// Panics if index is greater than the chains length.
-    pub fn split_off(&mut self, at: usize) -> Vec<Block> {
-        self.chain.split_off(at)
-    }
-
-    /// Returns an iterator over subslices separated by elements that match pred limited to
-    /// returning at most n items. This starts at the end of the slice and works backwards.
-    /// The matched element is not contained in the subslices.
-    /// The last element returned, if any, will contain the remainder of the slice.
-    /// # Panics
-    ///
-    /// Panics if index is greater than the chains length.
-    pub fn rsplitn<F>(&self, n: usize, pred: F) -> RSplitN<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.rsplitn(n, pred)
-    }
-
-    /// Returns an iterator over subslices separated by elements that match pred limited to
-    /// returning at most n items. This starts at the end of the slice and works backwards.
-    /// The matched element is not contained in the subslices.
-    /// The last element returned, if any, will contain the remainder of the slice.
-    /// # Panics
-    ///
-    /// Panics if index is greater than the chains length.
-    pub fn rsplitn_mut<F>(&mut self, n: usize, pred: F) -> RSplitNMut<Block, F>
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.rsplitn_mut(n, pred)
-    }
-
 
     // is link descriptor equal to all public keys xored together
     #[allow(unused)]
