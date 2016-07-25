@@ -14,7 +14,7 @@ to have been correctly stored onto the network. Code for this RFC is available o
 
 # Definitions used
 
-- Decentralised network, A peer to peer network in xor space, using Kadmelia type addressing.
+- Decentralised network, A peer to peer network in xor space, using Kademlia type addressing.
 - Hash, a cryptographic one way function that produces a fixed length representation of any input.
 - Immutable data, a data type that has a name == hash of it's contents (it is immutable as changing
   the contents creates a new piece of immutable data).
