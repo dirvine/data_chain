@@ -88,7 +88,7 @@
 //! assert!(pub1.len() == 3);
 //! assert!(pub2.len() == 3);
 //! assert!(pub3.len() == 3);
-//! let link_desc1 = create_link_descriptor(&pub1[..]);
+//! let link_desc1 = create_link_descriptor(&pub1[..]).unwrap();
 //! let identifier1 = BlockIdentifier::Link(link_desc1);
 //! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
 //! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
