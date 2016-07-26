@@ -805,18 +805,6 @@
 <span id="761">761</span>
 <span id="762">762</span>
 <span id="763">763</span>
-<span id="764">764</span>
-<span id="765">765</span>
-<span id="766">766</span>
-<span id="767">767</span>
-<span id="768">768</span>
-<span id="769">769</span>
-<span id="770">770</span>
-<span id="771">771</span>
-<span id="772">772</span>
-<span id="773">773</span>
-<span id="774">774</span>
-<span id="775">775</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -846,7 +834,7 @@
 <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
 <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
-<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::{<span class='self'>self</span>, <span class='ident'>NodeBlock</span>};
+<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::<span class='ident'>NodeBlock</span>;
 
 <span class='doccomment'>/// Created by holder of chain, can be passed to others as proof of data held.</span>
 <span class='doccomment'>/// This object is verifiable if :</span>
@@ -1072,17 +1060,6 @@
         <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>insert</span>(<span class='ident'>index</span>, <span class='ident'>block</span>)
     }
 
-    <span class='comment'>// is link descriptor equal to all public keys xored together</span>
-    <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>unused</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>link_locked</span>(<span class='ident'>link</span>: <span class='kw-2'>&amp;</span><span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>if</span> <span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>is_block</span>() {
-            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
-        }
-
-        <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>link</span>.<span class='ident'>proof</span>().<span class='ident'>iter</span>().<span class='ident'>cloned</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='op'>*</span><span class='ident'>x</span>.<span class='ident'>key</span>()).<span class='ident'>collect_vec</span>();
-        <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>keys</span>[..]) <span class='op'>==</span> <span class='op'>*</span><span class='ident'>link</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>()
-    }
-
     <span class='doccomment'>/// Validate an individual block. Will get latest link and confirm all signatures</span>
     <span class='doccomment'>/// were from last known valid group.</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_block</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>block</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Block</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -1263,8 +1240,8 @@
             .<span class='ident'>collect_vec</span>();
         <span class='kw'>let</span> <span class='ident'>pub1</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
         <span class='kw'>let</span> <span class='ident'>pub2</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>skip</span>(<span class='number'>1</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
-        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
-        <span class='kw'>let</span> <span class='ident'>link_desc2</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub2</span>[..]);
+        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>link_desc2</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub2</span>[..]).<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
         <span class='kw'>let</span> <span class='ident'>identifier2</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc2</span>);
         <span class='kw'>let</span> <span class='ident'>identifier3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;a&quot;</span>).<span class='number'>0</span>);
@@ -1317,9 +1294,9 @@
         <span class='comment'>// ########################################################################################</span>
         <span class='comment'>// create link descriptors, which form the Block identifier</span>
         <span class='comment'>// ########################################################################################</span>
-        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
-        <span class='kw'>let</span> <span class='ident'>link_desc2</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub2</span>[..]);
-        <span class='kw'>let</span> <span class='ident'>link_desc3</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub3</span>[..]);
+        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>link_desc2</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub2</span>[..]).<span class='ident'>unwrap</span>();
+        <span class='kw'>let</span> <span class='ident'>link_desc3</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub3</span>[..]).<span class='ident'>unwrap</span>();
         <span class='comment'>// ########################################################################################</span>
         <span class='comment'>// The block  identifier is the part of a Block/NodeBlock that</span>
         <span class='comment'>// describes the block, here it is links, but could be StructuredData / ImmutableData</span>
@@ -1365,7 +1342,6 @@
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>1</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>add_node_block</span>(<span class='ident'>link1_3</span>.<span class='ident'>unwrap</span>()).<span class='ident'>is_some</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>1</span>);
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>DataChain</span>::<span class='ident'>link_locked</span>(<span class='kw-2'>&amp;</span><span class='ident'>chain</span>.<span class='ident'>chain</span>[<span class='number'>0</span>]));
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>chain</span>.<span class='ident'>len</span>(), <span class='number'>1</span>);
         <span class='comment'>// ########################################################################################</span>
         <span class='comment'>// pune_and_validate will prune any invalid data, In first link all data is valid if sig OK</span>
@@ -1423,7 +1399,7 @@
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>pub1</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>3</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>pub2</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>3</span>);
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>pub3</span>.<span class='ident'>len</span>() <span class='op'>==</span> <span class='number'>3</span>);
-        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
+        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]).<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
         <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>).<span class='number'>0</span>);
         <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>).<span class='number'>0</span>,
@@ -1517,7 +1493,7 @@
         <span class='kw'>let</span> <span class='ident'>pub1</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
         <span class='kw'>let</span> <span class='ident'>pub2</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>skip</span>(<span class='number'>1</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
         <span class='kw'>let</span> <span class='ident'>pub3</span> <span class='op'>=</span> <span class='ident'>keys</span>.<span class='ident'>iter</span>().<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='number'>0</span>).<span class='ident'>skip</span>(<span class='number'>2</span>).<span class='ident'>take</span>(<span class='number'>3</span>).<span class='ident'>collect_vec</span>();
-        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]);
+        <span class='kw'>let</span> <span class='ident'>link_desc1</span> <span class='op'>=</span> <span class='ident'>node_block</span>::<span class='ident'>create_link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='ident'>pub1</span>[..]).<span class='ident'>unwrap</span>();
         <span class='kw'>let</span> <span class='ident'>identifier1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>link_desc1</span>);
         <span class='kw'>let</span> <span class='ident'>id_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;id1hash&quot;</span>).<span class='number'>0</span>);
         <span class='kw'>let</span> <span class='ident'>sd1_ident</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>sha256</span>::<span class='ident'>hash</span>(<span class='string'>b&quot;sd1hash&quot;</span>).<span class='number'>0</span>,

@@ -328,7 +328,7 @@
 <span class='doccomment'>//! assert!(pub1.len() == 3);</span>
 <span class='doccomment'>//! assert!(pub2.len() == 3);</span>
 <span class='doccomment'>//! assert!(pub3.len() == 3);</span>
-<span class='doccomment'>//! let link_desc1 = create_link_descriptor(&amp;pub1[..]);</span>
+<span class='doccomment'>//! let link_desc1 = create_link_descriptor(&amp;pub1[..]).unwrap();</span>
 <span class='doccomment'>//! let identifier1 = BlockIdentifier::Link(link_desc1);</span>
 <span class='doccomment'>//! let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b&quot;id1hash&quot;).0);</span>
 <span class='doccomment'>//! let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b&quot;sd1hash&quot;).0,</span>
