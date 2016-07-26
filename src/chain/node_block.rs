@@ -27,7 +27,6 @@ use chain::block_identifier::BlockIdentifier;
 /// This process is faster than hash and means group can be unordered
 /// which is beneficial under heavy churn and out of order links being sent.
 pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
-
     if let Some(mut base) = group.iter().cloned().last() {
         // xor of x is x
         for key in group.iter().skip(1) {
@@ -39,9 +38,7 @@ pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
     } else {
         None
     }
-
 }
-
 
 /// Proof as provided by a close group member
 #[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Debug, Clone)]
