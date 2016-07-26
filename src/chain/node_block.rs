@@ -15,6 +15,7 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+// use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
 use sodiumoxide::crypto;
@@ -25,14 +26,20 @@ use chain::block_identifier::BlockIdentifier;
 /// Descriptor is the xored group members starting with base of 0000..:32
 /// This process is faster than hash and means group can be unordered
 /// which is beneficial under heavy churn and out of order links being sent.
-pub fn create_link_descriptor(group: &[PublicKey]) -> LinkDescriptor {
-    let mut base = [0u8; 32];
-    for key in group.iter() {
-        for item in key.0.iter().cloned().enumerate() {
-            base[item.0] ^= item.1
+pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
+
+    if let Some(mut base) = group.iter().cloned().last() {
+        // xor of x is x
+        for key in group.iter().skip(1) {
+            for item in key.0.iter().enumerate() {
+                base.0[item.0] ^= *item.1
+            }
         }
+        Some(base.0)
+    } else {
+        None
     }
-    base
+
 }
 
 

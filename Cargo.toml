@@ -8,6 +8,7 @@ repository = "https://github.com/dirvine/data_chain"
 version = "0.1.1"
 
 [dependencies]
+bit-vec = "~0.4.3"
 fs2 = "0.2.5"
 itertools = "0.4.15"
 maidsafe_utilities = "~0.5.4"

@@ -26,7 +26,7 @@ use itertools::Itertools;
 use sodiumoxide::crypto::sign::PublicKey;
 use chain::block::Block;
 use chain::block_identifier::BlockIdentifier;
-use chain::node_block::{self, NodeBlock};
+use chain::node_block::NodeBlock;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -252,17 +252,6 @@ impl DataChain {
         self.chain.insert(index, block)
     }
 
-    // is link descriptor equal to all public keys xored together
-    #[allow(unused)]
-    fn link_locked(link: &Block) -> bool {
-        if link.identifier().is_block() {
-            return false;
-        }
-
-        let keys = link.proof().iter().cloned().map(|x| *x.key()).collect_vec();
-        node_block::create_link_descriptor(&keys[..]) == *link.identifier().hash()
-    }
-
     /// Validate an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
@@ -443,8 +432,8 @@ mod tests {
             .collect_vec();
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
         let identifier3 = BlockIdentifier::ImmutableData(sha256::hash(b"a").0);
@@ -497,9 +486,9 @@ mod tests {
         // ########################################################################################
         // create link descriptors, which form the Block identifier
         // ########################################################################################
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]);
-        let link_desc3 = node_block::create_link_descriptor(&pub3[..]);
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
+        let link_desc3 = node_block::create_link_descriptor(&pub3[..]).unwrap();
         // ########################################################################################
         // The block  identifier is the part of a Block/NodeBlock that
         // describes the block, here it is links, but could be StructuredData / ImmutableData
@@ -545,7 +534,6 @@ mod tests {
         assert_eq!(chain.len(), 1);
         assert!(chain.add_node_block(link1_3.unwrap()).is_some());
         assert_eq!(chain.len(), 1);
-        assert!(DataChain::link_locked(&chain.chain[0]));
         assert_eq!(chain.len(), 1);
         // ########################################################################################
         // pune_and_validate will prune any invalid data, In first link all data is valid if sig OK
@@ -603,7 +591,7 @@ mod tests {
         assert!(pub1.len() == 3);
         assert!(pub2.len() == 3);
         assert!(pub3.len() == 3);
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
         let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
@@ -697,7 +685,7 @@ mod tests {
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
         let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]);
+        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(sha256::hash(b"id1hash").0);
         let sd1_ident = BlockIdentifier::StructuredData(sha256::hash(b"sd1hash").0,
