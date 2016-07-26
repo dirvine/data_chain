@@ -33,7 +33,7 @@ pub enum Data {
 
 impl Data {
     /// Return data name.
-    pub fn name(&self) -> &[u8;32] {
+    pub fn name(&self) -> &[u8; 32] {
         match *self {
             Data::Structured(ref data) => data.name(),
             Data::Immutable(ref data) => data.name(),
