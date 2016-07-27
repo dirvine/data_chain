@@ -386,7 +386,7 @@ impl DataChain {
         for new in chain.chain().iter().filter(|x| x.identifier().is_block()) {
             let mut insert = false;
             for (pos, val) in self.chain.iter().skip(start_pos).enumerate() {
-                if DataChain::validate_block_with_proof(&new, val, self.group_size) {
+                if DataChain::validate_block_with_proof(new, val, self.group_size) {
                     start_pos = pos;
                     insert = true;
                     break;

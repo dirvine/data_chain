@@ -49,8 +49,8 @@ impl BlockIdentifier {
     /// Therefore we will delete before insert etc. based on name alone of the data element
     pub fn hash(&self) -> &[u8; 32] {
         match *self {
-            BlockIdentifier::ImmutableData(ref hash) => hash,
             BlockIdentifier::StructuredData(ref hash, _name, _) => hash,
+            BlockIdentifier::ImmutableData(ref hash) |
             BlockIdentifier::Link(ref hash) => hash,
         }
     }

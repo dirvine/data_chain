@@ -65,8 +65,6 @@ extern crate rustc_serialize;
 extern crate maidsafe_utilities;
 extern crate itertools;
 extern crate fs2;
-// extern crate bit_vec;
-
 #[cfg(test)]
 extern crate tempdir;
 #[cfg(test)]

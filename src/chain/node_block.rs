@@ -125,8 +125,8 @@ impl NodeBlock {
 }
 
 #[cfg(test)]
-
 mod tests {
+
     use super::*;
     use chain::block_identifier::BlockIdentifier;
     use sodiumoxide::crypto;

@@ -27,7 +27,6 @@ use sodiumoxide::crypto::hash::sha256;
 use sodiumoxide::crypto::sign::PublicKey;
 use chain::{BlockIdentifier, DataChain, NodeBlock};
 
-
 /// API for data based operations.
 pub struct SecuredData {
     cs: ChunkStore<[u8; 32], Data>,
@@ -74,7 +73,7 @@ impl SecuredData {
             if ans.is_link() {
                 return None;
             }
-            return Some((ans.clone(), self.cs.has(&ans.hash())));
+            return Some((ans.clone(), self.cs.has(ans.hash())));
 
         }
         None
@@ -169,7 +168,7 @@ impl SecuredData {
                                    .filter(|x| x.valid)
                                    .filter(|x| {
                                        x.identifier().is_link() ||
-                                       keys.contains(&x.identifier().hash())
+                                       keys.contains(x.identifier().hash())
                                    })
                                    .collect_vec(),
                                group_size)
@@ -185,7 +184,7 @@ impl SecuredData {
             .iter()
             .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| cs_keys.contains(&x.identifier().hash())) {
+            .filter(|x| cs_keys.contains(x.identifier().hash())) {
             // only throws error on IO error not missing data
             // TODO test this !!
             try!(self.cs.delete(dc_key.identifier().hash()));
@@ -222,7 +221,7 @@ impl SecuredData {
             .chain()
             .iter()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| !keys.contains(&x.identifier().hash()))
+            .filter(|x| !keys.contains(x.identifier().hash()))
             .map(|x| x.identifier().clone())
             .collect_vec()
     }
