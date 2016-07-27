@@ -87,6 +87,8 @@ impl SecuredData {
             .find_name(data_id.name()) {
             if block_id.valid {
                 return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+            } else {
+                return Err(Error::Validation);
             }
         }
         Err(Error::NoFile)
@@ -255,4 +257,5 @@ mod test {
         assert!(store.clear_disk(&storedir).is_ok());
         assert!(!storedir.exists());
     }
+
 }
