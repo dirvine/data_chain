@@ -8,7 +8,6 @@ repository = "https://github.com/dirvine/data_chain"
 version = "0.1.1"
 
 [dependencies]
-bit-vec = "~0.4.3"
 fs2 = "0.2.5"
 itertools = "0.4.15"
 maidsafe_utilities = "~0.5.4"
@@ -21,7 +20,6 @@ optional = true
 version = "~0.0.64"
 
 [dev-dependencies]
-quickcheck = "~0.3.1"
 rand = "~0.3.14"
 tempdir = "~0.3.4"
 unwrap = "~1.1.0"
