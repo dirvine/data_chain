@@ -114,7 +114,8 @@ mod test {
                                   vec![],
                                   owner_keys.clone(),
                                   vec![],
-                                  Some(&keys.1)) {
+                                  Some(&keys.1),
+                                  true) {
             Ok(structured_data) => {
                 assert_eq!(structured_data.clone().name(),
                            Data::Structured(structured_data.clone()).name());
@@ -153,7 +154,8 @@ mod test {
                                   vec![],
                                   owner_keys.clone(),
                                   vec![],
-                                  Some(&keys.1)) {
+                                  Some(&keys.1),
+                                  true) {
             Ok(structured_data) => {
                 assert_eq!(structured_data.payload_size(),
                            Data::Structured(structured_data).payload_size());

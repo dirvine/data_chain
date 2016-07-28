@@ -39,17 +39,20 @@ pub struct StructuredData {
     version: u64,
     current_owner_keys: Vec<PublicKey>,
     previous_owner_signatures: Vec<Signature>,
+    ledger: bool,
 }
 
 impl StructuredData {
     /// Creates a new `StructuredData` signed with `signing_key`.
+    #[cfg_attr(feature = "clippy", allow(too_many_arguments))]
     pub fn new(type_tag: u64,
                name: [u8; 32],
                version: u64,
                data: Vec<u8>,
                current_owner_keys: Vec<PublicKey>,
                previous_owner_keys: Vec<PublicKey>,
-               signing_key: Option<&SecretKey>)
+               signing_key: Option<&SecretKey>,
+               ledger: bool)
                -> Result<StructuredData, Error> {
 
         let mut structured_data = StructuredData {
@@ -60,6 +63,7 @@ impl StructuredData {
             version: version,
             current_owner_keys: current_owner_keys,
             previous_owner_signatures: vec![],
+            ledger: ledger,
         };
 
         if let Some(key) = signing_key {
@@ -270,7 +274,8 @@ mod test {
                                            vec![],
                                            owner_keys.clone(),
                                            vec![],
-                                           Some(&keys.1))
+                                           Some(&keys.1),
+                                           true)
             .is_ok());
     }
 
@@ -285,7 +290,8 @@ mod test {
                                                          vec![],
                                                          owner_keys.clone(),
                                                          vec![],
-                                                         None);
+                                                         None,
+                                                         true);
         assert!(structured_data.is_ok());
         assert!(structured_data.expect("").verify_previous_owner_signatures(&owner_keys).is_err());
 
@@ -303,7 +309,8 @@ mod test {
                                                          vec![],
                                                          owner_keys.clone(),
                                                          vec![],
-                                                         Some(&other_keys.1));
+                                                         Some(&other_keys.1),
+                                                         true);
 
         assert!(structured_data.is_ok());
         assert!(structured_data.expect("").verify_previous_owner_signatures(&owner_keys).is_err());
@@ -322,7 +329,8 @@ mod test {
                                                                         vec![],
                                                                         owner_keys.clone(),
                                                                         vec![],
-                                                                        None) {
+                                                                        None,
+                                                                        true) {
 
             assert!(structured_data.add_signature(&other_keys.1).is_ok());
             assert!(structured_data.verify_previous_owner_signatures(&owner_keys).is_err());
@@ -346,7 +354,8 @@ mod test {
                                          vec![],
                                          owner_keys.clone(),
                                          vec![],
-                                         None) {
+                                         None,
+                                         true) {
             Ok(mut structured_data) => {
                 // After one signature, one more is required to reach majority.
                 assert_eq!(unwrap!(structured_data.add_signature(&keys1.1)), 1);
@@ -377,7 +386,8 @@ mod test {
                                          vec![],
                                          owner_keys.clone(),
                                          vec![],
-                                         Some(&keys1.1)) {
+                                         Some(&keys1.1),
+                                         true) {
             Ok(mut structured_data) => {
                 // Two signatures are not enough because they don't have a strict majority.
                 assert_eq!(unwrap!(structured_data.add_signature(&keys2.1)), 1);
@@ -409,7 +419,8 @@ mod test {
                                          vec![],
                                          vec![keys1.0, keys2.0, keys3.0],
                                          vec![],
-                                         Some(&keys1.1)) {
+                                         Some(&keys1.1),
+                                         true) {
             Ok(mut orig_structured_data) => {
                 assert_eq!(orig_structured_data.add_signature(&keys2.1).ok(), Some(0));
                 // Transfer ownership and update to new owner
@@ -419,7 +430,8 @@ mod test {
                                                  vec![],
                                                  vec![new_owner.0],
                                                  vec![keys1.0, keys2.0, keys3.0],
-                                                 Some(&keys1.1)) {
+                                                 Some(&keys1.1),
+                                                 true) {
                     Ok(mut new_structured_data) => {
                         assert_eq!(new_structured_data.add_signature(&keys2.1).ok(), Some(0));
                         match orig_structured_data.replace_with_other(new_structured_data) {
@@ -433,7 +445,8 @@ mod test {
                                                          vec![],
                                                          vec![keys1.0],
                                                          vec![new_owner.0],
-                                                         Some(&new_owner.1)) {
+                                                         Some(&new_owner.1),
+                                                         true) {
                             Ok(another_new_structured_data) => {
                                 match orig_structured_data.replace_with_other(
                                         another_new_structured_data) {
