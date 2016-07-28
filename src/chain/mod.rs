@@ -66,11 +66,10 @@
 //!    extern crate data_chain;
 //!    extern crate itertools;
 //!
-//!
 //!  fn main() {
 //!    use sodiumoxide::crypto;
-//!    use sha3::hash;
 //!    use itertools::Itertools;
+//!    use data_chain::sha3::hash;
 //!    use data_chain::{NodeBlock, BlockIdentifier, DataChain, create_link_descriptor};
 //!
 //!
