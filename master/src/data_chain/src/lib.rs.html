@@ -136,6 +136,10 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -204,6 +208,7 @@
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>maidsafe_utilities</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>fs2</span>;
+<span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tiny_keccak</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>tempdir</span>;
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
@@ -221,6 +226,9 @@
 
 <span class='doccomment'>/// Data types</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data</span>;
+
+<span class='doccomment'>/// sha3 (keccak)</span>
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>sha3</span>;
 
 <span class='doccomment'>/// API</span>
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>secured_data</span>;
