@@ -65,6 +65,7 @@ extern crate rustc_serialize;
 extern crate maidsafe_utilities;
 extern crate itertools;
 extern crate fs2;
+extern crate tiny_keccak;
 #[cfg(test)]
 extern crate tempdir;
 #[cfg(test)]
@@ -82,6 +83,9 @@ pub mod chain;
 
 /// Data types
 pub mod data;
+
+/// sha3 (keccak)
+pub mod sha3;
 
 /// API
 pub mod secured_data;
