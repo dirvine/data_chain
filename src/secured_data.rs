@@ -1,11 +1,11 @@
 // Copyright 2015 MaidSafe.net limited.
 //
 // This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,
-// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which
+// version 1 or later, or (2) The General Public License (GPL), version 3, depending on which
 // licence you accepted on initial access to the Software (the "Licences").
 //
 // By contributing code to the SAFE Network Software, or to this project generally, you agree to be
-// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the
+// bound by the terms of the MaidSafe Contributor Agreement, version 1 This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
 // Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
@@ -23,7 +23,7 @@ use std::sync::{Arc, Mutex};
 use std::path::{Path, PathBuf};
 use data::{Data, DataIdentifier};
 use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto::hash::sha256;
+use sha3::hash;
 use sodiumoxide::crypto::sign::PublicKey;
 use chain::{BlockIdentifier, DataChain, NodeBlock};
 
@@ -102,17 +102,17 @@ impl SecuredData {
     ///
     /// **Versioned ledger structured data will be Put and paid for**
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = sha256::hash(&try!(serialisation::serialise(&data)));
+        let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
-            Data::Immutable(ref im) if *im.name() == hash.0 => {
-                BlockIdentifier::ImmutableData(hash.0)
+            Data::Immutable(ref im) if *im.name() == hash => {
+                BlockIdentifier::ImmutableData(hash)
             }
             Data::Structured(ref sd) if sd.version() == 0 => {
-                BlockIdentifier::StructuredData(hash.0, *sd.name(), false)
+                BlockIdentifier::StructuredData(hash, *sd.name(), false)
             }
             _ => return Err(Error::BadIdentifier),
         };
-        try!(self.cs.put(&hash.0, data));
+        try!(self.cs.put(&hash, data));
         Ok(id)
     }
 
@@ -121,10 +121,10 @@ impl SecuredData {
     ///
     /// **Will not accept versioned ledger based structuredData !**
     pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = sha256::hash(&try!(serialisation::serialise(&data)));
+        let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
             Data::Structured(ref sd) if sd.version() > 0 => {
-                BlockIdentifier::StructuredData(hash.0, *sd.name(), false)
+                BlockIdentifier::StructuredData(hash, *sd.name(), false)
             }
             _ => return Err(Error::BadIdentifier),
         };
@@ -140,7 +140,7 @@ impl SecuredData {
             }
         }
 
-        try!(self.cs.put(&hash.0, data));
+        try!(self.cs.put(&hash, data));
 
         Ok(id)
     }

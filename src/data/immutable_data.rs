@@ -1,11 +1,11 @@
 // Copyright 2015 MaidSafe.net limited.
 //
 // This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,
-// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which
+// version 1 or later, or (2) The General Public License (GPL), version 3, depending on which
 // licence you accepted on initial access to the Software (the "Licences").
 //
 // By contributing code to the SAFE Network Software, or to this project generally, you agree to be
-// bound by the terms of the MaidSafe Contributor Agreement, version 1.0.  This, along with the
+// bound by the terms of the MaidSafe Contributor Agreement, version 1.  This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
 // Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
@@ -18,7 +18,7 @@
 use std::fmt::{self, Debug, Formatter};
 
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
-use sodiumoxide::crypto::hash::sha256;
+use sha3::hash;
 use data::DataIdentifier;
 
 
@@ -33,7 +33,7 @@ impl ImmutableData {
     /// Creates a new instance of `ImmutableData`
     pub fn new(value: Vec<u8>) -> ImmutableData {
         ImmutableData {
-            name: sha256::hash(&value).0,
+            name: hash(&value),
             value: value,
         }
     }
@@ -71,7 +71,7 @@ impl Decodable for ImmutableData {
     fn decode<D: Decoder>(decoder: &mut D) -> Result<ImmutableData, D::Error> {
         let value: Vec<u8> = try!(Decodable::decode(decoder));
         Ok(ImmutableData {
-            name: sha256::hash(&value).0,
+            name: hash(&value),
             value: value,
         })
     }
@@ -97,7 +97,7 @@ mod test {
         // Normal
         let immutable_data = ImmutableData::new(value);
         let immutable_data_name = immutable_data.name().as_ref().to_hex();
-        let expected_name = "ec0775555a7a6afba5f6e0a1deaa06f8928da80cf6ca94742ecc2a00c31033d3";
+        let expected_name = "fac2869677ee06277633c37ac7e8e5c655f3d652f707c7a79fab930d584a3016";
 
         assert_eq!(&expected_name, &immutable_data_name);
     }

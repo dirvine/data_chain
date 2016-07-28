@@ -1,11 +1,11 @@
 // Copyright 2015 MaidSafe.net limited.
 //
 // This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,
-// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which
+// version 1 or later, or (2) The General Public License (GPL), version 3, depending on which
 // licence you accepted on initial access to the Software (the "Licences").
 //
 // By contributing code to the SAFE Network Software, or to this project generally, you agree to be
-// bound by the terms of the MaidSafe Contributor Agreement, version 1.0.  This, along with the
+// bound by the terms of the MaidSafe Contributor Agreement, version 1.  This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
 // Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
@@ -98,7 +98,7 @@ mod test {
 
     use super::*;
     use sodiumoxide::crypto::sign;
-    use sodiumoxide::crypto::hash::sha256;
+    use sha3::hash;
     use data::structured_data::StructuredData;
     use data::immutable_data::ImmutableData;
     use data::plain_data::PlainData;
@@ -136,7 +136,7 @@ mod test {
                    DataIdentifier::Immutable(*immutable_data.name()));
 
         // name() resolves correctly for PlainData
-        let name = sha256::hash(&[]).0;
+        let name = hash(&[]);
         let plain_data = PlainData::new(name, vec![]);
         assert_eq!(plain_data.name(), Data::Plain(plain_data.clone()).name());
         assert_eq!(plain_data.identifier(),
@@ -170,7 +170,7 @@ mod test {
                    Data::Immutable(immutable_data).payload_size());
 
         // payload_size() resolves correctly for PlainData
-        let name = sha256::hash(&[]).0;
+        let name = hash(&[]);
         let plain_data = PlainData::new(name, vec![]);
         assert_eq!(plain_data.payload_size(),
                    Data::Plain(plain_data).payload_size());
@@ -178,7 +178,7 @@ mod test {
 
     #[test]
     fn data_request_name() {
-        let name = sha256::hash(&[]).0;
+        let name = hash(&[]);
 
         // name() resolves correctly for StructuredData
         let tag = 0;

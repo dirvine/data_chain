@@ -1,11 +1,11 @@
 // Copyright 2015 MaidSafe.net limited.
 //
 // This SAFE Network Software is licensed to you under (1) the MaidSafe.net Commercial License,
-// version 1.0 or later, or (2) The General Public License (GPL), version 3, depending on which
+// version 1 or later, or (2) The General Public License (GPL), version 3, depending on which
 // licence you accepted on initial access to the Software (the "Licences").
 //
 // By contributing code to the SAFE Network Software, or to this project generally, you agree to be
-// bound by the terms of the MaidSafe Contributor Agreement, version 1.0 This, along with the
+// bound by the terms of the MaidSafe Contributor Agreement, version 1 This, along with the
 // Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
 // Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
@@ -90,12 +90,12 @@ impl BlockIdentifier {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use sodiumoxide::crypto::hash::sha256;
+    use sha3::hash;
 
     #[test]
     fn create_validate_link_identifier() {
         ::sodiumoxide::init();
-        let link = BlockIdentifier::Link(sha256::hash(b"1").0);
+        let link = BlockIdentifier::Link(hash(b"1"));
 
         assert!(link.is_link());
         assert!(!link.is_block());
@@ -104,24 +104,22 @@ mod tests {
 
     #[test]
     fn create_validate_immutable_data_identifier() {
-        let id_block = BlockIdentifier::ImmutableData(sha256::hash(b"1").0);
+        let id_block = BlockIdentifier::ImmutableData(hash(b"1"));
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
-        assert_eq!(*id_block.hash(), sha256::hash(b"1").0);
+        assert_eq!(*id_block.hash(), hash(b"1"));
         assert!(id_block.name().is_some());
     }
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(sha256::hash(b"hash").0,
-                                                       sha256::hash(b"name").0,
-                                                       false);
+        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"), hash(b"name"), false);
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
-        assert_eq!(*sd_block.hash(), sha256::hash(b"hash").0);
+        assert_eq!(*sd_block.hash(), hash(b"hash"));
         assert!(sd_block.name().is_some());
-        assert_eq!(*sd_block.name().expect("sd name"), sha256::hash(b"name").0)
+        assert_eq!(*sd_block.name().expect("sd name"), hash(b"name"))
     }
 
 }
