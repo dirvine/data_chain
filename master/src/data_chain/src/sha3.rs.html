@@ -100,6 +100,19 @@
 <span id="56">56</span>
 <span id="57">57</span>
 <span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -144,6 +157,19 @@
                             <span class='number'>0x49</span>, <span class='number'>0xfa</span>, <span class='number'>0x82</span>, <span class='number'>0xd8</span>, <span class='number'>0x0a</span>, <span class='number'>0x4b</span>, <span class='number'>0x80</span>, <span class='number'>0xf8</span>, <span class='number'>0x43</span>, <span class='number'>0x4a</span>];
 
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>expected</span>, <span class='ident'>empty_hash</span>);
+    }
+    <span class='comment'>// http://www.di-mgt.com.au/sha_testvectors.html</span>
+    <span class='attribute'>#[<span class='ident'>test</span>]</span>
+    <span class='kw'>fn</span> <span class='ident'>abc_string</span>() {
+        <span class='kw'>let</span> <span class='ident'>data</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;</span> <span class='op'>=</span> <span class='ident'>From</span>::<span class='ident'>from</span>(<span class='string'>&quot;abc&quot;</span>);
+        <span class='kw'>let</span> <span class='ident'>res</span> <span class='op'>=</span> <span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>);
+
+        <span class='kw'>let</span> <span class='ident'>expected</span> <span class='op'>=</span> <span class='macro'>vec</span><span class='macro'>!</span>[<span class='number'>0x3a</span>, <span class='number'>0x98</span>, <span class='number'>0x5d</span>, <span class='number'>0xa7</span>, <span class='number'>0x4f</span>, <span class='number'>0xe2</span>, <span class='number'>0x25</span>, <span class='number'>0xb2</span>, <span class='number'>0x04</span>, <span class='number'>0x5c</span>, <span class='number'>0x17</span>,
+                            <span class='number'>0x2d</span>, <span class='number'>0x6b</span>, <span class='number'>0xd3</span>, <span class='number'>0x90</span>, <span class='number'>0xbd</span>, <span class='number'>0x85</span>, <span class='number'>0x5f</span>, <span class='number'>0x08</span>, <span class='number'>0x6e</span>, <span class='number'>0x3e</span>, <span class='number'>0x9d</span>,
+                            <span class='number'>0x52</span>, <span class='number'>0x5b</span>, <span class='number'>0x46</span>, <span class='number'>0xbf</span>, <span class='number'>0xe2</span>, <span class='number'>0x45</span>, <span class='number'>0x11</span>, <span class='number'>0x43</span>, <span class='number'>0x15</span>, <span class='number'>0x32</span>];
+
+
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>expected</span>, <span class='ident'>res</span>);
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
