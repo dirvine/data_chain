@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `secured_data` mod in crate `data_chain`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, secured_data">
+    <meta name="description" content="API documentation for the Rust `DataAction` enum in crate `data_chain`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, DataAction">
 
-    <title>data_chain::secured_data - Rust</title>
+    <title>data_chain::secured_data::DataAction - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         <a href='../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
-        <p class='location'><a href='../index.html'>data_chain</a></p><script>window.sidebarCurrent = {name: 'secured_data', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>secured_data</a></p><script>window.sidebarCurrent = {name: 'DataAction', ty: 'enum', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,38 +42,20 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_chain</a>::<wbr><a class='mod' href=''>secured_data</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content enum">
+<h1 class='fqn'><span class='in-band'>Enum <a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>secured_data</a>::<wbr><a class='enum' href=''>DataAction</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1923' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#18-318' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>API</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SecuredData.html'
-                                  title='data_chain::secured_data::SecuredData'>SecuredData</a></td>
-                           <td class='docblock short'>
-                                <p>API for data based operations.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SignedAction.html'
-                                  title='data_chain::secured_data::SignedAction'>SignedAction</a></td>
-                           <td class='docblock short'>
-                                <p>signed action</p>
-                           </td>
-                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='enum' href='enum.DataAction.html'
-                                  title='data_chain::secured_data::DataAction'>DataAction</a></td>
-                           <td class='docblock short'>
-                                <p>Post and Delete require signed actions
+               </span><a id='src-1936' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#33-37' title='goto source code'>[src]</a></span></h1>
+<pre class='rust enum'>pub enum DataAction {
+    Put(<a class='enum' href='../../data_chain/enum.DataIdentifier.html' title='data_chain::DataIdentifier'>DataIdentifier</a>),
+    Post(<a class='enum' href='../../data_chain/enum.DataIdentifier.html' title='data_chain::DataIdentifier'>DataIdentifier</a>),
+    Delete(<a class='enum' href='../../data_chain/enum.DataIdentifier.html' title='data_chain::DataIdentifier'>DataIdentifier</a>),
+}</pre><div class='docblock'><p>Post and Delete require signed actions
 Put of ledger SD also requires <code>SignedAction</code></p>
-                           </td>
-                       </tr></table></section>
+</div><h2 class='variants'>Variants</h2>
+<table class='variants_table'><tr><td id='variant.Put'><code>Put</code></td><td></td><td></td></tr><tr><td id='variant.Post'><code>Post</code></td><td></td><td></td></tr><tr><td id='variant.Delete'><code>Delete</code></td><td></td><td></td></tr></table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>

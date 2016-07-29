@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["SecuredData","API for data based operations."]]});
+initSidebarItems({"enum":[["DataAction","Post and Delete require signed actions Put of ledger SD also requires `SignedAction`"]],"struct":[["SecuredData","API for data based operations."],["SignedAction","signed action"]]});

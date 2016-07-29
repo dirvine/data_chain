@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `secured_data` mod in crate `data_chain`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, secured_data">
+    <meta name="description" content="API documentation for the Rust `SignedAction` struct in crate `data_chain`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, SignedAction">
 
-    <title>data_chain::secured_data - Rust</title>
+    <title>data_chain::secured_data::SignedAction - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         <a href='../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
-        <p class='location'><a href='../index.html'>data_chain</a></p><script>window.sidebarCurrent = {name: 'secured_data', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>secured_data</a></p><script>window.sidebarCurrent = {name: 'SignedAction', ty: 'struct', relpath: ''};</script><script defer src="sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -42,38 +42,23 @@
         </form>
     </nav>
 
-    <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../index.html'>data_chain</a>::<wbr><a class='mod' href=''>secured_data</a></span><span class='out-of-band'><span id='render-detail'>
+    <section id='main' class="content struct">
+<h1 class='fqn'><span class='in-band'>Struct <a href='../index.html'>data_chain</a>::<wbr><a href='index.html'>secured_data</a>::<wbr><a class='struct' href=''>SignedAction</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1923' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#18-318' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>API</p>
-</div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SecuredData.html'
-                                  title='data_chain::secured_data::SecuredData'>SecuredData</a></td>
-                           <td class='docblock short'>
-                                <p>API for data based operations.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class='struct' href='struct.SignedAction.html'
-                                  title='data_chain::secured_data::SignedAction'>SignedAction</a></td>
-                           <td class='docblock short'>
-                                <p>signed action</p>
-                           </td>
-                       </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
-<table>
-                       <tr class=' module-item'>
-                           <td><a class='enum' href='enum.DataAction.html'
-                                  title='data_chain::secured_data::DataAction'>DataAction</a></td>
-                           <td class='docblock short'>
-                                <p>Post and Delete require signed actions
-Put of ledger SD also requires <code>SignedAction</code></p>
-                           </td>
-                       </tr></table></section>
+               </span><a id='src-1943' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#41-44' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct SignedAction {
+    // some fields omitted
+}</pre><div class='docblock'><p>signed action</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../data_chain/secured_data/struct.SignedAction.html' title='data_chain::secured_data::SignedAction'>SignedAction</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1946' class='srclink' href='../../src/data_chain/src/secured_data.rs.html#46-63' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(action: <a class='enum' href='../../data_chain/secured_data/enum.DataAction.html' title='data_chain::secured_data::DataAction'>DataAction</a>, sigs: <a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.Signature.html' title='sodiumoxide::crypto::sign::ed25519::Signature'>Signature</a>&gt;) -&gt; <a class='struct' href='../../data_chain/secured_data/struct.SignedAction.html' title='data_chain::secured_data::SignedAction'>SignedAction</a></code></h4>
+<div class='docblock'><p>Create a new signedAction</p>
+</div><h4 id='method.action' class='method'><code>fn <a href='#method.action' class='fnname'>action</a>(&amp;self) -&gt; &amp;<a class='enum' href='../../data_chain/secured_data/enum.DataAction.html' title='data_chain::secured_data::DataAction'>DataAction</a></code></h4>
+<div class='docblock'><p>Getter</p>
+</div><h4 id='method.sigs' class='method'><code>fn <a href='#method.sigs' class='fnname'>sigs</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='struct' href='../../sodiumoxide/crypto/sign/ed25519/struct.Signature.html' title='sodiumoxide::crypto::sign::ed25519::Signature'>Signature</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+<div class='docblock'><p>Getter</p>
+</div></div></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
