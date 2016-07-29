@@ -93,7 +93,7 @@ pub mod data;
 pub mod sha3;
 
 /// API
-/// This is the entry point to this crate and allows the crte to be
+/// This is the entry point to this crate and allows the crate to be
 /// used as a secured data store for all data types mentioned above.
 pub mod secured_data;
 
