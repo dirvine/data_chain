@@ -209,6 +209,7 @@ impl SecuredData {
             if !block_id.identifier().is_ledger() {
                 let _ = self.cs.delete(block_id.identifier().hash());
                 self.dc.lock().unwrap().remove(block_id.identifier());
+                return Ok(block_id.identifier().clone());
             }
         }
         Err(Error::NoFile)
