@@ -47,15 +47,15 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#18-98' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-0' class='srclink' href='../src/data_chain/src/lib.rs.html#18-105' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'>
 <h1 id='data-chain' class='section-header'><a href='#data-chain'>Data Chain</a></h1>
 <p>This crate holds three modules that together allow nodes in a decentralised network to manage
 data and history of data and nodes in a container that in itself is decentralised.</p>
 
 <p>The modules here include the ability to cryptographically lock history of data and nodes
-in a chain. There also exists the mechnism o persist these chains over sessions along with
-a copy of the data itself (the <code>ChunkStore</code>). The data representation is via the <code>Data</code> module.</p>
+in a chain. There also exists the mechnism to persist these chains over sessions along with
+a copy of the data itself (the <code>ChunkStore</code>). Data representation is via the <code>Data</code> module.</p>
 
 <h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
 <p>Basic usage</p>
@@ -71,14 +71,19 @@ a copy of the data itself (the <code>ChunkStore</code>). The data representation
                                   title='data_chain::chain'>chain</a></td>
                            <td class='docblock short'>
                                 <p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
-links</p>
+links. When enough blocks (<code>NodeBlock</code>s) are received from other nodes a block
+becomes valid. This is a cetnral type to the security of republishable data
+on the network.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='mod' href='data/index.html'
                                   title='data_chain::data'>data</a></td>
                            <td class='docblock short'>
-                                <p>Data types</p>
+                                <p>Data types
+Immutable data (name == hash of content) and
+Structured data (constant name with editable contents and ownership changes)
+this type is signed by at least one owner and can be a ledger type (never deleted)</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -92,7 +97,9 @@ links</p>
                            <td><a class='mod' href='secured_data/index.html'
                                   title='data_chain::secured_data'>secured_data</a></td>
                            <td class='docblock short'>
-                                <p>API</p>
+                                <p>API
+This is the entry point to this crate and allows the crte to be
+used as a secured data store for all data types mentioned above.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>

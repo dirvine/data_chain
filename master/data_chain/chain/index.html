@@ -49,7 +49,9 @@
                    </a>
                </span><a id='src-72' class='srclink' href='../../src/data_chain/src/chain/mod.rs.html#18-195' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
-links</p>
+links. When enough blocks (<code>NodeBlock</code>s) are received from other nodes a block
+becomes valid. This is a cetnral type to the security of republishable data
+on the network.</p>
 
 <h1 id='data_chain' class='section-header'><a href='#data_chain'>data_chain</a></h1>
 <p>Data blocks can be chained to provide verifiable assuredness that they contain network valid
