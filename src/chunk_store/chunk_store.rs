@@ -127,6 +127,20 @@ impl<Key, Value> ChunkStore<Key, Value>
         }
     }
 
+    /// Tests if a data chunk has been previously stored under `key`.
+    pub fn has(&self, key: &Key) -> bool {
+        let file_path = if let Ok(path) = self.file_path(key) {
+            path
+        } else {
+            return false;
+        };
+        if let Ok(metadata) = fs::metadata(file_path) {
+            return metadata.is_file();
+        } else {
+            false
+        }
+    }
+
     /// Lists all keys of currently-data stored.
     pub fn keys(&self) -> Vec<Key> {
         fs::read_dir(&self.rootdir)

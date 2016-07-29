@@ -106,6 +106,16 @@ impl SecuredData {
         self.dc.lock().unwrap().add_node_block(nb.clone())
     }
 
+    /// Do we have the daa on disk.
+    pub fn has_data(&self, data_id: &DataIdentifier) -> bool {
+        if let Some(id) = self.dc
+            .lock()
+            .unwrap()
+            .find_name(data_id.name()) {
+            return self.cs.has(&id.identifier().hash());
+        }
+        false
+    }
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
     pub fn get(&self, data_id: &DataIdentifier) -> Result<Data, Error> {
         if let Some(block_id) = self.dc
