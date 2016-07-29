@@ -101,17 +101,9 @@ impl SecuredData {
     }
 
     /// Add a NodeBlock from another node
-    /// If block is not a link and is valid wil return BlockIdentifier plus a bool
-    /// to represent whether we have the data when the block is valid
-    pub fn add_node_block(&mut self, nb: NodeBlock) -> Option<(BlockIdentifier, bool)> {
-        if let Some(ref ans) = self.dc.lock().unwrap().add_node_block(nb.clone()) {
-            if ans.is_link() {
-                return None;
-            }
-            return Some((ans.clone(), self.cs.has(ans.hash())));
-
-        }
-        None
+    /// If block is valid will return BlockIdentifier
+    pub fn add_node_block(&mut self, nb: NodeBlock) -> Option<BlockIdentifier> {
+        self.dc.lock().unwrap().add_node_block(nb.clone())
     }
 
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
