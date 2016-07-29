@@ -360,6 +360,7 @@
 <span id="316">316</span>
 <span id="317">317</span>
 <span id="318">318</span>
+<span id="319">319</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -572,6 +573,7 @@
             <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>block_id</span>.<span class='ident'>identifier</span>().<span class='ident'>is_ledger</span>() {
                 <span class='kw'>let</span> _ <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>cs</span>.<span class='ident'>delete</span>(<span class='ident'>block_id</span>.<span class='ident'>identifier</span>().<span class='ident'>hash</span>());
                 <span class='self'>self</span>.<span class='ident'>dc</span>.<span class='ident'>lock</span>().<span class='ident'>unwrap</span>().<span class='ident'>remove</span>(<span class='ident'>block_id</span>.<span class='ident'>identifier</span>());
+                <span class='kw'>return</span> <span class='prelude-val'>Ok</span>(<span class='ident'>block_id</span>.<span class='ident'>identifier</span>().<span class='ident'>clone</span>());
             }
         }
         <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>NoFile</span>)
