@@ -24,8 +24,43 @@ use std::path::{Path, PathBuf};
 use data::{Data, DataIdentifier};
 use maidsafe_utilities::serialisation;
 use sha3::hash;
-use sodiumoxide::crypto::sign::PublicKey;
+use sodiumoxide::crypto::sign::{PublicKey, Signature};
 use chain::{BlockIdentifier, DataChain, NodeBlock};
+
+/// Post and Delete require signed actions
+/// Put of ledger SD also requires `SignedAction`
+#[allow(missing_docs)]
+pub enum DataAction {
+    Put(DataIdentifier),
+    Post(DataIdentifier),
+    Delete(DataIdentifier),
+}
+
+/// signed action
+#[allow(missing_docs)]
+pub struct SignedAction {
+    sigs: Vec<Signature>,
+    action: DataAction,
+}
+
+impl SignedAction {
+    /// Create a new signedAction
+    pub fn new(action: DataAction, sigs: Vec<Signature>) -> SignedAction {
+        SignedAction {
+            sigs: sigs,
+            action: action,
+        }
+    }
+
+    /// Getter
+    pub fn action(&self) -> &DataAction {
+        &self.action
+    }
+    /// Getter
+    pub fn sigs(&self) -> &[Signature] {
+        &self.sigs
+    }
+}
 
 /// API for data based operations.
 pub struct SecuredData {
@@ -93,7 +128,22 @@ impl SecuredData {
         }
         Err(Error::NoFile)
     }
-
+    /// Will not remove ledger items
+    fn trim_previous_data(&mut self, hash: &[u8; 32]) {
+        if let Ok(ref item) = self.cs.get(hash) {
+            match *item {
+                Data::Structured(ref sd) => {
+                    if sd.ledger() {
+                        let _ = self.cs.delete(hash);
+                    }
+                }
+                Data::Immutable(ref _id) => {
+                    let _ = self.cs.delete(hash);
+                }
+                _ => {}
+            }
+        }
+    }
     /// Add received data, return Result false if we do not have the corresponding
     /// **valid** NodeBlock for this data. Will return a BlockIDentifier from us
     /// that we must use to create a NodeBlock to send to peers. We also **must**
@@ -110,6 +160,7 @@ impl SecuredData {
             }
             _ => return Err(Error::BadIdentifier),
         };
+        self.trim_previous_data(&hash);
         try!(self.cs.put(&hash, data));
         Ok(id)
     }
@@ -118,7 +169,10 @@ impl SecuredData {
     /// This is a call that will only handle structured data
     ///
     /// **Will not accept versioned ledger based structuredData !**
-    pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
+    pub fn post_data(&mut self,
+                     data: &Data,
+                     _sig_act: &SignedAction)
+                     -> Result<BlockIdentifier, Error> {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
             Data::Structured(ref sd) if !sd.ledger() => {
@@ -137,20 +191,25 @@ impl SecuredData {
                 self.dc.lock().unwrap().remove(block_id.identifier());
             }
         }
-
+        self.trim_previous_data(&hash);
         try!(self.cs.put(&hash, data));
 
         Ok(id)
     }
 
-    /// Handle Delete data :- will ignore the ledger bit
-    pub fn delete_data(&mut self, data_id: &DataIdentifier) -> Result<BlockIdentifier, Error> {
+    /// Handle Delete data Unless ledger bit is set
+    pub fn delete_data(&mut self,
+                       data_id: &DataIdentifier,
+                       _sig_act: &SignedAction)
+                       -> Result<BlockIdentifier, Error> {
         if let Some(ref block_id) = self.dc
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-            let _ = self.cs.delete(block_id.identifier().hash());
-            self.dc.lock().unwrap().remove(block_id.identifier());
+            if !block_id.identifier().is_ledger() {
+                let _ = self.cs.delete(block_id.identifier().hash());
+                self.dc.lock().unwrap().remove(block_id.identifier());
+            }
         }
         Err(Error::NoFile)
     }

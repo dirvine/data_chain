@@ -109,7 +109,7 @@ impl<Key, Value> ChunkStore<Key, Value>
     /// If the data doesn't exist, it does nothing and returns `Ok`.  In the case of an IO error, it
     /// returns `Error::Io`.
     pub fn delete(&mut self, key: &Key) -> Result<(), Error> {
-        let file_path = try!(self.file_path(key));
+        let file_path = try!(self.file_path(&key));
         self.do_delete(&file_path)
     }
 
