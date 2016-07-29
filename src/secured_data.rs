@@ -133,7 +133,7 @@ impl SecuredData {
         if let Ok(ref item) = self.cs.get(hash) {
             match *item {
                 Data::Structured(ref sd) => {
-                    if sd.ledger() {
+                    if !sd.ledger() {
                         let _ = self.cs.delete(hash);
                     }
                 }
