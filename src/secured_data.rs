@@ -106,7 +106,7 @@ impl SecuredData {
         self.dc.lock().unwrap().add_node_block(nb.clone())
     }
 
-    /// Do we have the daa on disk.
+    /// Do we have the data on disk.
     pub fn has_data(&self, data_id: &DataIdentifier) -> bool {
         if let Some(id) = self.dc
             .lock()

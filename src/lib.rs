@@ -21,8 +21,8 @@
 //! data and history of data and nodes in a container that in itself is decentralised.
 //!
 //! The modules here include the ability to cryptographically lock history of data and nodes
-//! in a chain. There also exists the mechnism o persist these chains over sessions along with
-//! a copy of the data itself (the `ChunkStore`). The data representation is via the `Data` module.
+//! in a chain. There also exists the mechnism to persist these chains over sessions along with
+//! a copy of the data itself (the `ChunkStore`). Data representation is via the `Data` module.
 //!
 //! # Example
 //!
@@ -78,19 +78,26 @@ extern crate rand;
 pub mod error;
 
 /// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or
-/// links
+/// links. When enough blocks (`NodeBlock`s) are received from other nodes a block
+/// becomes valid. This is a cetnral type to the security of republishable data
+/// on the network.
 pub mod chain;
 
 /// Data types
+/// Immutable data (name == hash of content) and
+/// Structured data (constant name with editable contents and ownership changes)
+/// this type is signed by at least one owner and can be a ledger type (never deleted)
 pub mod data;
 
 /// sha3 (keccak)
 pub mod sha3;
 
 /// API
+/// This is the entry point to this crate and allows the crte to be
+/// used as a secured data store for all data types mentioned above.
 pub mod secured_data;
 
-/// Persistant store on disk of Keys and large values
+/// Persistant store on disk of the data itself as well as the `DataChain`.
 mod chunk_store;
 
 pub use chain::{Block, BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
