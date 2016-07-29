@@ -19,6 +19,9 @@ use std::fmt::{self, Debug, Formatter};
 use data::structured_data::StructuredData;
 use data::immutable_data::ImmutableData;
 use data::plain_data::PlainData;
+use maidsafe_utilities::serialisation::serialise;
+use error::Error;
+use tiny_keccak::Keccak;
 
 /// Data types handled in a SAFE
 #[derive(Hash, PartialEq, Eq, PartialOrd, Ord, Clone, RustcEncodable, RustcDecodable)]
@@ -88,6 +91,25 @@ impl DataIdentifier {
             DataIdentifier::Structured(ref name, _) |
             DataIdentifier::Immutable(ref name) |
             DataIdentifier::Plain(ref name) => name,
+        }
+    }
+    /// DataIdentifier local name (for store).
+    pub fn local_name(&self) -> Result<[u8; 32], Error> {
+        match *self {
+            DataIdentifier::Structured(ref name, ref tag) => {
+                let mut sha3 = Keccak::new_sha3_256();
+                sha3.update(name);
+                sha3.update(&try!(serialise(tag)));
+                let mut res: [u8; 32] = [0; 32];
+                sha3.finalize(&mut res);
+                Ok(res)
+            }
+            DataIdentifier::Immutable(name) |
+            DataIdentifier::Plain(name) => {
+                let mut res: [u8; 32] = [0; 32];
+                res.copy_from_slice(&name);
+                Ok(res)
+            }
         }
     }
 }

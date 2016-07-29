@@ -112,7 +112,7 @@ impl SecuredData {
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-            return self.cs.has(&id.identifier().hash());
+            return self.cs.has(id.identifier().hash());
         }
         false
     }
