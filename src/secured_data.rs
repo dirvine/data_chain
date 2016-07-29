@@ -104,11 +104,9 @@ impl SecuredData {
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
-            Data::Immutable(ref im) if *im.name() == hash => {
-                BlockIdentifier::ImmutableData(hash)
-            }
+            Data::Immutable(ref im) if *im.name() == hash => BlockIdentifier::ImmutableData(hash),
             Data::Structured(ref sd) if sd.version() == 0 => {
-                BlockIdentifier::StructuredData(hash, *sd.name(), false)
+                BlockIdentifier::StructuredData(hash, *sd.name(), sd.ledger())
             }
             _ => return Err(Error::BadIdentifier),
         };
@@ -123,7 +121,7 @@ impl SecuredData {
     pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
-            Data::Structured(ref sd) if sd.version() > 0 => {
+            Data::Structured(ref sd) if !sd.ledger() => {
                 BlockIdentifier::StructuredData(hash, *sd.name(), false)
             }
             _ => return Err(Error::BadIdentifier),

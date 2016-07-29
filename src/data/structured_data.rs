@@ -96,6 +96,10 @@ impl StructuredData {
         &self.name
     }
 
+    /// Is this a ledger type 
+    pub fn ledger(&self) -> bool {
+        self.ledger
+    }
     /// Version of SD, must == 0 for Put
     pub fn version(&self) -> u64 {
         self.version
