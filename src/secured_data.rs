@@ -27,41 +27,6 @@ use sha3::hash;
 use sodiumoxide::crypto::sign::{PublicKey, Signature};
 use chain::{BlockIdentifier, DataChain, NodeBlock};
 
-/// Post and Delete require signed actions
-/// Put of ledger SD also requires `SignedAction`
-#[allow(missing_docs)]
-pub enum DataAction {
-    Put(DataIdentifier),
-    Post(DataIdentifier),
-    Delete(DataIdentifier),
-}
-
-/// signed action
-#[allow(missing_docs)]
-pub struct SignedAction {
-    sigs: Vec<Signature>,
-    action: DataAction,
-}
-
-impl SignedAction {
-    /// Create a new signedAction
-    pub fn new(action: DataAction, sigs: Vec<Signature>) -> SignedAction {
-        SignedAction {
-            sigs: sigs,
-            action: action,
-        }
-    }
-
-    /// Getter
-    pub fn action(&self) -> &DataAction {
-        &self.action
-    }
-    /// Getter
-    pub fn sigs(&self) -> &[Signature] {
-        &self.sigs
-    }
-}
-
 /// API for data based operations.
 pub struct SecuredData {
     cs: ChunkStore<[u8; 32], Data>,
@@ -172,8 +137,7 @@ impl SecuredData {
     ///
     /// **Will not accept versioned ledger based structuredData !**
     pub fn post_data(&mut self,
-                     data: &Data,
-                     _sig_act: &SignedAction)
+                     data: &Data)
                      -> Result<BlockIdentifier, Error> {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
@@ -202,7 +166,7 @@ impl SecuredData {
     /// Handle Delete data Unless ledger bit is set
     pub fn delete_data(&mut self,
                        data_id: &DataIdentifier,
-                       _sig_act: &SignedAction)
+                       _sigs: &[Signature])
                        -> Result<BlockIdentifier, Error> {
         if let Some(ref block_id) = self.dc
             .lock()
@@ -274,7 +238,12 @@ impl SecuredData {
             .take_while(|x| x.proof().iter().any(|z| z.key() == node))
             .count()
     }
-    /// Find any data we should have, given our current chain
+    /// Find any data we should have but are missing,
+    /// given our current chain.
+    /// The output of this gives an identifier we should send to other
+    /// nodes to get the data.
+    /// This is not a `DataIdentifier` as expected as this contains the
+    /// hash we know the data must match.
     pub fn required_data(&self) -> Vec<BlockIdentifier> {
         let keys = self.cs.keys();
         self.dc
