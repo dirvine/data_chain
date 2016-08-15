@@ -16,18 +16,19 @@
 // relating to use of the SAFE Network Software.
 
 // use itertools::Itertools;
-use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
-use sodiumoxide::crypto;
-use error::Error;
-use chain::block_identifier::LinkDescriptor;
+
 use chain::block_identifier::BlockIdentifier;
+use chain::block_identifier::LinkDescriptor;
+use error::Error;
+use maidsafe_utilities::serialisation;
+use sodiumoxide::crypto;
+use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
 
 /// Descriptor is the xored group members starting with base of 0000..:32
 /// This process is faster than hash and means group can be unordered
 /// which is beneficial under heavy churn and out of order links being sent.
 pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
-    if let Some(mut base) = group.iter().cloned().last() {
+    if let Some(mut base) = group.iter().cloned().next() {
         // xor of x is x
         for key in group.iter().skip(1) {
             for item in key.0.iter().enumerate() {
@@ -127,10 +128,10 @@ impl NodeBlock {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
     use chain::block_identifier::BlockIdentifier;
-    use sodiumoxide::crypto;
     use sha3::hash;
+    use sodiumoxide::crypto;
+    use super::*;
 
     #[test]
     fn node_block_comparisons() {

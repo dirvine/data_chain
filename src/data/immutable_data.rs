@@ -15,11 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use std::fmt::{self, Debug, Formatter};
+use data::DataIdentifier;
 
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
 use sha3::hash;
-use data::DataIdentifier;
+use std::fmt::{self, Debug, Formatter};
 
 
 /// An immutable chunk of data.
@@ -42,7 +42,6 @@ impl ImmutableData {
     pub fn value(&self) -> &Vec<u8> {
         &self.value
     }
-
 
     /// Returns name ensuring invariant.
     pub fn name(&self) -> &[u8; 32] {
@@ -87,8 +86,8 @@ impl Debug for ImmutableData {
 mod test {
     extern crate rand;
 
-    use super::*;
     use rustc_serialize::hex::ToHex;
+    use super::*;
 
     #[test]
     fn deterministic_test() {

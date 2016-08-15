@@ -81,7 +81,7 @@ impl BlockIdentifier {
         }
     }
 
-    /// Is this a block
+    /// Is this a data block
     pub fn is_block(&self) -> bool {
         !self.is_link()
     }
@@ -89,8 +89,8 @@ impl BlockIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use sha3::hash;
+    use super::*;
 
     #[test]
     fn create_validate_link_identifier() {
