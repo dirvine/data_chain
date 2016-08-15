@@ -50,16 +50,16 @@
                </span><a id='src-402' class='srclink' href='../src/itertools/adaptors.rs.html#756-762' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct MultiPeek&lt;I&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a></span> {
     // some fields omitted
-}</pre><div class='docblock'><p>An iterator adaptor that allows the user to peek at multiple <em>.next()</em>
+}</pre><div class='docblock'><p>An iterator adaptor that allows the user to peek at multiple <code>.next()</code>
 values without advancing itself.</p>
 
-<p>See <a href="trait.Itertools.html#method.multipeek"><em>.multipeek()</em></a> for more information.</p>
+<p>See <a href="trait.Itertools.html#method.multipeek"><code>.multipeek()</code></a> for more information.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>&gt; <a class='struct' href='../itertools/struct.MultiPeek.html' title='itertools::MultiPeek'>MultiPeek</a>&lt;I&gt;</code></span><span class='out-of-band'><div class='ghost'></div><a id='src-414' class='srclink' href='../src/itertools/adaptors.rs.html#764-793' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(iter: I) -&gt; <a class='struct' href='../itertools/struct.MultiPeek.html' title='itertools::MultiPeek'>MultiPeek</a>&lt;I&gt;</code></h4>
 <div class='docblock'><p>Create a <code>MultiPeek</code> iterator.</p>
 </div><h4 id='method.peek' class='method'><code>fn <a href='#method.peek' class='fnname'>peek</a>(&amp;mut self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;&amp;I::Item&gt;</code></h4>
-<div class='docblock'><p>Works exactly like <em>.next()</em> with the only difference that it doesn&#39;t
-advance itself. <em>.peek()</em> can be called multiple times, to peek
+<div class='docblock'><p>Works exactly like <code>.next()</code> with the only difference that it doesn&#39;t
+advance itself. <code>.peek()</code> can be called multiple times, to peek
 further ahead.</p>
 </div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl&lt;I&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a> for <a class='struct' href='../itertools/struct.MultiPeek.html' title='itertools::MultiPeek'>MultiPeek</a>&lt;I&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-423' class='srclink' href='../src/itertools/adaptors.rs.html#795-812' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='associatedtype.Item' class='type'><code>type <a href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html#associatedtype.Item' class='type'>Item</a> = I::Item</code></h4>

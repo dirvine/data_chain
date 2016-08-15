@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-3195' class='srclink' href='../src/itertools/lib.rs.html#200-1522' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-3195' class='srclink' href='../src/itertools/lib.rs.html#206-1533' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Itertools: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a> {
     fn <a href='#method.interleave' class='fnname'>interleave</a>&lt;J&gt;(self, other: J) -&gt; <a class='struct' href='../itertools/struct.Interleave.html' title='itertools::Interleave'>Interleave</a>&lt;Self, J::IntoIter&gt; <span class='where'>where J: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html' title='core::iter::traits::IntoIterator'>IntoIterator</a>&lt;Item=Self::<a class='trait' href='../itertools/trait.Itertools.html' title='itertools::Itertools'>Item</a>&gt;, Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
     fn <a href='#method.interleave_shortest' class='fnname'>interleave_shortest</a>&lt;J&gt;(self, other: J) -&gt; <a class='struct' href='../itertools/struct.InterleaveShortest.html' title='itertools::InterleaveShortest'>InterleaveShortest</a>&lt;Self, J::IntoIter&gt; <span class='where'>where J: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html' title='core::iter::traits::IntoIterator'>IntoIterator</a>&lt;Item=Self::<a class='trait' href='../itertools/trait.Itertools.html' title='itertools::Itertools'>Item</a>&gt;, Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a></span> { ... }
@@ -609,6 +609,9 @@ preserves the iterator type.</p>
 
 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>iter</span> <span class='op'>=</span> <span class='string'>&quot;αβγ&quot;</span>.<span class='ident'>chars</span>().<span class='ident'>dropping</span>(<span class='number'>2</span>);
 <span class='ident'>itertools</span>::<span class='ident'>assert_equal</span>(<span class='ident'>iter</span>, <span class='string'>&quot;γ&quot;</span>.<span class='ident'>chars</span>());</pre>
+
+<p><em>Fusing notes: if the iterator is exhausted by dropping,
+the result of calling <code>.next()</code> again depends on the iterator implementation.</em></p>
 </div><h3 id='method.dropping_back' class='method stab '><code>fn <a href='#method.dropping_back' class='fnname'>dropping_back</a>(self, n: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; Self <span class='where'>where Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/marker/trait.Sized.html' title='core::marker::Sized'>Sized</a>, Self: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.DoubleEndedIterator.html' title='core::iter::traits::DoubleEndedIterator'>DoubleEndedIterator</a></span></code></h3><div class='docblock'><p>Consume the last <code>n</code> elements from the iterator eagerly,
 and return the same iterator again.</p>
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.16/src/rciter.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.18/src/rciter.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>rciter.rs.html -- source</title>
@@ -115,7 +115,7 @@
 
 <span class='doccomment'>/// A wrapper for `Rc&lt;RefCell&lt;I&gt;&gt;`, that implements the `Iterator` trait.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// See [*.into_rc()*](trait.Itertools.html#method.into_rc) for more information.</span>
+<span class='doccomment'>/// See [`.into_rc()`](trait.Itertools.html#method.into_rc) for more information.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>RcIter</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// The boxed iterator.</span>
     <span class='kw'>pub</span> <span class='ident'>rciter</span>: <span class='ident'>Rc</span><span class='op'>&lt;</span><span class='ident'>RefCell</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;&gt;</span>,

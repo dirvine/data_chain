@@ -275,12 +275,12 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Debug</span>, <span class='ident'>Formatter</span>};
-<span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::<span class='ident'>StructuredData</span>;
 <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>immutable_data</span>::<span class='ident'>ImmutableData</span>;
 <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>plain_data</span>::<span class='ident'>PlainData</span>;
-<span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>;
+<span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::<span class='ident'>StructuredData</span>;
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
+<span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Debug</span>, <span class='ident'>Formatter</span>};
 <span class='kw'>use</span> <span class='ident'>tiny_keccak</span>::<span class='ident'>Keccak</span>;
 
 <span class='doccomment'>/// Data types handled in a SAFE</span>
@@ -378,12 +378,12 @@
 <span class='kw'>mod</span> <span class='ident'>test</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rand</span>;
 
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>;
-    <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
-    <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::<span class='ident'>StructuredData</span>;
     <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>immutable_data</span>::<span class='ident'>ImmutableData</span>;
     <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>plain_data</span>::<span class='ident'>PlainData</span>;
+    <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>structured_data</span>::<span class='ident'>StructuredData</span>;
+    <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
+    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>data_name</span>() {

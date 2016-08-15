@@ -53,9 +53,9 @@
 }</pre><div class='docblock'><p>An iterator adaptor that pads a sequence to a minimum length by filling
 missing elements using a closure.</p>
 
-<p>Iterator element type is <strong>I::Item</strong>.</p>
+<p>Iterator element type is <code>I::Item</code>.</p>
 
-<p>See <a href="trait.Itertools.html#method.pad_using"><em>.pad_using()</em></a> for more information.</p>
+<p>See <a href="trait.Itertools.html#method.pad_using"><code>.pad_using()</code></a> for more information.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;I, F&gt; <a class='struct' href='../itertools/struct.PadUsing.html' title='itertools::PadUsing'>PadUsing</a>&lt;I, F&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>) -&gt; I::Item</span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1890' class='srclink' href='../src/itertools/pad_tail.rs.html#18-31' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(iter: I, min: <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.usize.html'>usize</a>, filler: F) -&gt; <a class='struct' href='../itertools/struct.PadUsing.html' title='itertools::PadUsing'>PadUsing</a>&lt;I, F&gt;</code></h4>
 <div class='docblock'><p>Create a new <strong>PadUsing</strong> iterator.</p>

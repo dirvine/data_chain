@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.16/src/kmerge.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.18/src/kmerge.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>kmerge.rs.html -- source</title>
@@ -375,7 +375,7 @@
 
 <span class='doccomment'>/// Make `data` a heap (max-heap w.r.t T&#39;s Ord).</span>
 <span class='kw'>fn</span> <span class='ident'>heapify</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Ord</span><span class='op'>&gt;</span>(<span class='ident'>data</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> [<span class='ident'>T</span>]) {
-    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> <span class='number'>0</span>..<span class='ident'>data</span>.<span class='ident'>len</span>() <span class='op'>/</span> <span class='number'>2</span> {
+    <span class='kw'>for</span> <span class='ident'>i</span> <span class='kw'>in</span> (<span class='number'>0</span>..<span class='ident'>data</span>.<span class='ident'>len</span>() <span class='op'>/</span> <span class='number'>2</span>).<span class='ident'>rev</span>() {
         <span class='ident'>sift_down</span>(<span class='ident'>data</span>, <span class='ident'>i</span>);
     }
 }
@@ -409,7 +409,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// Iterator element type is `I::Item`.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// See [*.kmerge()*](trait.Itertools.html#method.kmerge) for more information.</span>
+<span class='doccomment'>/// See [`.kmerge()`](trait.Itertools.html#method.kmerge) for more information.</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>KMerge</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>
     <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>Iterator</span>
 {

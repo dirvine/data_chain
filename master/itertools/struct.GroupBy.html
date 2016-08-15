@@ -53,7 +53,7 @@
 }</pre><div class='docblock'><p>An iterator adaptor that groups iterator elements. Consecutive elements
 that map to the same key (“runs”), are returned as the iterator elements.</p>
 
-<p>See <a href="trait.Itertools.html#method.group_by"><em>.group_by()</em></a> for more information.</p>
+<p>See <a href="trait.Itertools.html#method.group_by"><code>.group_by()</code></a> for more information.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;K, F, I&gt; <a class='struct' href='../itertools/struct.GroupBy.html' title='itertools::GroupBy'>GroupBy</a>&lt;K, I, F&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-263' class='srclink' href='../src/itertools/adaptors.rs.html#416-428' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(iter: I, key: F) -&gt; Self</code></h4>
 <div class='docblock'><p>Create a new <code>GroupBy</code> iterator.</p>

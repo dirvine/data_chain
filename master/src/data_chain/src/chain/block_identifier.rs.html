@@ -251,7 +251,7 @@
         }
     }
 
-    <span class='doccomment'>/// Is this a block</span>
+    <span class='doccomment'>/// Is this a data block</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_block</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='op'>!</span><span class='self'>self</span>.<span class='ident'>is_link</span>()
     }
@@ -259,8 +259,8 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>create_validate_link_identifier</span>() {

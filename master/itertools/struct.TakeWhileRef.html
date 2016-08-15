@@ -53,7 +53,7 @@
 }</pre><div class='docblock'><p>An iterator adaptor that borrows from a <code>Clone</code>-able iterator
 to only pick off elements while the predicate returns <code>true</code>.</p>
 
-<p>See <a href="trait.Itertools.html#method.take_while_ref"><em>.take_while_ref()</em></a> for more information.</p>
+<p>See <a href="trait.Itertools.html#method.take_while_ref"><code>.take_while_ref()</code></a> for more information.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl&lt;'a, I, F&gt; <a class='struct' href='../itertools/struct.TakeWhileRef.html' title='itertools::TakeWhileRef'>TakeWhileRef</a>&lt;'a, I, F&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a> + <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a></span></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-528' class='srclink' href='../src/itertools/adaptors.rs.html#1012-1019' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>(iter: &amp;'a mut I, f: F) -&gt; Self</code></h4>
 <div class='docblock'><p>Create a new <code>TakeWhileRef</code> from a reference to clonable iterator.</p>
