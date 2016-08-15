@@ -15,12 +15,12 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use std::fmt::{self, Debug, Formatter};
-use data::structured_data::StructuredData;
 use data::immutable_data::ImmutableData;
 use data::plain_data::PlainData;
-use maidsafe_utilities::serialisation::serialise;
+use data::structured_data::StructuredData;
 use error::Error;
+use maidsafe_utilities::serialisation::serialise;
+use std::fmt::{self, Debug, Formatter};
 use tiny_keccak::Keccak;
 
 /// Data types handled in a SAFE
@@ -118,12 +118,12 @@ impl DataIdentifier {
 mod test {
     extern crate rand;
 
-    use super::*;
-    use sodiumoxide::crypto::sign;
-    use sha3::hash;
-    use data::structured_data::StructuredData;
     use data::immutable_data::ImmutableData;
     use data::plain_data::PlainData;
+    use data::structured_data::StructuredData;
+    use sha3::hash;
+    use sodiumoxide::crypto::sign;
+    use super::*;
 
     #[test]
     fn data_name() {

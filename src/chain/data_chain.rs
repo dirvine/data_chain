@@ -15,18 +15,18 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use std::mem;
-use std::path::PathBuf;
-use error::Error;
-use std::io::{self, Read, Write};
-use std::fs;
-use fs2::FileExt;
-use maidsafe_utilities::serialisation;
-use itertools::Itertools;
-use sodiumoxide::crypto::sign::PublicKey;
 use chain::block::Block;
 use chain::block_identifier::BlockIdentifier;
 use chain::node_block::NodeBlock;
+use error::Error;
+use fs2::FileExt;
+use itertools::Itertools;
+use maidsafe_utilities::serialisation;
+use sodiumoxide::crypto::sign::PublicKey;
+use std::fs;
+use std::io::{self, Read, Write};
+use std::mem;
+use std::path::PathBuf;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
 /// This object is verifiable if :
@@ -85,6 +85,7 @@ impl DataChain {
             path: None,
         }
     }
+
     /// Write current data chain to supplied path
     pub fn write(&self) -> Result<(), Error> {
         if let Some(path) = self.path.to_owned() {
@@ -97,6 +98,7 @@ impl DataChain {
         }
         Err(Error::NoFile)
     }
+
     /// Write current data chain to supplied path
     pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), Error> {
         let mut file = try!(fs::OpenOptions::new()
@@ -108,6 +110,7 @@ impl DataChain {
         self.path = Some(path);
         Ok(try!(file.lock_exclusive()))
     }
+
     /// Unlock the lock file
     pub fn unlock(&self) {
         if let Some(ref path) = self.path.to_owned() {
@@ -116,6 +119,7 @@ impl DataChain {
             }
         }
     }
+
     /// Nodes always validate a chain before accepting it
     /// Validation takes place from start of chain to now.
     /// Also confirm we can accept this chain, by comparing
@@ -157,27 +161,23 @@ impl DataChain {
                 }
             }
         }
-        {
+        for blk in &mut self.chain {
+            if blk.identifier() == block.identifier() {
+                if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
+                    return None;
+                }
 
+                let _ = blk.add_proof(block.proof().clone());
 
-            for blk in &mut self.chain {
-                if blk.identifier() == block.identifier() {
-                    if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
-                        return None;
-                    }
-
-                    let _ = blk.add_proof(block.proof().clone());
-
-                    if len == 1 ||
-                       links.iter()
-                        .filter(|x| x.identifier() != blk.identifier())
-                        .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
-                        blk.valid = true;
-                        return Some(blk.identifier().clone());
-                    } else {
-                        blk.valid = false;
-                        return None;
-                    }
+                if len == 1 ||
+                   links.iter()
+                    .filter(|x| x.identifier() != blk.identifier())
+                    .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
+                    blk.valid = true;
+                    return Some(blk.identifier().clone());
+                } else {
+                    blk.valid = false;
+                    return None;
                 }
             }
         }
@@ -192,18 +192,19 @@ impl DataChain {
     pub fn chain(&self) -> &Vec<Block> {
         &self.chain
     }
+
     // get size of chain for storing on disk
     #[allow(unused)]
     fn size_of(&self) -> usize {
         self.chain.capacity() * (mem::size_of::<Block>() + (mem::size_of::<usize>() * 2))
-
     }
+
     /// find a block (user required to test for validity)
     pub fn find(&self, block_identifier: &BlockIdentifier) -> Option<&Block> {
         self.chain.iter().find(|x| x.identifier() == block_identifier)
     }
 
-    /// find block by name from top (only first occurance)
+    /// find block by name from top (only first occurrence)
     pub fn find_name(&self, name: &[u8]) -> Option<&Block> {
         self.chain.iter().rev().find(|x| {
             x.valid &&
@@ -220,8 +221,8 @@ impl DataChain {
         self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
     }
 
-    /// Remove a block, with a predicate
-    pub fn remove_with<F>(&mut self, pred: F)
+    /// Retains only the blocks specified by the predicate.
+    pub fn retain<F>(&mut self, pred: F)
         where F: FnMut(&Block) -> bool
     {
         self.chain.retain(pred);
@@ -252,7 +253,7 @@ impl DataChain {
         self.chain.insert(index, block)
     }
 
-    /// Validate an individual block. Will get latest link and confirm all signatures
+    /// Validates an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
     pub fn validate_block(&mut self, block: &mut Block) -> bool {
         for link in &self.valid_links_at_block_id(block.identifier()) {
@@ -263,7 +264,7 @@ impl DataChain {
         false
     }
 
-    /// Remove all invalid blocks, does not confirm chain is valid to this group.
+    /// Removes all invalid blocks, does not confirm chain is valid to this group.
     pub fn prune(&mut self) {
         self.mark_blocks_valid();
         self.chain.retain(|x| x.valid);
@@ -273,15 +274,18 @@ impl DataChain {
     pub fn len(&self) -> usize {
         self.chain.len()
     }
+
     /// Number of valid blocks
     pub fn valid_len(&self) -> usize {
         self.blocks_len() + self.links_len()
     }
-    /// number of  blocks
+
+    /// number of valid data blocks
     pub fn blocks_len(&self) -> usize {
         self.chain.iter().filter(|x| x.identifier().is_block() && x.valid).count()
     }
-    /// number of links
+
+    /// number of valid links
     pub fn links_len(&self) -> usize {
         self.chain.iter().filter(|x| x.identifier().is_link() && x.valid).count()
     }
@@ -296,7 +300,7 @@ impl DataChain {
         self.chain.iter_mut().rev().find((|x| x.identifier().is_link() && x.valid))
     }
 
-    /// Return all links in chain
+    /// Returns all links in chain
     /// Does not perform validation on links
     pub fn all_links(&self) -> Vec<Block> {
         self.chain
@@ -304,10 +308,9 @@ impl DataChain {
             .cloned()
             .filter(|x| x.identifier().is_link())
             .collect_vec()
-
     }
 
-    /// Validate and return all links in chain
+    /// Validates and returns all links in chain
     pub fn valid_data(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
         self.chain
@@ -315,10 +318,9 @@ impl DataChain {
             .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
             .collect_vec()
-
     }
 
-    /// Validate and return all links in chain
+    /// Validates and returns all links in chain
     pub fn valid_links(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
         self.chain
@@ -326,10 +328,9 @@ impl DataChain {
             .cloned()
             .filter(|x| x.identifier().is_link() && x.valid)
             .collect_vec()
-
     }
 
-    /// Validate and return all valid links in chain 4 before and after target
+    /// Validates and returns all valid links in chain 4 before and after target
     pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> Vec<Block> {
         // FIXME the value of 4 is arbitrary
         // instead the length of last link len() should perhaps be used
@@ -397,7 +398,6 @@ impl DataChain {
                 self.chain.insert(start_pos, new.clone());
                 start_pos += 1;
             }
-
         }
     }
 
@@ -414,14 +414,14 @@ impl DataChain {
 #[cfg(test)]
 
 mod tests {
-    use super::*;
-    use sodiumoxide::crypto;
-    use sha3::hash;
-    use itertools::Itertools;
-    use chain::node_block;
-    use chain::node_block::NodeBlock;
     use chain::block::Block;
     use chain::block_identifier::BlockIdentifier;
+    use chain::node_block;
+    use chain::node_block::NodeBlock;
+    use itertools::Itertools;
+    use sha3::hash;
+    use sodiumoxide::crypto;
+    use super::*;
     use tempdir::TempDir;
 
     #[test]
