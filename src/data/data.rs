@@ -121,8 +121,8 @@ mod test {
     use data::immutable_data::ImmutableData;
     use data::plain_data::PlainData;
     use data::structured_data::StructuredData;
+    use rust_sodium::crypto::sign;
     use sha3::hash;
-    use sodiumoxide::crypto::sign;
     use super::*;
 
     #[test]
@@ -168,7 +168,7 @@ mod test {
     #[test]
     fn data_payload_size() {
         // payload_size() resolves correctly for StructuredData
-        let keys = ::sodiumoxide::crypto::sign::gen_keypair();
+        let keys = ::rust_sodium::crypto::sign::gen_keypair();
         let owner_keys = vec![keys.0];
         match StructuredData::new(0,
                                   rand::random(),

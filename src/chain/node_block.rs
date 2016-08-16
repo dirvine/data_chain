@@ -21,8 +21,8 @@ use chain::block_identifier::BlockIdentifier;
 use chain::block_identifier::LinkDescriptor;
 use error::Error;
 use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto;
-use sodiumoxide::crypto::sign::{PublicKey, SecretKey, Signature};
+use rust_sodium::crypto;
+use rust_sodium::crypto::sign::{PublicKey, SecretKey, Signature};
 
 /// Descriptor is the xored group members starting with base of 0000..:32
 /// This process is faster than hash and means group can be unordered
@@ -129,13 +129,13 @@ impl NodeBlock {
 mod tests {
 
     use chain::block_identifier::BlockIdentifier;
+    use rust_sodium::crypto;
     use sha3::hash;
-    use sodiumoxide::crypto;
     use super::*;
 
     #[test]
     fn node_block_comparisons() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let keys = crypto::sign::gen_keypair();
         let test_data1 = BlockIdentifier::Link(hash(b"1"));
         let test_data2 = BlockIdentifier::Link(hash(b"1"));

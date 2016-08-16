@@ -59,7 +59,7 @@
 #![cfg_attr(feature="clippy", deny(clippy))]
 #![cfg_attr(feature="clippy", allow(use_debug))]
 
-extern crate sodiumoxide;
+extern crate rust_sodium;
 extern crate rustc_serialize;
 #[macro_use]
 extern crate maidsafe_utilities;

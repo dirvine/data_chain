@@ -8,17 +8,14 @@ repository = "https://github.com/dirvine/data_chain"
 version = "0.1.1"
 
 [dependencies]
+clippy = {version = "~0.0.81", optional = true}
 fs2 = "0.2.5"
 itertools = "0.4.15"
 maidsafe_utilities = "~0.5.4"
 rayon = "~0.4.0"
+rust_sodium = "~0.1.1"
 rustc-serialize = "~0.3.19"
-sodiumoxide = "0.0.10"
 tiny-keccak = "~1.1.0"
-
-[dependencies.clippy]
-optional = true
-version = "~0.0.64"
 
 [dev-dependencies]
 rand = "~0.3.14"
