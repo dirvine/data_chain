@@ -799,6 +799,7 @@
 <span id="755">755</span>
 <span id="756">756</span>
 <span id="757">757</span>
+<span id="758">758</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -863,6 +864,7 @@
             <span class='ident'>path</span>: <span class='prelude-val'>Some</span>(<span class='ident'>path</span>),
         })
     }
+
     <span class='doccomment'>/// Open from existing directory</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>from_path</span>(<span class='ident'>path</span>: <span class='ident'>PathBuf</span>, <span class='ident'>group_size</span>: <span class='ident'>usize</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>DataChain</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>path</span> <span class='op'>=</span> <span class='ident'>path</span>.<span class='ident'>join</span>(<span class='string'>&quot;data_chain&quot;</span>);

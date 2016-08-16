@@ -73,9 +73,7 @@ These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode<
                            <td><a class='fn' href='fn.create_link_descriptor.html'
                                   title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a></td>
                            <td class='docblock short'>
-                                <p>Descriptor is the xored group members starting with base of 0000..:32
-This process is faster than hash and means group can be unordered
-which is beneficial under heavy churn and out of order links being sent.</p>
+                                <p>Returns a link descriptor with the hash of the group members, or <code>None</code> if <code>group</code> is empty.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
