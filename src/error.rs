@@ -17,15 +17,15 @@
 
 
 
-use std::fmt;
-use std::error;
-use std::io;
 use maidsafe_utilities::serialisation;
+use std::error;
+use std::fmt;
+use std::io;
 
 
 /// Error types.
 ///
-/// Hopefully sodiumoxide eventually defines errors properly, otherwise this makes little sense.
+/// Hopefully `rust_sodium` eventually defines errors properly, otherwise this makes little sense.
 #[allow(missing_docs)]
 #[derive(Debug)]
 pub enum Error {

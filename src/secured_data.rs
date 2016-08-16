@@ -15,17 +15,17 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use std::fs;
+use chain::{BlockIdentifier, DataChain, NodeBlock};
+use chunk_store::ChunkStore;
+use data::{Data, DataIdentifier};
 use error::Error;
 use itertools::Itertools;
-use chunk_store::ChunkStore;
-use std::sync::{Arc, Mutex};
-use std::path::{Path, PathBuf};
-use data::{Data, DataIdentifier};
 use maidsafe_utilities::serialisation;
+use rust_sodium::crypto::sign::{PublicKey, Signature};
 use sha3::hash;
-use sodiumoxide::crypto::sign::{PublicKey, Signature};
-use chain::{BlockIdentifier, DataChain, NodeBlock};
+use std::fs;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 
 /// API for data based operations.
 pub struct SecuredData {
@@ -136,9 +136,7 @@ impl SecuredData {
     /// This is a call that will only handle structured data
     ///
     /// **Will not accept versioned ledger based structuredData !**
-    pub fn post_data(&mut self,
-                     data: &Data)
-                     -> Result<BlockIdentifier, Error> {
+    pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
             Data::Structured(ref sd) if !sd.ledger() => {
@@ -148,7 +146,7 @@ impl SecuredData {
         };
         // Remove last element unless marked with ledger
         // TODO handle ledger bit
-        if let Some(ref block_id) = self.dc
+        if let Some(block_id) = self.dc
             .lock()
             .unwrap()
             .find_name(data.name()) {
@@ -168,7 +166,7 @@ impl SecuredData {
                        data_id: &DataIdentifier,
                        _sigs: &[Signature])
                        -> Result<BlockIdentifier, Error> {
-        if let Some(ref block_id) = self.dc
+        if let Some(block_id) = self.dc
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
