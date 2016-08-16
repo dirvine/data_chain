@@ -15,16 +15,16 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use std::fs::{self, File};
-use std::cmp;
-use std::io::{self, Read, Write};
-use std::marker::PhantomData;
-use std::path::{Path, PathBuf};
+use error::Error;
 
 use maidsafe_utilities::serialisation;
 use rustc_serialize::{Decodable, Encodable};
 use rustc_serialize::hex::{FromHex, ToHex};
-use error::Error;
+use std::cmp;
+use std::fs::{self, File};
+use std::io::{self, Read, Write};
+use std::marker::PhantomData;
+use std::path::{Path, PathBuf};
 
 /// The max name length for a chunk file.
 const MAX_CHUNK_FILE_NAME_LENGTH: usize = 104;

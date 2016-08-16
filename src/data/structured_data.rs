@@ -15,11 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use maidsafe_utilities::serialisation::serialise;
-use sodiumoxide::crypto::sign::{self, PublicKey, SecretKey, Signature};
-use std::fmt::{self, Debug, Formatter};
 use data::DataIdentifier;
 use error::Error;
+use maidsafe_utilities::serialisation::serialise;
+use rust_sodium::crypto::sign::{self, PublicKey, SecretKey, Signature};
+use std::fmt::{self, Debug, Formatter};
 
 /// Maximum allowed size for a Structured Data to grow to
 pub const MAX_BYTES: usize = 102400;
@@ -96,7 +96,7 @@ impl StructuredData {
         &self.name
     }
 
-    /// Is this a ledger type 
+    /// Is this a ledger type
     pub fn ledger(&self) -> bool {
         self.ledger
     }
@@ -154,7 +154,7 @@ impl StructuredData {
 
         let check_all_keys = |&sig| {
             owner_keys.iter()
-                .any(|ref pub_key| sign::verify_detached(&sig, &data, pub_key))
+                .any(|pub_key| sign::verify_detached(&sig, &data, pub_key))
         };
 
         if self.previous_owner_signatures
@@ -265,7 +265,7 @@ struct SerialisableStructuredData<'a> {
 mod test {
     extern crate rand;
 
-    use sodiumoxide::crypto::sign;
+    use rust_sodium::crypto::sign;
 
     #[test]
     fn single_owner() {

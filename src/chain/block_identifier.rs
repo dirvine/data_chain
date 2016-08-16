@@ -94,7 +94,7 @@ mod tests {
 
     #[test]
     fn create_validate_link_identifier() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let link = BlockIdentifier::Link(hash(b"1"));
 
         assert!(link.is_link());

@@ -7,7 +7,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/dirvine/data_chain/badge.svg?branch=master)](https://coveralls.io/github/dirvine/data_chain?branch=master)
 
 Data blocks that are chained to provide cryptographically verifiable assuredness  that they contain
-network valid data that a secured network has previously accepted. .
+network valid data that a secured network has previously accepted.
 
 ![Chain](https://github.com/dirvine/data_chain/blob/master/docs/chain.jpg)
 

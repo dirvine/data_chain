@@ -39,6 +39,6 @@ pub mod structured_data;
 pub mod plain_data;
 
 pub use data::data::{Data, DataIdentifier};
-pub use data::structured_data::{MAX_BYTES, StructuredData};
-pub use data::plain_data::PlainData;
 pub use data::immutable_data::ImmutableData;
+pub use data::plain_data::PlainData;
+pub use data::structured_data::{MAX_BYTES, StructuredData};
