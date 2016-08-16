@@ -61,6 +61,7 @@ impl DataChain {
             path: Some(path),
         })
     }
+
     /// Open from existing directory
     pub fn from_path(path: PathBuf, group_size: usize) -> Result<DataChain, Error> {
         let path = path.join("data_chain");
