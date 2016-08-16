@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["libc"] = [];implementors["regex_syntax"] = [];implementors["mio"] = [];implementors["serde"] = [];
+implementors["lazy_static"] = [];implementors["regex_syntax"] = [];implementors["libc"] = [];implementors["serde"] = [];implementors["mio"] = [];implementors["rust_sodium_sys"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

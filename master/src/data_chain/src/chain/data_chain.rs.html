@@ -824,7 +824,7 @@
 <span class='kw'>use</span> <span class='ident'>fs2</span>::<span class='ident'>FileExt</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
-<span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
+<span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fs</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>::{<span class='self'>self</span>, <span class='ident'>Read</span>, <span class='ident'>Write</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>;
@@ -1221,14 +1221,14 @@
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>;
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::<span class='ident'>NodeBlock</span>;
     <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
+    <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>;
     <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
-    <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
     <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>tempdir</span>::<span class='ident'>TempDir</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>validate_with_proof</span>() {
-        ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
+        ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>10</span>)
             .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>())
             .<span class='ident'>collect_vec</span>();
@@ -1270,7 +1270,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>link_only_chain</span>() {
-        ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
+        ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>10</span>)
             .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>())
             .<span class='ident'>collect_vec</span>();
@@ -1378,7 +1378,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>data_link_chain</span>() {
-        ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
+        ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>50</span>)
             .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>())
             .<span class='ident'>collect_vec</span>();
@@ -1473,7 +1473,7 @@
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>file_based_chain</span>() {
-        ::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
+        ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>50</span>)
             .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>())
             .<span class='ident'>collect_vec</span>();

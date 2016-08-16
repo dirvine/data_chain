@@ -156,15 +156,15 @@
 
 
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>error</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>io</span>;
 
 
 <span class='doccomment'>/// Error types.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// Hopefully sodiumoxide eventually defines errors properly, otherwise this makes little sense.</span>
+<span class='doccomment'>/// Hopefully `rust_sodium` eventually defines errors properly, otherwise this makes little sense.</span>
 <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>missing_docs</span>)]</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Error</span> {

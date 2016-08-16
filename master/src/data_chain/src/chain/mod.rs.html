@@ -302,18 +302,18 @@
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//! ```rust</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//!    extern crate sodiumoxide;</span>
+<span class='doccomment'>//!    extern crate rust_sodium;</span>
 <span class='doccomment'>//!    extern crate data_chain;</span>
 <span class='doccomment'>//!    extern crate itertools;</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!  fn main() {</span>
-<span class='doccomment'>//!    use sodiumoxide::crypto;</span>
+<span class='doccomment'>//!    use rust_sodium::crypto;</span>
 <span class='doccomment'>//!    use itertools::Itertools;</span>
 <span class='doccomment'>//!    use data_chain::sha3::hash;</span>
 <span class='doccomment'>//!    use data_chain::{NodeBlock, BlockIdentifier, DataChain, create_link_descriptor};</span>
 <span class='doccomment'>//!</span>
 <span class='doccomment'>//!</span>
-<span class='doccomment'>//! ::sodiumoxide::init();</span>
+<span class='doccomment'>//! ::rust_sodium::init();</span>
 <span class='doccomment'>//! let keys = (0..50)</span>
 <span class='doccomment'>//!     .map(|_| crypto::sign::gen_keypair())</span>
 <span class='doccomment'>//!     .collect_vec();</span>
@@ -429,10 +429,10 @@
 <span class='kw'>mod</span> <span class='ident'>block_identifier</span>;
 
 
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>Proof</span>, <span class='ident'>create_link_descriptor</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>data_chain</span>::<span class='ident'>DataChain</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block</span>::<span class='ident'>Block</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>Proof</span>, <span class='ident'>create_link_descriptor</span>};
 </pre>
 </section>
     <section id='search' class="content hidden"></section>

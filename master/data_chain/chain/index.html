@@ -98,18 +98,18 @@ Please also see <a href="https://github.com/dirvine/data_chain/blob/master/docs/
 
 <pre class='rust rust-example-rendered'>
 
-   <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>sodiumoxide</span>;
+   <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>rust_sodium</span>;
    <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>data_chain</span>;
    <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>itertools</span>;
 
  <span class='kw'>fn</span> <span class='ident'>main</span>() {
-   <span class='kw'>use</span> <span class='ident'>sodiumoxide</span>::<span class='ident'>crypto</span>;
+   <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>;
    <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
    <span class='kw'>use</span> <span class='ident'>data_chain</span>::<span class='ident'>sha3</span>::<span class='ident'>hash</span>;
    <span class='kw'>use</span> <span class='ident'>data_chain</span>::{<span class='ident'>NodeBlock</span>, <span class='ident'>BlockIdentifier</span>, <span class='ident'>DataChain</span>, <span class='ident'>create_link_descriptor</span>};
 
 
-::<span class='ident'>sodiumoxide</span>::<span class='ident'>init</span>();
+::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
 <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> (<span class='number'>0</span>..<span class='number'>50</span>)
     .<span class='ident'>map</span>(<span class='op'>|</span>_<span class='op'>|</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>())
     .<span class='ident'>collect_vec</span>();
@@ -208,7 +208,7 @@ Please also see <a href="https://github.com/dirvine/data_chain/blob/master/docs/
  }
 </pre>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub use chain::node_block::{<a class='struct' href='../../data_chain/chain/node_block/struct.NodeBlock.html' title='data_chain::chain::node_block::NodeBlock'>NodeBlock</a>, <a class='struct' href='../../data_chain/chain/node_block/struct.Proof.html' title='data_chain::chain::node_block::Proof'>Proof</a>, <a class='fn' href='../../data_chain/chain/node_block/fn.create_link_descriptor.html' title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a>};</code></td></tr><tr><td><code>pub use chain::data_chain::<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr><td><code>pub use chain::data_chain::<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>;</code></td></tr><tr><td><code>pub use chain::node_block::{<a class='struct' href='../../data_chain/chain/node_block/struct.NodeBlock.html' title='data_chain::chain::node_block::NodeBlock'>NodeBlock</a>, <a class='struct' href='../../data_chain/chain/node_block/struct.Proof.html' title='data_chain::chain::node_block::Proof'>Proof</a>, <a class='fn' href='../../data_chain/chain/node_block/fn.create_link_descriptor.html' title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a>};</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='mod' href='data_chain/index.html'

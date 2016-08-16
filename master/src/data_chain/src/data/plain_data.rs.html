@@ -152,8 +152,8 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Debug</span>, <span class='ident'>Formatter</span>};
 <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>DataIdentifier</span>;
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Debug</span>, <span class='ident'>Formatter</span>};
 
 <span class='doccomment'>/// Plain data with a name and a value.</span>
 <span class='doccomment'>///</span>
@@ -207,10 +207,10 @@
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>test</span> {
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>PlainData</span>;
     <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
     <span class='kw'>use</span> <span class='ident'>rand</span>::{<span class='self'>self</span>, <span class='ident'>Rng</span>};
     <span class='kw'>use</span> <span class='ident'>rustc_serialize</span>::<span class='ident'>hex</span>::<span class='ident'>ToHex</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>PlainData</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>basic_check</span>() {
