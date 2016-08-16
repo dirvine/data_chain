@@ -22,7 +22,7 @@ use error::Error;
 use fs2::FileExt;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
-use sodiumoxide::crypto::sign::PublicKey;
+use rust_sodium::crypto::sign::PublicKey;
 use std::fs;
 use std::io::{self, Read, Write};
 use std::mem;
@@ -419,14 +419,14 @@ mod tests {
     use chain::node_block;
     use chain::node_block::NodeBlock;
     use itertools::Itertools;
+    use rust_sodium::crypto;
     use sha3::hash;
-    use sodiumoxide::crypto;
     use super::*;
     use tempdir::TempDir;
 
     #[test]
     fn validate_with_proof() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let keys = (0..10)
             .map(|_| crypto::sign::gen_keypair())
             .collect_vec();
@@ -468,7 +468,7 @@ mod tests {
 
     #[test]
     fn link_only_chain() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let keys = (0..10)
             .map(|_| crypto::sign::gen_keypair())
             .collect_vec();
@@ -576,7 +576,7 @@ mod tests {
 
     #[test]
     fn data_link_chain() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let keys = (0..50)
             .map(|_| crypto::sign::gen_keypair())
             .collect_vec();
@@ -671,7 +671,7 @@ mod tests {
 
     #[test]
     fn file_based_chain() {
-        ::sodiumoxide::init();
+        ::rust_sodium::init();
         let keys = (0..50)
             .map(|_| crypto::sign::gen_keypair())
             .collect_vec();
