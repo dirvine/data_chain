@@ -131,10 +131,10 @@ impl DataChain {
         self.mark_blocks_valid();
         // ensure last good ink contains majority of current group
         if let Some(last_link) = self.last_valid_link() {
-            return (last_link.proof()
+            return (last_link.proofs()
                 .iter()
                 .filter(|&k| my_group.iter().any(|&z| PublicKey(z.0) == *k.key()))
-                .count() * 2) > last_link.proof().len();
+                .count() * 2) > last_link.proofs().len();
 
         } else {
             false
@@ -164,7 +164,7 @@ impl DataChain {
         }
         for blk in &mut self.chain {
             if blk.identifier() == block.identifier() {
-                if blk.proof().iter().any(|x| x.key() == block.proof().key()) {
+                if blk.proofs().iter().any(|x| x.key() == block.proof().key()) {
                     return None;
                 }
 
@@ -403,11 +403,11 @@ impl DataChain {
     }
 
     fn validate_block_with_proof(block: &Block, proof: &Block, group_size: usize) -> bool {
-        let p_len = proof.proof()
+        let p_len = proof.proofs()
             .iter()
-            .filter(|&y| block.proof().iter().any(|p| p.key() == y.key()))
+            .filter(|&y| block.proofs().iter().any(|p| p.key() == y.key()))
             .count();
-        (p_len * 2 > proof.proof().len()) || (p_len == group_size)
+        (p_len * 2 > proof.proofs().len()) || (p_len == group_size)
     }
 }
 

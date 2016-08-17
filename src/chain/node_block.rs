@@ -62,6 +62,11 @@ impl Proof {
     pub fn sig(&self) -> &Signature {
         &self.sig
     }
+
+    /// Validates `data` against this `Proof`'s `key` and `sig`.
+    pub fn validate(&self, data: &[u8]) -> bool {
+        sign::verify_detached(&self.sig, data, &self.key)
+    }
 }
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
@@ -105,7 +110,7 @@ impl NodeBlock {
     /// validate signed correctly
     pub fn validate_detached(&self, identifier: &BlockIdentifier) -> bool {
         match serialisation::serialise(identifier) {
-            Ok(data) => sign::verify_detached(self.proof.sig(), &data[..], self.proof.key()),
+            Ok(data) => self.proof.validate(&data[..]),
             _ => false,
         }
     }
