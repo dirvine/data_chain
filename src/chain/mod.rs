@@ -188,8 +188,29 @@ pub mod node_block;
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
 mod block_identifier;
 
-
 pub use chain::block::Block;
 pub use chain::block_identifier::BlockIdentifier;
 pub use chain::data_chain::DataChain;
 pub use chain::node_block::{NodeBlock, Proof, create_link_descriptor};
+use std::fmt::Write;
+
+fn debug_bytes<V: AsRef<[u8]>>(input: V) -> String {
+    let input_ref = input.as_ref();
+    if input_ref.is_empty() {
+        return "<empty>".to_owned();
+    }
+    if input_ref.len() <= 6 {
+        let mut ret = String::new();
+        for byte in input_ref.iter() {
+            write!(ret, "{:02x}", byte).unwrap_or(());
+        }
+        return ret;
+    }
+    format!("{:02x}{:02x}{:02x}..{:02x}{:02x}{:02x}",
+            input_ref[0],
+            input_ref[1],
+            input_ref[2],
+            input_ref[input_ref.len() - 3],
+            input_ref[input_ref.len() - 2],
+            input_ref[input_ref.len() - 1])
+}

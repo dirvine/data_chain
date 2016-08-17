@@ -15,6 +15,9 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+use std::fmt::{self, Debug, Formatter};
+use super::debug_bytes;
+
 /// structured Data name
 pub type SdName = [u8; 32];
 
@@ -28,7 +31,7 @@ pub type LinkDescriptor = [u8; 32];
 /// The hash of each data type is available to ensure there is no confusion
 /// over the validity of any data presented by this chain
 #[allow(missing_docs)]
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
     ImmutableData([u8; 32]),
@@ -83,6 +86,26 @@ impl BlockIdentifier {
     /// Is this a data block
     pub fn is_block(&self) -> bool {
         !self.is_link()
+    }
+}
+
+impl Debug for BlockIdentifier {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        match *self {
+            BlockIdentifier::ImmutableData(ref hash) => {
+                write!(formatter, "ImmutableData({})", debug_bytes(hash))
+            }
+            BlockIdentifier::StructuredData(ref hash, ref name, ref ledger) => {
+                write!(formatter,
+                       "StructuredData(hash: {}, name: {}, ledger: {})",
+                       debug_bytes(hash),
+                       debug_bytes(name),
+                       ledger)
+            }
+            BlockIdentifier::Link(ref descriptor) => {
+                write!(formatter, "Link({})", debug_bytes(descriptor))
+            }
+        }
     }
 }
 

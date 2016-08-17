@@ -23,9 +23,9 @@ use fs2::FileExt;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::PublicKey;
-use std::fs;
+use std::{fs, mem};
+use std::fmt::{self, Debug, Formatter};
 use std::io::{self, Read, Write};
-use std::mem;
 use std::path::PathBuf;
 
 /// Created by holder of chain, can be passed to others as proof of data held.
@@ -38,7 +38,7 @@ use std::path::PathBuf;
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
-#[derive(Default, Debug, PartialEq, RustcEncodable, RustcDecodable)]
+#[derive(Default, PartialEq, RustcEncodable, RustcDecodable)]
 pub struct DataChain {
     chain: Vec<Block>,
     group_size: usize,
@@ -411,14 +411,41 @@ impl DataChain {
     }
 }
 
+impl Debug for DataChain {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        let print_block = |block: &Block| -> String {
+            let mut output = format!("    Block {{\n        identifier: {:?}\n        valid: {}\n",
+                                     block.identifier(),
+                                     block.valid);
+            for proof in block.proofs() {
+                output.push_str(&format!("        {:?}\n", proof))
+            }
+            output.push_str("    }");
+            output
+        };
+        try!(write!(formatter,
+                    "DataChain {{\n    group_size: {}\n    path: ",
+                    self.group_size));
+        match self.path {
+            Some(ref path) => try!(writeln!(formatter, "{}", path.display())),
+            None => try!(writeln!(formatter, "None")),
+        }
+        if self.chain.is_empty() {
+            write!(formatter, "    chain: []\n}}")
+        } else {
+            for block in &self.chain {
+                try!(writeln!(formatter, "{}", print_block(block)))
+            }
+            write!(formatter, "}}")
+        }
+    }
+}
 
 #[cfg(test)]
-
 mod tests {
     use chain::block::Block;
     use chain::block_identifier::BlockIdentifier;
-    use chain::node_block;
-    use chain::node_block::NodeBlock;
+    use chain::node_block::{self, NodeBlock};
     use itertools::Itertools;
     use rust_sodium::crypto;
     use sha3::hash;
