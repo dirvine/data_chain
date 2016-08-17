@@ -15,15 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-// use itertools::Itertools;
-
-use chain::block_identifier::BlockIdentifier;
-use chain::block_identifier::LinkDescriptor;
+use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
 use error::Error;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
-use rust_sodium::crypto;
-use rust_sodium::crypto::sign::{PublicKey, SecretKey, Signature};
+use rust_sodium::crypto::sign::{self, PublicKey, SecretKey, Signature};
 use tiny_keccak::Keccak;
 
 /// Returns a link descriptor with the hash of the group members, or `None` if `group` is empty.
@@ -84,15 +80,12 @@ impl NodeBlock {
                secret_key: &SecretKey,
                data_identifier: BlockIdentifier)
                -> Result<NodeBlock, Error> {
-        let signature =
-            crypto::sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
-                                        secret_key);
-
+        let signature = sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
+                                            secret_key);
         Ok(NodeBlock {
             identifier: data_identifier,
             proof: Proof::new(*pub_key, signature),
         })
-
     }
 
     /// Getter
@@ -106,37 +99,29 @@ impl NodeBlock {
 
     /// validate signed correctly
     pub fn validate(&self) -> bool {
-        let data = if let Ok(data) = serialisation::serialise(&self.identifier) {
-            data
-        } else {
-            return false;
-        };
-        crypto::sign::verify_detached(self.proof.sig(), &data[..], self.proof.key())
+        self.validate_detached(&self.identifier)
     }
 
     /// validate signed correctly
-    pub fn validate_detached(&self, identifier: BlockIdentifier) -> bool {
-        let data = if let Ok(data) = serialisation::serialise(&identifier) {
-            data
-        } else {
-            return false;
-        };
-        crypto::sign::verify_detached(self.proof.sig(), &data[..], self.proof.key())
+    pub fn validate_detached(&self, identifier: &BlockIdentifier) -> bool {
+        match serialisation::serialise(identifier) {
+            Ok(data) => sign::verify_detached(self.proof.sig(), &data[..], self.proof.key()),
+            _ => false,
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-
     use chain::block_identifier::BlockIdentifier;
-    use rust_sodium::crypto;
+    use rust_sodium::crypto::sign;
     use sha3::hash;
     use super::*;
 
     #[test]
     fn node_block_comparisons() {
         ::rust_sodium::init();
-        let keys = crypto::sign::gen_keypair();
+        let keys = sign::gen_keypair();
         let test_data1 = BlockIdentifier::Link(hash(b"1"));
         let test_data2 = BlockIdentifier::Link(hash(b"1"));
         let test_data3 = BlockIdentifier::ImmutableData(hash(b"1"));
@@ -149,6 +134,5 @@ mod tests {
         assert_eq!(test_node_data_block1.clone(), test_node_data_block2.clone());
         assert!(test_node_data_block1 != test_node_data_block3.clone());
         assert!(test_node_data_block2 != test_node_data_block3);
-
     }
 }

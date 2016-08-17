@@ -69,7 +69,7 @@ impl Debug for PlainData {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use itertools::Itertools;
     use rand::{self, Rng};
     use rustc_serialize::hex::ToHex;

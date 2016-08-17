@@ -24,7 +24,6 @@ pub type Ledger = bool;
 /// This is signed by each group member.
 pub type LinkDescriptor = [u8; 32];
 
-
 /// Data identifiers for use in a data Chain.
 /// The hash of each data type is available to ensure there is no confusion
 /// over the validity of any data presented by this chain
@@ -58,7 +57,7 @@ impl BlockIdentifier {
     /// Is this an identifier with ledger bit set
     pub fn is_ledger(&self) -> bool {
         match *self {
-            BlockIdentifier::StructuredData(ref _hash, _name, ledger) => ledger,
+            BlockIdentifier::StructuredData(_hash, _name, ledger) => ledger,
             _ => false,
         }
     }
@@ -121,5 +120,4 @@ mod tests {
         assert!(sd_block.name().is_some());
         assert_eq!(*sd_block.name().expect("sd name"), hash(b"name"))
     }
-
 }

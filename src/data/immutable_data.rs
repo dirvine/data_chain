@@ -16,11 +16,9 @@
 // relating to use of the SAFE Network Software.
 
 use data::DataIdentifier;
-
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
 use sha3::hash;
 use std::fmt::{self, Debug, Formatter};
-
 
 /// An immutable chunk of data.
 #[derive(Hash, Clone, Eq, PartialEq, Ord, PartialOrd)]
@@ -83,9 +81,7 @@ impl Debug for ImmutableData {
 }
 
 #[cfg(test)]
-mod test {
-    extern crate rand;
-
+mod tests {
     use rustc_serialize::hex::ToHex;
     use super::*;
 

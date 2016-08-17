@@ -262,9 +262,8 @@ struct SerialisableStructuredData<'a> {
 }
 
 #[cfg(test)]
-mod test {
-    extern crate rand;
-
+mod tests {
+    use rand;
     use rust_sodium::crypto::sign;
 
     #[test]

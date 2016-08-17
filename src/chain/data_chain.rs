@@ -673,9 +673,7 @@ mod tests {
     #[test]
     fn file_based_chain() {
         ::rust_sodium::init();
-        let keys = (0..50)
-            .map(|_| crypto::sign::gen_keypair())
-            .collect_vec();
+        let keys = (0..50).map(|_| crypto::sign::gen_keypair()).collect_vec();
         // ########################################################################################
         // create groups of keys to resemble close_groups
         // ########################################################################################
