@@ -360,12 +360,12 @@
         <span class='kw'>let</span> <span class='ident'>file_path</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>path</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>file_path</span>(<span class='ident'>key</span>) {
             <span class='ident'>path</span>
         } <span class='kw'>else</span> {
-            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
+            <span class='kw'>return</span> <span class='bool-val'>false</span>;
         };
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>metadata</span>) <span class='op'>=</span> <span class='ident'>fs</span>::<span class='ident'>metadata</span>(<span class='ident'>file_path</span>) {
             <span class='kw'>return</span> <span class='ident'>metadata</span>.<span class='ident'>is_file</span>();
         } <span class='kw'>else</span> {
-            <span class='boolvalue'>false</span>
+            <span class='bool-val'>false</span>
         }
     }
 

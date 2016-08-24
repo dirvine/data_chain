@@ -185,17 +185,6 @@
 <span id="141">141</span>
 <span id="142">142</span>
 <span id="143">143</span>
-<span id="144">144</span>
-<span id="145">145</span>
-<span id="146">146</span>
-<span id="147">147</span>
-<span id="148">148</span>
-<span id="149">149</span>
-<span id="150">150</span>
-<span id="151">151</span>
-<span id="152">152</span>
-<span id="153">153</span>
-<span id="154">154</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -214,15 +203,11 @@
 <span class='comment'>// Please review the Licences for the specific language governing permissions and limitations</span>
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
-<span class='comment'>// use itertools::Itertools;</span>
-
-<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
-<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>LinkDescriptor</span>;
+<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>LinkDescriptor</span>};
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
-<span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>;
-<span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::{<span class='ident'>PublicKey</span>, <span class='ident'>SecretKey</span>, <span class='ident'>Signature</span>};
+<span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::{<span class='self'>self</span>, <span class='ident'>PublicKey</span>, <span class='ident'>SecretKey</span>, <span class='ident'>Signature</span>};
 <span class='kw'>use</span> <span class='ident'>tiny_keccak</span>::<span class='ident'>Keccak</span>;
 
 <span class='doccomment'>/// Returns a link descriptor with the hash of the group members, or `None` if `group` is empty.</span>
@@ -265,6 +250,11 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>sig</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>Signature</span> {
         <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>sig</span>
     }
+
+    <span class='doccomment'>/// Validates `data` against this `Proof`&#39;s `key` and `sig`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>data</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>sig</span>, <span class='ident'>data</span>, <span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>key</span>)
+    }
 }
 
 <span class='doccomment'>/// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.</span>
@@ -283,15 +273,12 @@
                <span class='ident'>secret_key</span>: <span class='kw-2'>&amp;</span><span class='ident'>SecretKey</span>,
                <span class='ident'>data_identifier</span>: <span class='ident'>BlockIdentifier</span>)
                <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>NodeBlock</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='kw'>let</span> <span class='ident'>signature</span> <span class='op'>=</span>
-            <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>sign_detached</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data_identifier</span>))[..],
-                                        <span class='ident'>secret_key</span>);
-
+        <span class='kw'>let</span> <span class='ident'>signature</span> <span class='op'>=</span> <span class='ident'>sign</span>::<span class='ident'>sign_detached</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>data_identifier</span>))[..],
+                                            <span class='ident'>secret_key</span>);
         <span class='prelude-val'>Ok</span>(<span class='ident'>NodeBlock</span> {
             <span class='ident'>identifier</span>: <span class='ident'>data_identifier</span>,
             <span class='ident'>proof</span>: <span class='ident'>Proof</span>::<span class='ident'>new</span>(<span class='op'>*</span><span class='ident'>pub_key</span>, <span class='ident'>signature</span>),
         })
-
     }
 
     <span class='doccomment'>/// Getter</span>
@@ -305,37 +292,29 @@
 
     <span class='doccomment'>/// validate signed correctly</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>) {
-            <span class='ident'>data</span>
-        } <span class='kw'>else</span> {
-            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
-        };
-        <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>key</span>())
+        <span class='self'>self</span>.<span class='ident'>validate_detached</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='ident'>identifier</span>)
     }
 
     <span class='doccomment'>/// validate signed correctly</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_detached</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>identifier</span>: <span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
-        <span class='kw'>let</span> <span class='ident'>data</span> <span class='op'>=</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='kw-2'>&amp;</span><span class='ident'>identifier</span>) {
-            <span class='ident'>data</span>
-        } <span class='kw'>else</span> {
-            <span class='kw'>return</span> <span class='boolvalue'>false</span>;
-        };
-        <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>verify_detached</span>(<span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>sig</span>(), <span class='kw-2'>&amp;</span><span class='ident'>data</span>[..], <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>key</span>())
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_detached</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>identifier</span>: <span class='kw-2'>&amp;</span><span class='ident'>BlockIdentifier</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
+        <span class='kw'>match</span> <span class='ident'>serialisation</span>::<span class='ident'>serialise</span>(<span class='ident'>identifier</span>) {
+            <span class='prelude-val'>Ok</span>(<span class='ident'>data</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>proof</span>.<span class='ident'>validate</span>(<span class='kw-2'>&amp;</span><span class='ident'>data</span>[..]),
+            _ <span class='op'>=&gt;</span> <span class='bool-val'>false</span>,
+        }
     }
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
-
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
-    <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>;
+    <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>;
     <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
     <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>node_block_comparisons</span>() {
         ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
-        <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>();
+        <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>();
         <span class='kw'>let</span> <span class='ident'>test_data1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
         <span class='kw'>let</span> <span class='ident'>test_data2</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
         <span class='kw'>let</span> <span class='ident'>test_data3</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
@@ -348,7 +327,6 @@
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>test_node_data_block1</span>.<span class='ident'>clone</span>(), <span class='ident'>test_node_data_block2</span>.<span class='ident'>clone</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test_node_data_block1</span> <span class='op'>!=</span> <span class='ident'>test_node_data_block3</span>.<span class='ident'>clone</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>test_node_data_block2</span> <span class='op'>!=</span> <span class='ident'>test_node_data_block3</span>);
-
     }
 }
 </pre>

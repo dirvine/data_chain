@@ -1,1 +1,0 @@
-initSidebarItems({"enum":[["Data","Data types handled in a SAFE"],["DataIdentifier","An identifier to address a data chunk."]]});
