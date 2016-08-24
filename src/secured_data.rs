@@ -233,7 +233,7 @@ impl SecuredData {
             .chain()
             .iter()
             .rev()
-            .take_while(|x| x.proof().iter().any(|z| z.key() == node))
+            .take_while(|x| x.proofs().iter().any(|z| z.key() == node))
             .count()
     }
     /// Find any data we should have but are missing,
@@ -267,7 +267,7 @@ impl SecuredData {
 }
 
 #[cfg(test)]
-mod test {
+mod tests {
     use super::*;
     use tempdir::TempDir;
 

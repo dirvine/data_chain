@@ -115,12 +115,11 @@ impl DataIdentifier {
 }
 
 #[cfg(test)]
-mod test {
-    extern crate rand;
-
+mod tests {
     use data::immutable_data::ImmutableData;
     use data::plain_data::PlainData;
     use data::structured_data::StructuredData;
+    use rand;
     use rust_sodium::crypto::sign;
     use sha3::hash;
     use super::*;

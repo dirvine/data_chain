@@ -19,6 +19,6 @@
 //! A simple, non-persistent, disk-based key-value store.
 
 mod chunk_store;
-mod test;
+mod tests;
 
 pub use chunk_store::chunk_store::ChunkStore;

@@ -15,13 +15,8 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-
-
 use maidsafe_utilities::serialisation;
-use std::error;
-use std::fmt;
-use std::io;
-
+use std::{error, fmt, io};
 
 /// Error types.
 ///
