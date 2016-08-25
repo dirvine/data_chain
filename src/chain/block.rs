@@ -50,7 +50,7 @@ impl Block {
             return Err(Error::Signature);
         }
         if !self.proofs.iter().any(|x| x.key() == proof.key()) {
-            self.proofs.push(Proof::new(*proof.key(), *proof.sig()));
+            self.proofs.push(proof);
             return Ok(());
         }
         Err(Error::Validation)

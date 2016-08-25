@@ -8,7 +8,7 @@ repository = "https://github.com/dirvine/data_chain"
 version = "0.1.1"
 
 [dependencies]
-clippy = {version = "~0.0.81", optional = true}
+clippy = {version = "~0.0.83", optional = true}
 fs2 = "0.2.5"
 itertools = "0.4.15"
 maidsafe_utilities = "~0.5.4"

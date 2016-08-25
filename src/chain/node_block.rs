@@ -20,6 +20,8 @@ use error::Error;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::{self, PublicKey, SecretKey, Signature};
+use std::fmt::{self, Debug, Formatter};
+use super::debug_bytes;
 use tiny_keccak::Keccak;
 
 /// Returns a link descriptor with the hash of the group members, or `None` if `group` is empty.
@@ -38,7 +40,7 @@ pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
 }
 
 /// Proof as provided by a close group member
-#[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Debug, Clone)]
+#[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Clone)]
 pub struct Proof {
     key: PublicKey,
     sig: Signature,
@@ -66,6 +68,12 @@ impl Proof {
     /// Validates `data` against this `Proof`'s `key` and `sig`.
     pub fn validate(&self, data: &[u8]) -> bool {
         sign::verify_detached(&self.sig, data, &self.key)
+    }
+}
+
+impl Debug for Proof {
+    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
+        write!(formatter, "Proof {{ key: {}, .. }}", debug_bytes(self.key))
     }
 }
 
