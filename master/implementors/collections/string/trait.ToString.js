@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["regex_syntax"] = [];implementors["serde"] = [];implementors["mio"] = [];implementors["rust_sodium_sys"] = [];
+implementors["regex_syntax"] = [];implementors["mio"] = [];implementors["serde"] = [];implementors["rust_sodium_sys"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);
