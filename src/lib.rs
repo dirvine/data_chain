@@ -43,11 +43,11 @@
 // https://github.com/maidsafe/QA/blob/master/Documentation/Rust%20Lint%20Checks.md
 #![forbid(bad_style, exceeding_bitshifts, mutable_transmutes, no_mangle_const_items,
           unknown_crate_types, warnings)]
-#![deny(deprecated, drop_with_repr_extern, improper_ctypes, missing_docs,
-        non_shorthand_field_patterns, overflowing_literals, plugin_as_library,
-        private_no_mangle_fns, private_no_mangle_statics, stable_features, unconditional_recursion,
-        unknown_lints, unsafe_code, unused, unused_allocation, unused_attributes,
-        unused_comparisons, unused_features, unused_parens, while_true)]
+#![deny(deprecated, improper_ctypes, missing_docs, non_shorthand_field_patterns,
+        overflowing_literals, plugin_as_library, private_no_mangle_fns, private_no_mangle_statics,
+        stable_features, unconditional_recursion, unknown_lints, unsafe_code, unused,
+        unused_allocation, unused_attributes, unused_comparisons, unused_features, unused_parens,
+        while_true)]
 #![warn(trivial_casts, trivial_numeric_casts, unused_extern_crates, unused_import_braces,
         unused_qualifications, unused_results)]
 #![allow(box_pointers, fat_ptr_transmutes, missing_copy_implementations,
@@ -59,20 +59,21 @@
 #![cfg_attr(feature="clippy", deny(clippy))]
 #![cfg_attr(feature="clippy", allow(use_debug))]
 
-extern crate rust_sodium;
-extern crate rustc_serialize;
+extern crate bincode;
+extern crate fs2;
+extern crate itertools;
 #[macro_use]
 extern crate maidsafe_utilities;
-extern crate itertools;
-extern crate fs2;
-extern crate tiny_keccak;
+#[cfg(test)]
+extern crate rand;
+extern crate rust_sodium;
+extern crate rustc_serialize;
 #[cfg(test)]
 extern crate tempdir;
+extern crate tiny_keccak;
 #[cfg(test)]
 #[macro_use]
 extern crate unwrap;
-#[cfg(test)]
-extern crate rand;
 
 /// Error types for this crate
 pub mod error;
