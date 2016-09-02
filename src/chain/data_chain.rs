@@ -15,6 +15,7 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+use bincode::rustc_serialize;
 use chain::block::Block;
 use chain::block_identifier::BlockIdentifier;
 use chain::node_block::NodeBlock;
@@ -23,8 +24,8 @@ use fs2::FileExt;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::PublicKey;
-use std::{fs, mem};
 use std::fmt::{self, Debug, Formatter};
+use std::fs;
 use std::io::{self, Read, Write};
 use std::path::PathBuf;
 
@@ -196,8 +197,8 @@ impl DataChain {
 
     // get size of chain for storing on disk
     #[allow(unused)]
-    fn size_of(&self) -> usize {
-        self.chain.capacity() * (mem::size_of::<Block>() + (mem::size_of::<usize>() * 2))
+    fn size_of(&self) -> u64 {
+        rustc_serialize::encoded_size(self)
     }
 
     /// find a block (user required to test for validity)
