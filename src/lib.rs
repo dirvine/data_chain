@@ -103,4 +103,4 @@ mod chunk_store;
 
 pub use chain::{Block, BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
 
-pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, PlainData, StructuredData};
+pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, StructuredData};

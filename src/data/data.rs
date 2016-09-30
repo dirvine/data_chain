@@ -16,7 +16,6 @@
 // relating to use of the SAFE Network Software.
 
 use data::immutable_data::ImmutableData;
-use data::plain_data::PlainData;
 use data::structured_data::StructuredData;
 use error::Error;
 use maidsafe_utilities::serialisation::serialise;
@@ -30,8 +29,6 @@ pub enum Data {
     Structured(StructuredData),
     /// `ImmutableData` data type.
     Immutable(ImmutableData),
-    /// `PlainData` data type.
-    Plain(PlainData),
 }
 
 impl Data {
@@ -40,7 +37,6 @@ impl Data {
         match *self {
             Data::Structured(ref data) => data.name(),
             Data::Immutable(ref data) => data.name(),
-            Data::Plain(ref data) => data.name(),
         }
     }
 
@@ -49,7 +45,6 @@ impl Data {
         match *self {
             Data::Structured(ref data) => data.identifier(),
             Data::Immutable(ref data) => data.identifier(),
-            Data::Plain(ref data) => data.identifier(),
         }
     }
 
@@ -58,7 +53,6 @@ impl Data {
         match *self {
             Data::Structured(ref data) => data.payload_size(),
             Data::Immutable(ref data) => data.payload_size(),
-            Data::Plain(ref data) => data.payload_size(),
         }
     }
 }
@@ -70,8 +64,6 @@ pub enum DataIdentifier {
     Structured([u8; 32], u64),
     /// Data request, (Identifier), for `ImmutableData`.
     Immutable([u8; 32]),
-    /// Request for PlainData.
-    Plain([u8; 32]),
 }
 
 impl Debug for Data {
@@ -79,7 +71,6 @@ impl Debug for Data {
         match *self {
             Data::Structured(ref data) => data.fmt(formatter),
             Data::Immutable(ref data) => data.fmt(formatter),
-            Data::Plain(ref data) => data.fmt(formatter),
         }
     }
 }
@@ -89,8 +80,7 @@ impl DataIdentifier {
     pub fn name(&self) -> &[u8] {
         match *self {
             DataIdentifier::Structured(ref name, _) |
-            DataIdentifier::Immutable(ref name) |
-            DataIdentifier::Plain(ref name) => name,
+            DataIdentifier::Immutable(ref name) => name
         }
     }
     /// DataIdentifier local name (for store).
@@ -104,12 +94,7 @@ impl DataIdentifier {
                 sha3.finalize(&mut res);
                 Ok(res)
             }
-            DataIdentifier::Immutable(name) |
-            DataIdentifier::Plain(name) => {
-                let mut res: [u8; 32] = [0; 32];
-                res.copy_from_slice(&name);
-                Ok(res)
-            }
+            DataIdentifier::Immutable(name) => Ok(name),
         }
     }
 }
@@ -117,7 +102,6 @@ impl DataIdentifier {
 #[cfg(test)]
 mod tests {
     use data::immutable_data::ImmutableData;
-    use data::plain_data::PlainData;
     use data::structured_data::StructuredData;
     use rand;
     use rust_sodium::crypto::sign;
@@ -156,12 +140,6 @@ mod tests {
         assert_eq!(immutable_data.identifier(),
                    DataIdentifier::Immutable(*immutable_data.name()));
 
-        // name() resolves correctly for PlainData
-        let name = hash(&[]);
-        let plain_data = PlainData::new(name, vec![]);
-        assert_eq!(plain_data.name(), Data::Plain(plain_data.clone()).name());
-        assert_eq!(plain_data.identifier(),
-                   DataIdentifier::Plain(*plain_data.name()));
     }
 
     #[test]
@@ -190,11 +168,6 @@ mod tests {
         assert_eq!(immutable_data.payload_size(),
                    Data::Immutable(immutable_data).payload_size());
 
-        // payload_size() resolves correctly for PlainData
-        let name = hash(&[]);
-        let plain_data = PlainData::new(name, vec![]);
-        assert_eq!(plain_data.payload_size(),
-                   Data::Plain(plain_data).payload_size());
     }
 
     #[test]
@@ -208,7 +181,5 @@ mod tests {
         // name() resolves correctly for ImmutableData
         assert_eq!(&name, DataIdentifier::Immutable(name).name());
 
-        // name() resolves correctly for PlainData
-        assert_eq!(&name, DataIdentifier::Plain(name).name());
     }
 }

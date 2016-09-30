@@ -107,7 +107,6 @@ impl SecuredData {
                 Data::Immutable(ref _id) => {
                     let _ = self.cs.delete(hash);
                 }
-                _ => {}
             }
         }
     }

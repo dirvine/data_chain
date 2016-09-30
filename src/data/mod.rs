@@ -35,10 +35,7 @@ mod data;
 pub mod immutable_data;
 /// Data that will retain it's name but allow dynamic content or transfer of ownership
 pub mod structured_data;
-/// Flexible and insecure data type with no fixed invarients. The name and content are not related.
-pub mod plain_data;
 
 pub use data::data::{Data, DataIdentifier};
 pub use data::immutable_data::ImmutableData;
-pub use data::plain_data::PlainData;
 pub use data::structured_data::{MAX_BYTES, StructuredData};
