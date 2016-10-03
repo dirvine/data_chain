@@ -11,6 +11,9 @@ rust:
   - stable
   - beta
   - nightly
+matrix:
+  allow_failures:
+  - nightly
 sudo: false
 branches:
   only:
