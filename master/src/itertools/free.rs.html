@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.18/src/free.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/free.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>free.rs.html -- source</title>
@@ -318,6 +318,56 @@
 <span id="274">274</span>
 <span id="275">275</span>
 <span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
+<span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Free functions that create iterator adaptors or call iterator methods.</span>
 <span class='doccomment'>//!</span>
@@ -332,6 +382,7 @@
     <span class='ident'>KMerge</span>,
     <span class='ident'>Merge</span>,
     <span class='ident'>ZipEq</span>,
+    <span class='ident'>RcIter</span>,
 };
 
 <span class='doccomment'>/// Iterate `iterable` with a running index.</span>
@@ -425,6 +476,22 @@
           <span class='ident'>J</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>I</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
 {
     <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>chain</span>(<span class='ident'>j</span>)
+}
+
+<span class='doccomment'>/// Create an iterator that clones each element from &amp;T to T</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `IntoIterator` enabled version of `i.cloned()`.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use itertools::free::cloned;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// assert_eq!(cloned(b&quot;abc&quot;).next(), Some(b&#39;a&#39;));</span>
+<span class='doccomment'>/// ```</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>cloned</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>I</span>, <span class='ident'>T</span>: <span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>(<span class='ident'>iterable</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>iter</span>::<span class='ident'>Cloned</span><span class='op'>&lt;</span><span class='ident'>I</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span><span class='op'>=</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;a</span> <span class='ident'>T</span><span class='op'>&gt;</span>,
+          <span class='ident'>T</span>: <span class='ident'>Clone</span>,
+{
+    <span class='ident'>iterable</span>.<span class='ident'>into_iter</span>().<span class='ident'>cloned</span>()
 }
 
 <span class='doccomment'>/// Perform a fold operation over the iterable.</span>
@@ -594,6 +661,39 @@
           <span class='ident'>I</span>::<span class='ident'>Item</span>: <span class='ident'>Ord</span>
 {
     <span class='ident'>iterable</span>.<span class='ident'>into_iter</span>().<span class='ident'>sorted</span>()
+}
+
+<span class='doccomment'>/// Return an iterator inside a `Rc&lt;RefCell&lt;_&gt;&gt;` wrapper.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// The returned `RcIter` can be cloned, and each clone will refer back to the</span>
+<span class='doccomment'>/// same original iterator.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// `RcIter` allows doing interesting things like using `.zip()` on an iterator with</span>
+<span class='doccomment'>/// itself, at the cost of runtime borrow checking.</span>
+<span class='doccomment'>/// (If it is not obvious: this has a performance penalty.)</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// Iterator element type is `Self::Item`.</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>/// use itertools::free::rciter;</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// let mut rit = rciter(0..9);</span>
+<span class='doccomment'>/// let mut z = rit.clone().zip(rit.clone());</span>
+<span class='doccomment'>/// assert_eq!(z.next(), Some((0, 1)));</span>
+<span class='doccomment'>/// assert_eq!(z.next(), Some((2, 3)));</span>
+<span class='doccomment'>/// assert_eq!(z.next(), Some((4, 5)));</span>
+<span class='doccomment'>/// assert_eq!(rit.next(), Some(6));</span>
+<span class='doccomment'>/// assert_eq!(z.next(), Some((7, 8)));</span>
+<span class='doccomment'>/// assert_eq!(z.next(), None);</span>
+<span class='doccomment'>/// ```</span>
+<span class='doccomment'>///</span>
+<span class='doccomment'>/// **Panics** in iterator methods if a borrow error is encountered,</span>
+<span class='doccomment'>/// but it can only happen if the `RcIter` is reentered in for example `.next()`,</span>
+<span class='doccomment'>/// i.e. if it somehow participates in an “iterator knot” where it is an adaptor of itself.</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>rciter</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='ident'>iterable</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>RcIter</span><span class='op'>&lt;</span><span class='ident'>I</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>
+{
+    <span class='ident'>RcIter</span>::<span class='ident'>new</span>(<span class='ident'>iterable</span>.<span class='ident'>into_iter</span>())
 }
 </pre>
 </section>

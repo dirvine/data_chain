@@ -47,10 +47,10 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1509' class='srclink' href='../../src/itertools/misc.rs.html#26-31' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1513' class='srclink' href='../../src/itertools/misc.rs.html#26-31' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait AppendTuple&lt;X&gt; {
     type <a href='#associatedtype.Result' class='type'>Result</a>;
-    fn <a href='#tymethod.append' class='fnname'>append</a>(self, x: X) -&gt; Self::<a class='trait' href='../../itertools/misc/trait.AppendTuple.html' title='itertools::misc::AppendTuple'>Result</a>;
+    fn <a href='#tymethod.append' class='fnname'>append</a>(self, x: X) -&gt; Self::Result;
 }</pre><div class='docblock'><p>A helper trait for (x, y, z) ++ w =&gt; (x, y, z, w),
 used for implementing <code>iproduct!</code>.</p>
 </div>
@@ -60,7 +60,7 @@ used for implementing <code>iproduct!</code>.</p>
 </div></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.append' class='method stab '><code>fn <a href='#tymethod.append' class='fnname'>append</a>(self, x: X) -&gt; Self::<a class='trait' href='../../itertools/misc/trait.AppendTuple.html' title='itertools::misc::AppendTuple'>Result</a></code></h3><div class='docblock'><p>“Append” value <code>x</code> to a tuple.</p>
+        <h3 id='tymethod.append' class='method stab '><code>fn <a href='#tymethod.append' class='fnname'>append</a>(self, x: X) -&gt; Self::Result</code></h3><div class='docblock'><p>“Append” value <code>x</code> to a tuple.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>

@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-741' class='srclink' href='../../src/itertools/free.rs.html#1-276' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-740' class='srclink' href='../../src/itertools/free.rs.html#1-326' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Free functions that create iterator adaptors or call iterator methods.</p>
 
 <p>The benefit of free functions is that they accept any <code>IntoIterator</code> as
@@ -73,6 +73,13 @@ argument, so the resulting code may be easier to read.</p>
                                   title='itertools::free::chain'>chain</a></td>
                            <td class='docblock short'>
                                 <p>Create an iterator that first iterates <code>i</code> and then <code>j</code>.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.cloned.html'
+                                  title='itertools::free::cloned'>cloned</a></td>
+                           <td class='docblock short'>
+                                <p>Create an iterator that clones each element from &amp;T to T</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -129,6 +136,13 @@ argument, so the resulting code may be easier to read.</p>
                                   title='itertools::free::min'>min</a></td>
                            <td class='docblock short'>
                                 <p>Return the minimum value of the iterable.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='fn' href='fn.rciter.html'
+                                  title='itertools::free::rciter'>rciter</a></td>
+                           <td class='docblock short'>
+                                <p>Return an iterator inside a <code>Rc&lt;RefCell&lt;_&gt;&gt;</code> wrapper.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>

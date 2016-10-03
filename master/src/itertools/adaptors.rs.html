@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.18/src/adaptors.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/adaptors.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>adaptors.rs.html -- source</title>
@@ -1492,6 +1492,7 @@
 <span id="1448">1448</span>
 <span id="1449">1449</span>
 <span id="1450">1450</span>
+<span id="1451">1451</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Licensed under the Apache License, Version 2.0</span>
 <span class='doccomment'>//! http://www.apache.org/licenses/LICENSE-2.0 or the MIT license</span>
@@ -1509,7 +1510,6 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::{<span class='ident'>Fuse</span>, <span class='ident'>Peekable</span>, <span class='ident'>FlatMap</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>collections</span>::<span class='ident'>HashSet</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>hash</span>::<span class='ident'>Hash</span>;
-<span class='kw'>use</span> <span class='ident'>Itertools</span>;
 <span class='kw'>use</span> <span class='ident'>size_hint</span>;
 <span class='kw'>use</span> <span class='ident'>misc</span>::<span class='ident'>MendSlice</span>;
 
@@ -1998,7 +1998,9 @@
     <span class='attribute'>#[<span class='ident'>inline</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>I</span>::<span class='ident'>Item</span><span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>elt</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>next</span>();
-        <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>dropn</span>(<span class='self'>self</span>.<span class='ident'>skip</span>);
+        <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>skip</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
+            <span class='self'>self</span>.<span class='ident'>iter</span>.<span class='ident'>nth</span>(<span class='self'>self</span>.<span class='ident'>skip</span> <span class='op'>-</span> <span class='number'>1</span>);
+        }
         <span class='ident'>elt</span>
     }
 
