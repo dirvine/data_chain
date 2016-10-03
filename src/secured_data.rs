@@ -122,7 +122,7 @@ impl SecuredData {
         let id = match *data {
             Data::Immutable(ref im) if *im.name() == hash => BlockIdentifier::ImmutableData(hash),
             Data::Structured(ref sd) if sd.version() == 0 || sd.ledger() => {
-                BlockIdentifier::StructuredData(hash, *sd.name(), sd.ledger())
+                BlockIdentifier::StructuredData(hash, sd.identifier())
             }
             _ => return Err(Error::BadIdentifier),
         };
@@ -139,21 +139,21 @@ impl SecuredData {
         let hash = hash(&try!(serialisation::serialise(&data)));
         let id = match *data {
             Data::Structured(ref sd) if !sd.ledger() => {
-                BlockIdentifier::StructuredData(hash, *sd.name(), false)
+                BlockIdentifier::StructuredData(hash, sd.identifier())
             }
             _ => return Err(Error::BadIdentifier),
         };
         // Remove last element unless marked with ledger
         // TODO handle ledger bit
-        if let Some(block_id) = self.dc
-            .lock()
-            .unwrap()
-            .find_name(data.name()) {
-            if !block_id.identifier().is_ledger() {
-                let _ = self.cs.delete(block_id.identifier().hash());
-                self.dc.lock().unwrap().remove(block_id.identifier());
-            }
-        }
+        // if let Some(block_id) = self.dc
+        //     .lock()
+        //     .unwrap()
+        //     .find_name(data.name()) {
+        //     if !block_id.identifier().is_ledger() {
+        //         let _ = self.cs.delete(block_id.identifier().hash());
+        //         self.dc.lock().unwrap().remove(block_id.identifier());
+        //     }
+        // }
         self.trim_previous_data(&hash);
         try!(self.cs.put(&hash, data));
 
@@ -169,11 +169,11 @@ impl SecuredData {
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-            if !block_id.identifier().is_ledger() {
+            // if !block_id.identifier().is_ledger() {
                 let _ = self.cs.delete(block_id.identifier().hash());
                 self.dc.lock().unwrap().remove(block_id.identifier());
                 return Ok(block_id.identifier().clone());
-            }
+            // }
         }
         Err(Error::NoFile)
     }

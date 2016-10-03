@@ -77,12 +77,13 @@ impl Debug for Data {
 
 impl DataIdentifier {
     /// DataIdentifier name.
-    pub fn name(&self) -> &[u8] {
+    pub fn name(&self) -> &[u8;32] {
         match *self {
             DataIdentifier::Structured(ref name, _) |
             DataIdentifier::Immutable(ref name) => name
         }
     }
+    /// check for ledger
     /// DataIdentifier local name (for store).
     pub fn local_name(&self) -> Result<[u8; 32], Error> {
         match *self {

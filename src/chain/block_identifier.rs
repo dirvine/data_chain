@@ -17,9 +17,7 @@
 
 use std::fmt::{self, Debug, Formatter};
 use super::debug_bytes;
-
-/// structured Data name
-pub type SdName = [u8; 32];
+use data::DataIdentifier;
 
 /// Ledger type (delete or keep)
 pub type Ledger = bool;
@@ -36,7 +34,7 @@ pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
     ImmutableData([u8; 32]),
     ///           hash     name (identity + tag) (stored localy as name in data store)
-    StructuredData([u8; 32], SdName, Ledger),
+    StructuredData([u8; 32], DataIdentifier),
     /// This array represents **this nodes** current close group
     /// The array is all nodes xored together
     /// This is unique to this node, but known by all nodes connected to it
@@ -51,17 +49,9 @@ impl BlockIdentifier {
     /// Therefore we will delete before insert etc. based on name alone of the data element
     pub fn hash(&self) -> &[u8; 32] {
         match *self {
-            BlockIdentifier::StructuredData(ref hash, _name, _) => hash,
+            BlockIdentifier::StructuredData(ref hash, _name) => hash,
             BlockIdentifier::ImmutableData(ref hash) |
             BlockIdentifier::Link(ref hash) => hash,
-        }
-    }
-
-    /// Is this an identifier with ledger bit set
-    pub fn is_ledger(&self) -> bool {
-        match *self {
-            BlockIdentifier::StructuredData(_hash, _name, ledger) => ledger,
-            _ => false,
         }
     }
 
@@ -69,7 +59,7 @@ impl BlockIdentifier {
     pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
             BlockIdentifier::ImmutableData(ref hash) => Some(hash),
-            BlockIdentifier::StructuredData(_hash, ref name, _) => Some(name),
+            BlockIdentifier::StructuredData(_hash, ref id) => Some(id.name()),
             BlockIdentifier::Link(_hash) => None,
         }
     }
@@ -78,14 +68,18 @@ impl BlockIdentifier {
     pub fn is_link(&self) -> bool {
         match *self {
             BlockIdentifier::ImmutableData(_) |
-            BlockIdentifier::StructuredData(_, _, _) => false,
+            BlockIdentifier::StructuredData(_, _) => false,
             BlockIdentifier::Link(_) => true,
         }
     }
 
     /// Is this a data block
     pub fn is_block(&self) -> bool {
-        !self.is_link()
+        match *self {
+            BlockIdentifier::ImmutableData(_) |
+            BlockIdentifier::StructuredData(_, _) => true,
+            BlockIdentifier::Link(_) => false,
+        }
     }
 }
 
@@ -95,12 +89,11 @@ impl Debug for BlockIdentifier {
             BlockIdentifier::ImmutableData(ref hash) => {
                 write!(formatter, "ImmutableData({})", debug_bytes(hash))
             }
-            BlockIdentifier::StructuredData(ref hash, ref name, ref ledger) => {
+            BlockIdentifier::StructuredData(ref hash, ref name) => {
                 write!(formatter,
-                       "StructuredData(hash: {}, name: {}, ledger: {})",
+                       "StructuredData(hash: {}, name: {:?})",
                        debug_bytes(hash),
-                       debug_bytes(name),
-                       ledger)
+                       name)
             }
             BlockIdentifier::Link(ref descriptor) => {
                 write!(formatter, "Link({})", debug_bytes(descriptor))
@@ -112,6 +105,7 @@ impl Debug for BlockIdentifier {
 #[cfg(test)]
 mod tests {
     use sha3::hash;
+    use data::DataIdentifier;
     use super::*;
 
     #[test]
@@ -135,7 +129,7 @@ mod tests {
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"), hash(b"name"), false);
+        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"), DataIdentifier::Structured(hash(b"name"), 1));
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
