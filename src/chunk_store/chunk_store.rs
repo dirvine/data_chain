@@ -49,12 +49,12 @@ impl<Key, Value> ChunkStore<Key, Value>
     ///
     /// The data is stored in a root directory. If `root` doesn't exist, it will be created.
     pub fn new(root: PathBuf, max_space: u64) -> Result<ChunkStore<Key, Value>, Error> {
-        try!(fs::create_dir_all(&root));
+        fs::create_dir_all(&root)?;
 
         // Verify that chunk files can be created.
         let name: String = (0..MAX_CHUNK_FILE_NAME_LENGTH).map(|_| '0').collect();
-        let _ = try!(File::create(&root.join(name.clone())));
-        try!(fs::remove_file(&root.join(name)));
+        let _ = File::create(&root.join(name.clone()))?;
+        fs::remove_file(&root.join(name))?;
         Ok(ChunkStore {
             rootdir: root,
             max_space: max_space,
@@ -82,13 +82,13 @@ impl<Key, Value> ChunkStore<Key, Value>
     ///
     /// If the key already exists, it will be overwritten.
     pub fn put(&mut self, key: &Key, value: &Value) -> Result<(), Error> {
-        let serialised_value = try!(serialisation::serialise(value));
+        let serialised_value = serialisation::serialise(value)?;
         if self.used_space + serialised_value.len() as u64 > self.max_space {
             return Err(Error::NoSpace);
         }
 
         // If a file corresponding to 'key' already exists, delete it.
-        let file_path = try!(self.file_path(key));
+        let file_path = self.file_path(key)?;
         let _ = self.do_delete(&file_path);
 
         // Write the file.
@@ -109,7 +109,7 @@ impl<Key, Value> ChunkStore<Key, Value>
     /// If the data doesn't exist, it does nothing and returns `Ok`.  In the case of an IO error, it
     /// returns `Error::Io`.
     pub fn delete(&mut self, key: &Key) -> Result<(), Error> {
-        let file_path = try!(self.file_path(&key));
+        let file_path = self.file_path(&key)?;
         self.do_delete(&file_path)
     }
 
@@ -117,11 +117,11 @@ impl<Key, Value> ChunkStore<Key, Value>
     ///
     /// If the data file can't be accessed, it returns `Error::ChunkNotFound`.
     pub fn get(&self, key: &Key) -> Result<Value, Error> {
-        match File::open(try!(self.file_path(key))) {
+        match File::open(self.file_path(key)?) {
             Ok(mut file) => {
                 let mut contents = Vec::<u8>::new();
-                let _ = try!(file.read_to_end(&mut contents));
-                Ok(try!(serialisation::deserialise::<Value>(&contents)))
+                let _ = file.read_to_end(&mut contents)?;
+                Ok(serialisation::deserialise::<Value>(&contents)?)
             }
             Err(_) => Err(Error::NoFile),
         }
@@ -176,7 +176,7 @@ impl<Key, Value> ChunkStore<Key, Value>
     }
 
     fn file_path(&self, key: &Key) -> Result<PathBuf, Error> {
-        let filename = try!(serialisation::serialise(key)).to_hex();
+        let filename = serialisation::serialise(key)?.to_hex();
         let path_name = Path::new(&filename);
         Ok(self.rootdir.join(path_name))
     }

@@ -44,7 +44,7 @@ pub struct StructuredData {
 
 impl StructuredData {
     /// Creates a new `StructuredData` signed with `signing_key`.
-    #[cfg_attr(feature = "clippy", allow(too_many_arguments))]
+    #[cfg_attr(feature = "cargo-clippy", allow(too_many_arguments))]
     pub fn new(type_tag: u64,
                name: [u8; 32],
                version: u64,
@@ -67,7 +67,7 @@ impl StructuredData {
         };
 
         if let Some(key) = signing_key {
-            let _ = try!(structured_data.add_signature(key));
+            let _ = structured_data.add_signature(key)?;
         }
         Ok(structured_data)
     }
@@ -79,7 +79,7 @@ impl StructuredData {
     /// To transfer ownership, the current owner signs over the data; the previous owners field
     /// must have the previous owners of `version - 1` as the current owners of that last version.
     pub fn replace_with_other(&mut self, other: StructuredData) -> Result<(), Error> {
-        try!(self.validate_self_against_successor(&other));
+        self.validate_self_against_successor(&other)?;
 
         self.type_tag = other.type_tag;
         self.name = other.name;
@@ -149,7 +149,7 @@ impl StructuredData {
             return Err(Error::Validation);
         }
 
-        let data = try!(self.data_to_sign());
+        let data = self.data_to_sign()?;
         // Count valid previous_owner_signatures and refuse if quantity is not enough
 
         let check_all_keys = |&sig| {
@@ -185,7 +185,7 @@ impl StructuredData {
     /// the number of signatures that are still required. If more than 50% of the previous owners
     /// have signed, 0 is returned and validation is complete.
     pub fn add_signature(&mut self, secret_key: &SecretKey) -> Result<usize, Error> {
-        let data = try!(self.data_to_sign());
+        let data = self.data_to_sign()?;
         let sig = sign::sign_detached(&data, secret_key);
         self.previous_owner_signatures.push(sig);
         let owner_keys = if self.previous_owner_keys.is_empty() {
@@ -326,14 +326,15 @@ mod tests {
         let owner_keys = vec![keys.0];
         let other_keys = sign::gen_keypair();
 
-        if let Ok(ref mut structured_data) = super::StructuredData::new(0,
-                                                                        rand::random(),
-                                                                        0,
-                                                                        vec![],
-                                                                        owner_keys.clone(),
-                                                                        vec![],
-                                                                        None,
-                                                                        true) {
+        if let Ok(ref mut structured_data) =
+            super::StructuredData::new(0,
+                                       rand::random(),
+                                       0,
+                                       vec![],
+                                       owner_keys.clone(),
+                                       vec![],
+                                       None,
+                                       true) {
 
             assert!(structured_data.add_signature(&other_keys.1).is_ok());
             assert!(structured_data.verify_previous_owner_signatures(&owner_keys).is_err());

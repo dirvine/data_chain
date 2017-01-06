@@ -39,8 +39,8 @@ impl SecuredData {
                           max_disk_space: u64,
                           group_size: usize)
                           -> Result<SecuredData, Error> {
-        let cs = try!(ChunkStore::new(path.clone(), max_disk_space));
-        let dc = Arc::new(Mutex::new(try!(DataChain::create_in_path(path, group_size))));
+        let cs = ChunkStore::new(path.clone(), max_disk_space)?;
+        let dc = Arc::new(Mutex::new(DataChain::create_in_path(path, group_size)?));
         Ok(SecuredData { cs: cs, dc: dc })
     }
 
@@ -49,15 +49,15 @@ impl SecuredData {
                      max_disk_space: u64,
                      group_size: usize)
                      -> Result<SecuredData, Error> {
-        let cs = try!(ChunkStore::from_path(path.clone(), max_disk_space));
-        let dc = Arc::new(Mutex::new(try!(DataChain::from_path(path, group_size))));
+        let cs = ChunkStore::from_path(path.clone(), max_disk_space)?;
+        let dc = Arc::new(Mutex::new(DataChain::from_path(path, group_size)?));
         Ok(SecuredData { cs: cs, dc: dc })
     }
 
     /// remove all disk based data
     pub fn clear_disk(&self, path: &Path) -> Result<(), Error> {
         self.dc.lock().unwrap().unlock();
-        Ok(try!(fs::remove_dir_all(&path)))
+        Ok(fs::remove_dir_all(&path)?)
     }
 
     /// Access to DataChain
@@ -88,7 +88,7 @@ impl SecuredData {
             .unwrap()
             .find_name(data_id.name()) {
             if block_id.valid {
-                return Ok(try!(self.cs.get(&block_id.identifier().hash())));
+                return Ok(self.cs.get(&block_id.identifier().hash())?);
             } else {
                 return Err(Error::Validation);
             }
@@ -118,7 +118,7 @@ impl SecuredData {
     ///
     /// **Versioned ledger structured data will be Put and paid for**
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = hash(&try!(serialisation::serialise(&data)));
+        let hash = hash(&serialisation::serialise(&data)?);
         let id = match *data {
             Data::Immutable(ref im) if *im.name() == hash => BlockIdentifier::ImmutableData(hash),
             Data::Structured(ref sd) if sd.version() == 0 || sd.ledger() => {
@@ -127,7 +127,7 @@ impl SecuredData {
             _ => return Err(Error::BadIdentifier),
         };
         self.trim_previous_data(&hash);
-        try!(self.cs.put(&hash, data));
+        self.cs.put(&hash, data)?;
         Ok(id)
     }
 
@@ -136,7 +136,7 @@ impl SecuredData {
     ///
     /// **Will not accept versioned ledger based structuredData !**
     pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = hash(&try!(serialisation::serialise(&data)));
+        let hash = hash(&serialisation::serialise(&data)?);
         let id = match *data {
             Data::Structured(ref sd) if !sd.ledger() => {
                 BlockIdentifier::StructuredData(hash, sd.identifier())
@@ -155,7 +155,7 @@ impl SecuredData {
         //     }
         // }
         self.trim_previous_data(&hash);
-        try!(self.cs.put(&hash, data));
+        self.cs.put(&hash, data)?;
 
         Ok(id)
     }
@@ -170,9 +170,9 @@ impl SecuredData {
             .unwrap()
             .find_name(data_id.name()) {
             // if !block_id.identifier().is_ledger() {
-                let _ = self.cs.delete(block_id.identifier().hash());
-                self.dc.lock().unwrap().remove(block_id.identifier());
-                return Ok(block_id.identifier().clone());
+            let _ = self.cs.delete(block_id.identifier().hash());
+            self.dc.lock().unwrap().remove(block_id.identifier());
+            return Ok(block_id.identifier().clone());
             // }
         }
         Err(Error::NoFile)
@@ -210,7 +210,7 @@ impl SecuredData {
             .filter(|x| cs_keys.contains(x.identifier().hash())) {
             // only throws error on IO error not missing data
             // TODO test this !!
-            try!(self.cs.delete(dc_key.identifier().hash()));
+            self.cs.delete(dc_key.identifier().hash())?;
         }
         Ok(())
     }

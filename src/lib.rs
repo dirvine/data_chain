@@ -53,12 +53,6 @@
 #![allow(box_pointers, fat_ptr_transmutes, missing_copy_implementations,
          missing_debug_implementations, variant_size_differences)]
 
-
-#![cfg_attr(feature="clippy", feature(plugin))]
-#![cfg_attr(feature="clippy", plugin(clippy))]
-#![cfg_attr(feature="clippy", deny(clippy))]
-#![cfg_attr(feature="clippy", allow(use_debug))]
-
 extern crate bincode;
 extern crate fs2;
 extern crate itertools;

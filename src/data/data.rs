@@ -77,10 +77,10 @@ impl Debug for Data {
 
 impl DataIdentifier {
     /// DataIdentifier name.
-    pub fn name(&self) -> &[u8;32] {
+    pub fn name(&self) -> &[u8; 32] {
         match *self {
             DataIdentifier::Structured(ref name, _) |
-            DataIdentifier::Immutable(ref name) => name
+            DataIdentifier::Immutable(ref name) => name,
         }
     }
     /// check for ledger
@@ -90,7 +90,7 @@ impl DataIdentifier {
             DataIdentifier::Structured(ref name, ref tag) => {
                 let mut sha3 = Keccak::new_sha3_256();
                 sha3.update(name);
-                sha3.update(&try!(serialise(tag)));
+                sha3.update(&serialise(tag)?);
                 let mut res: [u8; 32] = [0; 32];
                 sha3.finalize(&mut res);
                 Ok(res)

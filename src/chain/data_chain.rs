@@ -53,9 +53,9 @@ impl DataChain {
     /// Provide the directory to create the files in
     pub fn create_in_path(path: PathBuf, group_size: usize) -> io::Result<DataChain> {
         let path = path.join("data_chain");
-        let file = try!(fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path));
+        let file = fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path)?;
         // hold a lock on the file for the whole session
-        try!(file.lock_exclusive());
+        file.lock_exclusive()?;
         Ok(DataChain {
             chain: Blocks::default(),
             group_size: group_size,
@@ -66,14 +66,13 @@ impl DataChain {
     /// Open from existing directory
     pub fn from_path(path: PathBuf, group_size: usize) -> Result<DataChain, Error> {
         let path = path.join("data_chain");
-        let mut file =
-            try!(fs::OpenOptions::new().read(true).write(true).create(false).open(&path));
+        let mut file = fs::OpenOptions::new().read(true).write(true).create(false).open(&path)?;
         // hold a lock on the file for the whole session
-        try!(file.lock_exclusive());
+        file.lock_exclusive()?;
         let mut buf = Vec::<u8>::new();
-        let _ = try!(file.read_to_end(&mut buf));
+        let _ = file.read_to_end(&mut buf)?;
         Ok(DataChain {
-            chain: try!(serialisation::deserialise::<Blocks>(&buf[..])),
+            chain: serialisation::deserialise::<Blocks>(&buf[..])?,
             group_size: group_size,
             path: Some(path),
         })
@@ -91,26 +90,24 @@ impl DataChain {
     /// Write current data chain to supplied path
     pub fn write(&self) -> Result<(), Error> {
         if let Some(path) = self.path.to_owned() {
-            let mut file = try!(fs::OpenOptions::new()
-                .read(true)
+            let mut file = fs::OpenOptions::new().read(true)
                 .write(true)
                 .create(false)
-                .open(&path.as_path()));
-            return Ok(try!(file.write_all(&try!(serialisation::serialise(&self.chain)))));
+                .open(&path.as_path())?;
+            return Ok(file.write_all(&serialisation::serialise(&self.chain)?)?);
         }
         Err(Error::NoFile)
     }
 
     /// Write current data chain to supplied path
     pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), Error> {
-        let mut file = try!(fs::OpenOptions::new()
-            .read(true)
+        let mut file = fs::OpenOptions::new().read(true)
             .write(true)
             .create(false)
-            .open(path.as_path()));
-        try!(file.write_all(&try!(serialisation::serialise(&self.chain))));
+            .open(path.as_path())?;
+        file.write_all(&serialisation::serialise(&self.chain)?)?;
         self.path = Some(path);
-        Ok(try!(file.lock_exclusive()))
+        Ok(file.lock_exclusive()?)
     }
 
     /// Unlock the lock file
@@ -299,7 +296,7 @@ impl DataChain {
 
     /// Should contain majority of the current common_close_group
     fn last_valid_link(&mut self) -> Option<&mut Block> {
-        self.chain.iter_mut().rev().find((|x| x.identifier().is_link() && x.valid))
+        self.chain.iter_mut().rev().find(|x| x.identifier().is_link() && x.valid)
     }
 
     /// Returns all links in chain
@@ -361,10 +358,11 @@ impl DataChain {
 
     /// Mark all links that are valid as such.
     pub fn mark_blocks_valid(&mut self) {
-        if let Some(mut first_link) = self.chain
-            .iter()
-            .cloned()
-            .find(|x| x.identifier().is_link()) {
+        if let Some(mut first_link) =
+            self.chain
+                .iter()
+                .cloned()
+                .find(|x| x.identifier().is_link()) {
             for block in &mut self.chain {
                 block.remove_invalid_signatures();
                 if Self::validate_block_with_proof(block, &first_link, self.group_size) {
@@ -424,18 +422,18 @@ impl Debug for DataChain {
             output.push_str("    }");
             output
         };
-        try!(write!(formatter,
-                    "DataChain {{\n    group_size: {}\n    path: ",
-                    self.group_size));
+        write!(formatter,
+               "DataChain {{\n    group_size: {}\n    path: ",
+               self.group_size)?;
         match self.path {
-            Some(ref path) => try!(writeln!(formatter, "{}", path.display())),
-            None => try!(writeln!(formatter, "None")),
+            Some(ref path) => writeln!(formatter, "{}", path.display())?,
+            None => writeln!(formatter, "None")?,
         }
         if self.chain.is_empty() {
             write!(formatter, "    chain: []\n}}")
         } else {
             for block in &self.chain {
-                try!(writeln!(formatter, "{}", print_block(block)))
+                writeln!(formatter, "{}", print_block(block))?
             }
             write!(formatter, "}}")
         }
@@ -624,8 +622,12 @@ mod tests {
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
-        let sd1_ident = BlockIdentifier::StructuredData(hash(b"sd1hash"), DataIdentifier::Structured(hash(b"sd1name"), 0));
-        let sd2_ident = BlockIdentifier::StructuredData(hash(b"s21hash"), DataIdentifier::Structured(hash(b"sd2name"),0));
+        let sd1_ident =
+            BlockIdentifier::StructuredData(hash(b"sd1hash"),
+                                            DataIdentifier::Structured(hash(b"sd1name"), 0));
+        let sd2_ident =
+            BlockIdentifier::StructuredData(hash(b"s21hash"),
+                                            DataIdentifier::Structured(hash(b"sd2name"), 0));
         assert!(identifier1 != id_ident);
         assert!(identifier1 != sd1_ident);
         assert!(id_ident != sd1_ident);
@@ -712,7 +714,9 @@ mod tests {
         let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
-        let sd1_ident = BlockIdentifier::StructuredData(hash(b"sd1hash"), DataIdentifier::Structured(hash(b"sd1name"),0));
+        let sd1_ident =
+            BlockIdentifier::StructuredData(hash(b"sd1hash"),
+                                            DataIdentifier::Structured(hash(b"sd1name"), 0));
         let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
         let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
         let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);

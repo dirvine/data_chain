@@ -15,12 +15,9 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+use data::DataIdentifier;
 use std::fmt::{self, Debug, Formatter};
 use super::debug_bytes;
-use data::DataIdentifier;
-
-/// Ledger type (delete or keep)
-pub type Ledger = bool;
 
 /// Hash of the public keys of all group members (keys are lexicographically sorted before hashing).
 ///
@@ -103,8 +100,8 @@ impl Debug for BlockIdentifier {
 
 #[cfg(test)]
 mod tests {
-    use sha3::hash;
     use data::DataIdentifier;
+    use sha3::hash;
     use super::*;
 
     #[test]
@@ -128,7 +125,9 @@ mod tests {
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"), DataIdentifier::Structured(hash(b"name"), 1));
+        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"),
+                                                       DataIdentifier::Structured(hash(b"name"),
+                                                                                  1));
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());

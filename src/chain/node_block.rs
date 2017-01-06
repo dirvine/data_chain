@@ -93,7 +93,7 @@ impl NodeBlock {
                secret_key: &SecretKey,
                data_identifier: BlockIdentifier)
                -> Result<NodeBlock, Error> {
-        let signature = sign::sign_detached(&try!(serialisation::serialise(&data_identifier))[..],
+        let signature = sign::sign_detached(&serialisation::serialise(&data_identifier)?[..],
                                             secret_key);
         Ok(NodeBlock {
             identifier: data_identifier,
