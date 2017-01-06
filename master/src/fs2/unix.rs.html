@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/fs2-0.2.5/src/unix.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/fs2-0.4.1/src/unix.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>unix.rs.html -- source</title>
@@ -252,15 +252,6 @@
 <span id="208">208</span>
 <span id="209">209</span>
 <span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
 </pre><pre class='rust '>
 <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>libc</span>;
 
@@ -272,6 +263,8 @@
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>fs</span>::<span class='ident'>MetadataExt</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>os</span>::<span class='ident'>unix</span>::<span class='ident'>io</span>::{<span class='ident'>AsRawFd</span>, <span class='ident'>FromRawFd</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>path</span>::<span class='ident'>Path</span>;
+
+<span class='kw'>use</span> <span class='ident'>FsStats</span>;
 
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>duplicate</span>(<span class='ident'>file</span>: <span class='kw-2'>&amp;</span><span class='ident'>File</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>File</span><span class='op'>&gt;</span> {
     <span class='kw'>unsafe</span> {
@@ -371,8 +364,8 @@
     }
 }
 
-<span class='kw'>fn</span> <span class='ident'>statvfs</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>libc</span>::<span class='ident'>statvfs</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
-    <span class='kw'>let</span> <span class='ident'>cstr</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>CString</span>::<span class='ident'>new</span>(<span class='ident'>path</span>.<span class='ident'>as_ref</span>().<span class='ident'>as_os_str</span>().<span class='ident'>as_bytes</span>()) {
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>statvfs</span>(<span class='ident'>path</span>: <span class='kw-2'>&amp;</span><span class='ident'>Path</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>FsStats</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='ident'>cstr</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>CString</span>::<span class='ident'>new</span>(<span class='ident'>path</span>.<span class='ident'>as_os_str</span>().<span class='ident'>as_bytes</span>()) {
         <span class='prelude-val'>Ok</span>(<span class='ident'>cstr</span>) <span class='op'>=&gt;</span> <span class='ident'>cstr</span>,
         <span class='prelude-val'>Err</span>(..) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>new</span>(<span class='ident'>ErrorKind</span>::<span class='ident'>InvalidInput</span>, <span class='string'>&quot;path contained a null&quot;</span>)),
     };
@@ -380,28 +373,17 @@
     <span class='kw'>unsafe</span> {
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>stat</span>: <span class='ident'>libc</span>::<span class='ident'>statvfs</span> <span class='op'>=</span> <span class='ident'>mem</span>::<span class='ident'>zeroed</span>();
         <span class='comment'>// danburkert/fs2-rs#1: cast is necessary for platforms where c_char != u8.</span>
-        <span class='kw'>if</span> <span class='ident'>libc</span>::<span class='ident'>statvfs</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>stat</span>) <span class='op'>==</span> <span class='op'>-</span><span class='number'>1</span> {
+        <span class='kw'>if</span> <span class='ident'>libc</span>::<span class='ident'>statvfs</span>(<span class='ident'>cstr</span>.<span class='ident'>as_ptr</span>() <span class='kw'>as</span> <span class='op'>*</span><span class='kw'>const</span> _, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>stat</span>) <span class='op'>!=</span> <span class='number'>0</span> {
             <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>last_os_error</span>())
         } <span class='kw'>else</span> {
-            <span class='prelude-val'>Ok</span>(<span class='ident'>stat</span>)
+            <span class='prelude-val'>Ok</span>(<span class='ident'>FsStats</span> {
+                <span class='ident'>free_space</span>: <span class='ident'>stat</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>stat</span>.<span class='ident'>f_bfree</span> <span class='kw'>as</span> <span class='ident'>u64</span>,
+                <span class='ident'>available_space</span>: <span class='ident'>stat</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>stat</span>.<span class='ident'>f_bavail</span> <span class='kw'>as</span> <span class='ident'>u64</span>,
+                <span class='ident'>total_space</span>: <span class='ident'>stat</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>stat</span>.<span class='ident'>f_blocks</span> <span class='kw'>as</span> <span class='ident'>u64</span>,
+                <span class='ident'>allocation_granularity</span>: <span class='ident'>stat</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span>,
+            })
         }
     }
-}
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>free_space</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
-    <span class='ident'>statvfs</span>(<span class='ident'>path</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>statvfs</span><span class='op'>|</span> <span class='ident'>statvfs</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>statvfs</span>.<span class='ident'>f_bfree</span> <span class='kw'>as</span> <span class='ident'>u64</span>)
-}
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>available_space</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
-    <span class='ident'>statvfs</span>(<span class='ident'>path</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>statvfs</span><span class='op'>|</span> <span class='ident'>statvfs</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>statvfs</span>.<span class='ident'>f_bavail</span> <span class='kw'>as</span> <span class='ident'>u64</span>)
-}
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>total_space</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
-    <span class='ident'>statvfs</span>(<span class='ident'>path</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>statvfs</span><span class='op'>|</span> <span class='ident'>statvfs</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span> <span class='op'>*</span> <span class='ident'>statvfs</span>.<span class='ident'>f_blocks</span> <span class='kw'>as</span> <span class='ident'>u64</span>)
-}
-
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>allocation_granularity</span><span class='op'>&lt;</span><span class='ident'>P</span><span class='op'>&gt;</span>(<span class='ident'>path</span>: <span class='ident'>P</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u64</span><span class='op'>&gt;</span> <span class='kw'>where</span> <span class='ident'>P</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span><span class='ident'>Path</span><span class='op'>&gt;</span> {
-    <span class='ident'>statvfs</span>(<span class='ident'>path</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>statvfs</span><span class='op'>|</span> <span class='ident'>statvfs</span>.<span class='ident'>f_frsize</span> <span class='kw'>as</span> <span class='ident'>u64</span>)
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
@@ -538,11 +520,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "fs2";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

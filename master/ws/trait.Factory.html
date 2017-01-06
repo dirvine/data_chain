@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-849' class='srclink' href='../src/ws/factory.rs.html#5-104' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-366' class='srclink' href='../src/ws/factory.rs.html#5-104' title='goto source code'>[src]</a></span></h1>
 <pre class='rust trait'>pub trait Factory {
     type <a href='#associatedtype.Handler' class='type'>Handler</a>: <a class='trait' href='../ws/trait.Handler.html' title='ws::Handler'>Handler</a>;
     fn <a href='#tymethod.connection_made' class='fnname'>connection_made</a>(&amp;mut self, <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler;
@@ -60,15 +60,15 @@
 </div>
             <h2 id='associated-types'>Associated Types</h2>
             <div class='methods'>
-        <h3 id='associatedtype.Handler' class='method stab '><code>type <a href='#associatedtype.Handler' class='type'>Handler</a>: <a class='trait' href='../ws/trait.Handler.html' title='ws::Handler'>Handler</a></code></h3></div>
+        <h3 id='associatedtype.Handler' class='method stab '><span id='Handler.t' class='invisible'><code>type <a href='#associatedtype.Handler' class='type'>Handler</a>: <a class='trait' href='../ws/trait.Handler.html' title='ws::Handler'>Handler</a></code></span></h3></div>
             <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
-        <h3 id='tymethod.connection_made' class='method stab '><code>fn <a href='#tymethod.connection_made' class='fnname'>connection_made</a>(&amp;mut self, <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></h3><div class='docblock'><p>Called when a TCP connection is made.</p>
+        <h3 id='tymethod.connection_made' class='method stab '><span id='connection_made.v' class='invisible'><code>fn <a href='#tymethod.connection_made' class='fnname'>connection_made</a>(&amp;mut self, <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></span></h3><div class='docblock'><p>Called when a TCP connection is made.</p>
 </div></div>
             <h2 id='provided-methods'>Provided Methods</h2>
             <div class='methods'>
-        <h3 id='method.on_shutdown' class='method stab '><code>fn <a href='#method.on_shutdown' class='fnname'>on_shutdown</a>(&amp;mut self)</code></h3><div class='docblock'><p>Called when the WebSocket is shutting down.</p>
-</div><h3 id='method.client_connected' class='method stab '><code>fn <a href='#method.client_connected' class='fnname'>client_connected</a>(&amp;mut self, ws: <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></h3><div class='docblock'><p>Called when a new connection is established for a client endpoint.
+        <h3 id='method.on_shutdown' class='method stab '><span id='on_shutdown.v' class='invisible'><code>fn <a href='#method.on_shutdown' class='fnname'>on_shutdown</a>(&amp;mut self)</code></span></h3><div class='docblock'><p>Called when the WebSocket is shutting down.</p>
+</div><h3 id='method.client_connected' class='method stab '><span id='client_connected.v' class='invisible'><code>fn <a href='#method.client_connected' class='fnname'>client_connected</a>(&amp;mut self, ws: <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></span></h3><div class='docblock'><p>Called when a new connection is established for a client endpoint.
 This method can be used to differentiate a client aspect for a handler.</p>
 
 <pre class='rust rust-example-rendered'>
@@ -101,7 +101,7 @@ This method can be used to differentiate a client aspect for a handler.</p>
         }
     }
 }</pre>
-</div><h3 id='method.server_connected' class='method stab '><code>fn <a href='#method.server_connected' class='fnname'>server_connected</a>(&amp;mut self, ws: <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></h3><div class='docblock'><p>Called when a new connection is established for a server endpoint.
+</div><h3 id='method.server_connected' class='method stab '><span id='server_connected.v' class='invisible'><code>fn <a href='#method.server_connected' class='fnname'>server_connected</a>(&amp;mut self, ws: <a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; Self::Handler</code></span></h3><div class='docblock'><p>Called when a new connection is established for a server endpoint.
 This method can be used to differentiate a server aspect for a handler.</p>
 
 <pre class='rust rust-example-rendered'>
@@ -134,7 +134,7 @@ This method can be used to differentiate a server aspect for a handler.</p>
         }
     }
 }</pre>
-</div><h3 id='method.connection_lost' class='method stab '><code>fn <a href='#method.connection_lost' class='fnname'>connection_lost</a>(&amp;mut self, _: Self::Handler)</code></h3><div class='docblock'><p>Called when a TCP connection is lost with the handler that was
+</div><h3 id='method.connection_lost' class='method stab '><span id='connection_lost.v' class='invisible'><code>fn <a href='#method.connection_lost' class='fnname'>connection_lost</a>(&amp;mut self, _: Self::Handler)</code></span></h3><div class='docblock'><p>Called when a TCP connection is lost with the handler that was
 setup for that connection.</p>
 
 <p>The default implementation is a noop that simply drops the handler.
@@ -143,7 +143,7 @@ state that was not internally tracked by the handler.</p>
 </div></div>
         <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
-    <li><code>impl&lt;F,&nbsp;H&gt; Factory for F <span class='where'>where H: <a class='trait' href='../ws/trait.Handler.html' title='ws::Handler'>Handler</a>, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; H</span></code></li>
+    <li><code>impl&lt;F, H&gt; Factory for F <span class='where'>where H: <a class='trait' href='../ws/trait.Handler.html' title='ws::Handler'>Handler</a>, F: <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.FnMut.html' title='core::ops::FnMut'>FnMut</a>(<a class='struct' href='../ws/struct.Sender.html' title='ws::Sender'>Sender</a>) -&gt; H</span></code></li>
 </ul><script type="text/javascript" async
                          src="../implementors/ws/trait.Factory.js">
                  </script></section>
@@ -202,11 +202,9 @@ state that was not internally tracked by the handler.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "ws";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
     <script defer src="../search-index.js"></script>
 </body>
 </html>

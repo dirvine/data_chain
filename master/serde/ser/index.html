@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-11193' class='srclink' href='../../src/serde/ser/mod.rs.html#1-412' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-1540' class='srclink' href='../../src/serde/ser/mod.rs.html#1-412' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>Generic serialization framework.</p>
 
 <h1 id='for-developers-who-want-to-serialize-objects' class='section-header'><a href='#for-developers-who-want-to-serialize-objects'>For Developers who want to serialize objects</a></h1>
@@ -65,7 +65,7 @@ depending on the quirks of your format.</p>
                        <tr class=' module-item'>
                            <td><a class='mod' href='impls/index.html'
                                   title='serde::ser::impls'>impls</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Implementations for all of Rust&#39;s builtin types. Tuples implement the <code>Serialize</code> trait if they
 have at most 16 fields. Arrays implement the <code>Serialize</code> trait if their length is 32 or less.
 You can always forward array serialization to slice serialization, which works for any length.
@@ -77,7 +77,7 @@ that case the number of fields is irrelevant.</p>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.Error.html'
                                   title='serde::ser::Error'>Error</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>Error</code> is a trait that allows a <code>Serialize</code> to generically create a
 <code>Serializer</code> error.</p>
                            </td>
@@ -85,14 +85,14 @@ that case the number of fields is irrelevant.</p>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.Serialize.html'
                                   title='serde::ser::Serialize'>Serialize</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>A trait that describes a type that can be serialized by a <code>Serializer</code>.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='trait' href='trait.Serializer.html'
                                   title='serde::ser::Serializer'>Serializer</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>A trait that describes a type that can serialize a stream of values into the underlying format.</p>
                            </td>
                        </tr></table></section>
@@ -151,11 +151,9 @@ that case the number of fields is irrelevant.</p>
     <script>
         window.rootPath = "../../";
         window.currentCrate = "serde";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

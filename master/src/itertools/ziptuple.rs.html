@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/ziptuple.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.5.8/src/ziptuple.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>ziptuple.rs.html -- source</title>
@@ -150,11 +150,30 @@
 <span id="106">106</span>
 <span id="107">107</span>
 <span id="108">108</span>
+<span id="109">109</span>
+<span id="110">110</span>
+<span id="111">111</span>
+<span id="112">112</span>
 </pre><pre class='rust '>
-<span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>misc</span>::<span class='ident'>IntoIteratorTuple</span>;
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>size_hint</span>;
 
+<span class='doccomment'>/// See [`multizip`](../fn.multizip.html) for more information.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='ident'>t</span>: <span class='ident'>T</span>,
+}
+
+<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
+    <span class='doccomment'>/// Deprecated: renamed to multizip</span>
+    <span class='attribute'>#[<span class='ident'>deprecated</span>(<span class='ident'>note</span> <span class='op'>=</span> <span class='string'>&quot;Renamed to multizip&quot;</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span>(<span class='ident'>t</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
+        <span class='kw'>where</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span>,
+              <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Iterator</span>,
+    {
+        <span class='ident'>multizip</span>(<span class='ident'>t</span>)
+    }
+}
+
 <span class='doccomment'>/// An iterator that generalizes *.zip()* and allows running multiple iterators in lockstep.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// The iterator `Zip&lt;(I, J, ..., M)&gt;` is formed from a tuple of iterators (or values that</span>
@@ -165,42 +184,32 @@
 <span class='doccomment'>/// element types of the subiterator.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::Zip;</span>
+<span class='doccomment'>/// use itertools::multizip;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// // Iterate over three sequences side-by-side</span>
 <span class='doccomment'>/// let mut xs = [0, 0, 0];</span>
 <span class='doccomment'>/// let ys = [69, 107, 101];</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// for (i, a, b) in Zip::new((0..100, &amp;mut xs, &amp;ys)) {</span>
+<span class='doccomment'>/// for (i, a, b) in multizip((0..100, &amp;mut xs, &amp;ys)) {</span>
 <span class='doccomment'>///    *a = i ^ *b;</span>
 <span class='doccomment'>/// }</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(xs, [69, 106, 103]);</span>
 <span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
-    <span class='ident'>t</span>: <span class='ident'>T</span>,
-}
-
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>IntoIteratorTuple</span>,
-          <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span>::<span class='ident'>Output</span><span class='op'>&gt;</span>: <span class='ident'>Iterator</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>multizip</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span>(<span class='ident'>t</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>
+    <span class='kw'>where</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>From</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span>,
+          <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>: <span class='ident'>Iterator</span>,
 {
-    <span class='doccomment'>/// Create a new `Zip` from a tuple of iterators.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>t</span>: <span class='ident'>T</span>) <span class='op'>-&gt;</span> <span class='ident'>Zip</span><span class='op'>&lt;</span><span class='ident'>T</span>::<span class='ident'>Output</span><span class='op'>&gt;</span> {
-        <span class='ident'>Zip</span> { <span class='ident'>t</span>: <span class='ident'>t</span>.<span class='ident'>into_iterator_tuple</span>() }
-    }
+    <span class='ident'>Zip</span>::<span class='ident'>from</span>(<span class='ident'>t</span>)
 }
 
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>impl_zip_iter</span> {
     ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>:<span class='ident'>ident</span>),<span class='op'>*</span>) <span class='op'>=&gt;</span> (
         <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>non_snake_case</span>)]</span>
-        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>: <span class='ident'>IntoIterator</span>),<span class='op'>*</span><span class='op'>&gt;</span> <span class='ident'>IntoIteratorTuple</span> <span class='kw'>for</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>,)<span class='op'>*</span>)
-        {
-            <span class='kw'>type</span> <span class='ident'>Output</span> <span class='op'>=</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>::<span class='ident'>IntoIter</span>,)<span class='op'>*</span>);
-            <span class='kw'>fn</span> <span class='ident'>into_iterator_tuple</span>(<span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='self'>Self</span>::<span class='ident'>Output</span>
-            {
-                <span class='kw'>let</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>,)<span class='op'>*</span>) <span class='op'>=</span> <span class='self'>self</span>;
-                ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>.<span class='ident'>into_iter</span>(),)<span class='op'>*</span>)
+        <span class='kw'>impl</span><span class='op'>&lt;</span>$(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>: <span class='ident'>IntoIterator</span>),<span class='op'>*</span><span class='op'>&gt;</span> <span class='ident'>From</span><span class='op'>&lt;</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>,)<span class='op'>*</span>)<span class='op'>&gt;</span> <span class='kw'>for</span> <span class='ident'>Zip</span><span class='op'>&lt;</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>::<span class='ident'>IntoIter</span>,)<span class='op'>*</span>)<span class='op'>&gt;</span> {
+            <span class='kw'>fn</span> <span class='ident'>from</span>(<span class='ident'>t</span>: ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>,)<span class='op'>*</span>)) <span class='op'>-&gt;</span> <span class='self'>Self</span> {
+                <span class='kw'>let</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>,)<span class='op'>*</span>) <span class='op'>=</span> <span class='ident'>t</span>;
+                <span class='ident'>Zip</span> { <span class='ident'>t</span>: ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>B</span>.<span class='ident'>into_iter</span>(),)<span class='op'>*</span>) }
             }
         }
 
@@ -258,7 +267,6 @@
 <span class='macro'>impl_zip_iter</span><span class='macro'>!</span>(<span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>C</span>, <span class='ident'>D</span>, <span class='ident'>E</span>, <span class='ident'>F</span>);
 <span class='macro'>impl_zip_iter</span><span class='macro'>!</span>(<span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>C</span>, <span class='ident'>D</span>, <span class='ident'>E</span>, <span class='ident'>F</span>, <span class='ident'>G</span>);
 <span class='macro'>impl_zip_iter</span><span class='macro'>!</span>(<span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>C</span>, <span class='ident'>D</span>, <span class='ident'>E</span>, <span class='ident'>F</span>, <span class='ident'>G</span>, <span class='ident'>H</span>);
-<span class='macro'>impl_zip_iter</span><span class='macro'>!</span>(<span class='ident'>A</span>, <span class='ident'>B</span>, <span class='ident'>C</span>, <span class='ident'>D</span>, <span class='ident'>E</span>, <span class='ident'>F</span>, <span class='ident'>G</span>, <span class='ident'>H</span>, <span class='ident'>I</span>);
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -316,11 +324,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "itertools";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

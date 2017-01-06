@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-2721' class='srclink' href='../../../../src/rust_sodium/crypto/pwhash/scryptsalsa208sha256.rs.html#1-248' title='goto source code'>[src]</a></span></h1>
+               </span><a id='src-264' class='srclink' href='../../../../src/rust_sodium/crypto/pwhash/scryptsalsa208sha256.rs.html#1-248' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p><code>crypto_pwhash_scryptsalsa208sha256</code>, a particular combination of Scrypt, Salsa20/8
 and SHA-256</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
@@ -55,14 +55,14 @@ and SHA-256</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.HashedPassword.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::HashedPassword'>HashedPassword</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>HashedPassword</code>is a password verifier generated from a password</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.MemLimit.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::MemLimit'>MemLimit</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>MemLimit</code> represents the maximum amount of RAM that the functions in this
 module will use, in bytes.</p>
                            </td>
@@ -70,7 +70,7 @@ module will use, in bytes.</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.OpsLimit.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::OpsLimit'>OpsLimit</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>OpsLimit</code> represents the maximum number of computations to perform when
 using the functions in this module.</p>
                            </td>
@@ -78,7 +78,7 @@ using the functions in this module.</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Salt.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::Salt'>Salt</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>Salt</code> used for password hashing</p>
                            </td>
                        </tr></table><h2 id='constants' class='section-header'><a href="#constants">Constants</a></h2>
@@ -86,49 +86,49 @@ using the functions in this module.</p>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.HASHEDPASSWORDBYTES.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::HASHEDPASSWORDBYTES'>HASHEDPASSWORDBYTES</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Number of bytes in a <code>HashedPassword</code>.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.MEMLIMIT_INTERACTIVE.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::MEMLIMIT_INTERACTIVE'>MEMLIMIT_INTERACTIVE</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Safe base line for <code>MemLimit</code> for interactive password hashing.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.MEMLIMIT_SENSITIVE.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::MEMLIMIT_SENSITIVE'>MEMLIMIT_SENSITIVE</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>MemLimit</code> for highly sensitive data.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.OPSLIMIT_INTERACTIVE.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::OPSLIMIT_INTERACTIVE'>OPSLIMIT_INTERACTIVE</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Safe base line for <code>OpsLimit</code> for interactive password hashing.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.OPSLIMIT_SENSITIVE.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::OPSLIMIT_SENSITIVE'>OPSLIMIT_SENSITIVE</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>OpsLimit</code> for highly sensitive data.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.SALTBYTES.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::SALTBYTES'>SALTBYTES</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Number of bytes in a <code>Salt</code>.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='constant' href='constant.STRPREFIX.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::STRPREFIX'>STRPREFIX</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>All <code>HashedPasswords</code> start with this string.</p>
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
@@ -136,21 +136,21 @@ using the functions in this module.</p>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.derive_key.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::derive_key'>derive_key</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>The <code>derive_key()</code> function derives a key from a password and a <code>Salt</code></p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.gen_salt.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::gen_salt'>gen_salt</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>gen_salt()</code> randombly generates a new <code>Salt</code> for key derivation</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.pwhash.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::pwhash'>pwhash</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>The <code>pwhash()</code> returns a <code>HashedPassword</code> which
 includes:</p>
                            </td>
@@ -158,7 +158,7 @@ includes:</p>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.pwhash_verify.html'
                                   title='rust_sodium::crypto::pwhash::scryptsalsa208sha256::pwhash_verify'>pwhash_verify</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p><code>pwhash_verify()</code> verifies that the password <code>str_</code> is a valid password
 verification string (as generated by <code>pwhash()</code>) for <code>passwd</code></p>
                            </td>
@@ -218,11 +218,9 @@ verification string (as generated by <code>pwhash()</code>) for <code>passwd</co
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "rust_sodium";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

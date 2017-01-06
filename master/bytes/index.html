@@ -54,28 +54,28 @@
                        <tr class=' module-item'>
                            <td><a class='mod' href='alloc/index.html'
                                   title='bytes::alloc'>alloc</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='mod' href='buf/index.html'
                                   title='bytes::buf'>buf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='mod' href='str/index.html'
                                   title='bytes::str'>str</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='mod' href='traits/index.html'
                                   title='bytes::traits'>traits</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>All traits are re-exported here to allow glob imports.</p>
                            </td>
                        </tr></table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
@@ -83,42 +83,42 @@
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.ByteBuf.html'
                                   title='bytes::ByteBuf'>ByteBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>A <code>Buf</code> backed by a contiguous region of memory.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Bytes.html'
                                   title='bytes::Bytes'>Bytes</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>A specialized <code>ByteStr</code> box.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.MutByteBuf.html'
                                   title='bytes::MutByteBuf'>MutByteBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.MutSliceBuf.html'
                                   title='bytes::MutSliceBuf'>MutSliceBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.ROByteBuf.html'
                                   title='bytes::ROByteBuf'>ROByteBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Same as <code>ByteBuf</code> but cannot be flipped to a <code>MutByteBuf</code>.</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.RingBuf.html'
                                   title='bytes::RingBuf'>RingBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>Buf backed by a continous chunk of memory. Maintains a read cursor and a
 write cursor. When reads and writes reach the end of the allocated buffer,
 wraps around to the start.</p>
@@ -127,7 +127,7 @@ wraps around to the start.</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Rope.html'
                                   title='bytes::Rope'>Rope</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 <p>An immutable sequence of bytes formed by concatenation of other <code>ByteStr</code>
 values, without copying the data in the pieces. The concatenation is
 represented as a tree whose leaf nodes are each a <code>Bytes</code> value.</p>
@@ -136,42 +136,42 @@ represented as a tree whose leaf nodes are each a <code>Bytes</code> value.</p>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.RopeBuf.html'
                                   title='bytes::RopeBuf'>RopeBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.SeqByteStr.html'
                                   title='bytes::SeqByteStr'>SeqByteStr</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.SliceBuf.html'
                                   title='bytes::SliceBuf'>SliceBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.SmallByteStr.html'
                                   title='bytes::SmallByteStr'>SmallByteStr</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.SmallByteStrBuf.html'
                                   title='bytes::SmallByteStrBuf'>SmallByteStrBuf</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Take.html'
                                   title='bytes::Take'>Take</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
@@ -179,7 +179,7 @@ represented as a tree whose leaf nodes are each a <code>Bytes</code> value.</p>
                        <tr class=' module-item'>
                            <td><a class='enum' href='enum.BufError.html'
                                   title='bytes::BufError'>BufError</a></td>
-                           <td class='docblock short'>
+                           <td class='docblock-short'>
                                 
                            </td>
                        </tr></table></section>
@@ -238,11 +238,9 @@ represented as a tree whose leaf nodes are each a <code>Bytes</code> value.</p>
     <script>
         window.rootPath = "../";
         window.currentCrate = "bytes";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
     <script defer src="../search-index.js"></script>
 </body>
 </html>

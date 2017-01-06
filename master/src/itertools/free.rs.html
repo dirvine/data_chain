@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/free.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.5.8/src/free.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>free.rs.html -- source</title>
@@ -264,110 +264,6 @@
 <span id="220">220</span>
 <span id="221">221</span>
 <span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
-<span id="230">230</span>
-<span id="231">231</span>
-<span id="232">232</span>
-<span id="233">233</span>
-<span id="234">234</span>
-<span id="235">235</span>
-<span id="236">236</span>
-<span id="237">237</span>
-<span id="238">238</span>
-<span id="239">239</span>
-<span id="240">240</span>
-<span id="241">241</span>
-<span id="242">242</span>
-<span id="243">243</span>
-<span id="244">244</span>
-<span id="245">245</span>
-<span id="246">246</span>
-<span id="247">247</span>
-<span id="248">248</span>
-<span id="249">249</span>
-<span id="250">250</span>
-<span id="251">251</span>
-<span id="252">252</span>
-<span id="253">253</span>
-<span id="254">254</span>
-<span id="255">255</span>
-<span id="256">256</span>
-<span id="257">257</span>
-<span id="258">258</span>
-<span id="259">259</span>
-<span id="260">260</span>
-<span id="261">261</span>
-<span id="262">262</span>
-<span id="263">263</span>
-<span id="264">264</span>
-<span id="265">265</span>
-<span id="266">266</span>
-<span id="267">267</span>
-<span id="268">268</span>
-<span id="269">269</span>
-<span id="270">270</span>
-<span id="271">271</span>
-<span id="272">272</span>
-<span id="273">273</span>
-<span id="274">274</span>
-<span id="275">275</span>
-<span id="276">276</span>
-<span id="277">277</span>
-<span id="278">278</span>
-<span id="279">279</span>
-<span id="280">280</span>
-<span id="281">281</span>
-<span id="282">282</span>
-<span id="283">283</span>
-<span id="284">284</span>
-<span id="285">285</span>
-<span id="286">286</span>
-<span id="287">287</span>
-<span id="288">288</span>
-<span id="289">289</span>
-<span id="290">290</span>
-<span id="291">291</span>
-<span id="292">292</span>
-<span id="293">293</span>
-<span id="294">294</span>
-<span id="295">295</span>
-<span id="296">296</span>
-<span id="297">297</span>
-<span id="298">298</span>
-<span id="299">299</span>
-<span id="300">300</span>
-<span id="301">301</span>
-<span id="302">302</span>
-<span id="303">303</span>
-<span id="304">304</span>
-<span id="305">305</span>
-<span id="306">306</span>
-<span id="307">307</span>
-<span id="308">308</span>
-<span id="309">309</span>
-<span id="310">310</span>
-<span id="311">311</span>
-<span id="312">312</span>
-<span id="313">313</span>
-<span id="314">314</span>
-<span id="315">315</span>
-<span id="316">316</span>
-<span id="317">317</span>
-<span id="318">318</span>
-<span id="319">319</span>
-<span id="320">320</span>
-<span id="321">321</span>
-<span id="322">322</span>
-<span id="323">323</span>
-<span id="324">324</span>
-<span id="325">325</span>
-<span id="326">326</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Free functions that create iterator adaptors or call iterator methods.</span>
 <span class='doccomment'>//!</span>
@@ -376,14 +272,18 @@
 
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Display</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>iter</span>::{<span class='self'>self</span>, <span class='ident'>Zip</span>};
-<span class='kw'>use</span> {
-    <span class='ident'>Interleave</span>,
-    <span class='ident'>Itertools</span>,
-    <span class='ident'>KMerge</span>,
-    <span class='ident'>Merge</span>,
-    <span class='ident'>ZipEq</span>,
-    <span class='ident'>RcIter</span>,
+<span class='kw'>use</span> <span class='ident'>Itertools</span>;
+
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>adaptors</span>::{
+    <span class='ident'>interleave</span>,
+    <span class='ident'>merge</span>,
+    <span class='ident'>multipeek</span>,
+    <span class='ident'>put_back</span>,
+    <span class='ident'>put_back_n</span>,
 };
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>kmerge_impl</span>::<span class='ident'>kmerge</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>zip_eq_impl</span>::<span class='ident'>zip_eq</span>;
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>rciter_impl</span>::<span class='ident'>rciter</span>;
 
 <span class='doccomment'>/// Iterate `iterable` with a running index.</span>
 <span class='doccomment'>///</span>
@@ -425,7 +325,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.zip(j)`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::zip;</span>
+<span class='doccomment'>/// use itertools::zip;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// let data = [1, 2, 3, 4, 5];</span>
 <span class='doccomment'>/// for (a, b) in zip(&amp;data, &amp;data[1..]) {</span>
@@ -439,33 +339,12 @@
     <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>zip</span>(<span class='ident'>j</span>)
 }
 
-<span class='doccomment'>/// Iterate `i` and `j` in lock step.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// **Panics** if the iterators are not of the same length.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `IntoIterator` enabled version of `i.zip_eq(j)`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::zip_eq;</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// let data = [1, 2, 3, 4, 5];</span>
-<span class='doccomment'>/// for (a, b) in zip_eq(&amp;data[..data.len() - 1], &amp;data[1..]) {</span>
-<span class='doccomment'>///     /* loop body */</span>
-<span class='doccomment'>/// }</span>
-<span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>zip_eq</span><span class='op'>&lt;</span><span class='ident'>I</span>, <span class='ident'>J</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>, <span class='ident'>j</span>: <span class='ident'>J</span>) <span class='op'>-&gt;</span> <span class='ident'>ZipEq</span><span class='op'>&lt;</span><span class='ident'>I</span>::<span class='ident'>IntoIter</span>, <span class='ident'>J</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>,
-          <span class='ident'>J</span>: <span class='ident'>IntoIterator</span>
-{
-    <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>zip_eq</span>(<span class='ident'>j</span>)
-}
-
 <span class='doccomment'>/// Create an iterator that first iterates `i` and then `j`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.chain(j)`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::chain;</span>
+<span class='doccomment'>/// use itertools::chain;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// for elt in chain(&amp;[1, 2, 3], &amp;[4]) {</span>
 <span class='doccomment'>///     /* loop body */</span>
@@ -483,7 +362,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.cloned()`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::cloned;</span>
+<span class='doccomment'>/// use itertools::cloned;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(cloned(b&quot;abc&quot;).next(), Some(b&#39;a&#39;));</span>
 <span class='doccomment'>/// ```</span>
@@ -499,7 +378,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.fold(init, f)`</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::fold;</span>
+<span class='doccomment'>/// use itertools::fold;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(fold(&amp;[1., 2., 3.], 0., |a, &amp;b| f32::max(a, b)), 3.);</span>
 <span class='doccomment'>/// ```</span>
@@ -515,7 +394,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.all(f)`</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::all;</span>
+<span class='doccomment'>/// use itertools::all;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert!(all(&amp;[1, 2, 3], |elt| *elt &gt; 0));</span>
 <span class='doccomment'>/// ```</span>
@@ -531,7 +410,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.any(f)`</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::any;</span>
+<span class='doccomment'>/// use itertools::any;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert!(any(&amp;[0, -1, 2], |elt| *elt &gt; 0));</span>
 <span class='doccomment'>/// ```</span>
@@ -547,7 +426,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.max()`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::max;</span>
+<span class='doccomment'>/// use itertools::max;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(max(0..10), Some(9));</span>
 <span class='doccomment'>/// ```</span>
@@ -563,7 +442,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `i.min()`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::min;</span>
+<span class='doccomment'>/// use itertools::min;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(min(0..10), Some(0));</span>
 <span class='doccomment'>/// ```</span>
@@ -574,68 +453,13 @@
     <span class='ident'>iterable</span>.<span class='ident'>into_iter</span>().<span class='ident'>min</span>()
 }
 
-<span class='doccomment'>/// Create an iterator that interleaves elements in `i` and `j`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `IntoIterator` enabled version of `i.interleave(j)`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::interleave;</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// for elt in interleave(&amp;[1, 2, 3], &amp;[2, 3, 4]) {</span>
-<span class='doccomment'>///     /* loop body */</span>
-<span class='doccomment'>/// }</span>
-<span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>interleave</span><span class='op'>&lt;</span><span class='ident'>I</span>, <span class='ident'>J</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>, <span class='ident'>j</span>: <span class='ident'>J</span>) <span class='op'>-&gt;</span> <span class='ident'>Interleave</span><span class='op'>&lt;&lt;</span><span class='ident'>I</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>IntoIter</span>, <span class='op'>&lt;</span><span class='ident'>J</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>,
-          <span class='ident'>J</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>I</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>
-{
-    <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>interleave</span>(<span class='ident'>j</span>)
-}
-
-<span class='doccomment'>/// Create an iterator that merges elements in `i` and `j`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `IntoIterator` enabled version of `i.merge(j)`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::merge;</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// for elt in merge(&amp;[1, 2, 3], &amp;[2, 3, 4]) {</span>
-<span class='doccomment'>///     /* loop body */</span>
-<span class='doccomment'>/// }</span>
-<span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>merge</span><span class='op'>&lt;</span><span class='ident'>I</span>, <span class='ident'>J</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>, <span class='ident'>j</span>: <span class='ident'>J</span>) <span class='op'>-&gt;</span> <span class='ident'>Merge</span><span class='op'>&lt;&lt;</span><span class='ident'>I</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>IntoIter</span>, <span class='op'>&lt;</span><span class='ident'>J</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>,
-          <span class='ident'>J</span>: <span class='ident'>IntoIterator</span><span class='op'>&lt;</span><span class='ident'>Item</span> <span class='op'>=</span> <span class='ident'>I</span>::<span class='ident'>Item</span><span class='op'>&gt;</span>,
-          <span class='ident'>I</span>::<span class='ident'>Item</span>: <span class='ident'>PartialOrd</span>
-{
-    <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>merge</span>(<span class='ident'>j</span>)
-}
-
-<span class='doccomment'>/// Create an iterator that merges elements of the contained iterators.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Equivalent to `i.into_iter().kmerge()`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::kmerge;</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// for elt in kmerge(vec![vec![0, 2, 4], vec![1, 3, 5], vec![6, 7]]) {</span>
-<span class='doccomment'>///     /* loop body */</span>
-<span class='doccomment'>/// }</span>
-<span class='doccomment'>/// ```</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>kmerge</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>KMerge</span><span class='op'>&lt;&lt;</span><span class='op'>&lt;</span><span class='ident'>I</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>Item</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>,
-          <span class='ident'>I</span>::<span class='ident'>Item</span>: <span class='ident'>IntoIterator</span>,
-          <span class='op'>&lt;&lt;</span><span class='ident'>I</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>Item</span> <span class='kw'>as</span> <span class='ident'>IntoIterator</span><span class='op'>&gt;</span>::<span class='ident'>Item</span>: <span class='ident'>Ord</span>,
-{
-    <span class='ident'>i</span>.<span class='ident'>into_iter</span>().<span class='ident'>kmerge</span>()
-}
 
 <span class='doccomment'>/// Combine all iterator elements into one String, seperated by `sep`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// `IntoIterator` enabled version of `iterable.join(sep)`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::join;</span>
+<span class='doccomment'>/// use itertools::join;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_eq!(join(&amp;[1, 2, 3], &quot;, &quot;), &quot;1, 2, 3&quot;);</span>
 <span class='doccomment'>/// ```</span>
@@ -651,7 +475,7 @@
 <span class='doccomment'>/// `IntoIterator` enabled version of `iterable.sorted()`.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::sorted;</span>
+<span class='doccomment'>/// use itertools::sorted;</span>
 <span class='doccomment'>/// use itertools::assert_equal;</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// assert_equal(sorted(&quot;rust&quot;.chars()), &quot;rstu&quot;.chars());</span>
@@ -663,38 +487,6 @@
     <span class='ident'>iterable</span>.<span class='ident'>into_iter</span>().<span class='ident'>sorted</span>()
 }
 
-<span class='doccomment'>/// Return an iterator inside a `Rc&lt;RefCell&lt;_&gt;&gt;` wrapper.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// The returned `RcIter` can be cloned, and each clone will refer back to the</span>
-<span class='doccomment'>/// same original iterator.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// `RcIter` allows doing interesting things like using `.zip()` on an iterator with</span>
-<span class='doccomment'>/// itself, at the cost of runtime borrow checking.</span>
-<span class='doccomment'>/// (If it is not obvious: this has a performance penalty.)</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Iterator element type is `Self::Item`.</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>/// use itertools::free::rciter;</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// let mut rit = rciter(0..9);</span>
-<span class='doccomment'>/// let mut z = rit.clone().zip(rit.clone());</span>
-<span class='doccomment'>/// assert_eq!(z.next(), Some((0, 1)));</span>
-<span class='doccomment'>/// assert_eq!(z.next(), Some((2, 3)));</span>
-<span class='doccomment'>/// assert_eq!(z.next(), Some((4, 5)));</span>
-<span class='doccomment'>/// assert_eq!(rit.next(), Some(6));</span>
-<span class='doccomment'>/// assert_eq!(z.next(), Some((7, 8)));</span>
-<span class='doccomment'>/// assert_eq!(z.next(), None);</span>
-<span class='doccomment'>/// ```</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// **Panics** in iterator methods if a borrow error is encountered,</span>
-<span class='doccomment'>/// but it can only happen if the `RcIter` is reentered in for example `.next()`,</span>
-<span class='doccomment'>/// i.e. if it somehow participates in an “iterator knot” where it is an adaptor of itself.</span>
-<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>rciter</span><span class='op'>&lt;</span><span class='ident'>I</span><span class='op'>&gt;</span>(<span class='ident'>iterable</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>RcIter</span><span class='op'>&lt;</span><span class='ident'>I</span>::<span class='ident'>IntoIter</span><span class='op'>&gt;</span>
-    <span class='kw'>where</span> <span class='ident'>I</span>: <span class='ident'>IntoIterator</span>
-{
-    <span class='ident'>RcIter</span>::<span class='ident'>new</span>(<span class='ident'>iterable</span>.<span class='ident'>into_iter</span>())
-}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
@@ -752,11 +544,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "itertools";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

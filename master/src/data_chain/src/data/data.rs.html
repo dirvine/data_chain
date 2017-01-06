@@ -308,10 +308,10 @@
 
 <span class='kw'>impl</span> <span class='ident'>DataIdentifier</span> {
     <span class='doccomment'>/// DataIdentifier name.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>;<span class='number'>32</span>] {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>] {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>DataIdentifier</span>::<span class='ident'>Structured</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, _) <span class='op'>|</span>
-            <span class='ident'>DataIdentifier</span>::<span class='ident'>Immutable</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='ident'>name</span>
+            <span class='ident'>DataIdentifier</span>::<span class='ident'>Immutable</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>) <span class='op'>=&gt;</span> <span class='ident'>name</span>,
         }
     }
     <span class='doccomment'>/// check for ledger</span>
@@ -321,7 +321,7 @@
             <span class='ident'>DataIdentifier</span>::<span class='ident'>Structured</span>(<span class='kw-2'>ref</span> <span class='ident'>name</span>, <span class='kw-2'>ref</span> <span class='ident'>tag</span>) <span class='op'>=&gt;</span> {
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>sha3</span> <span class='op'>=</span> <span class='ident'>Keccak</span>::<span class='ident'>new_sha3_256</span>();
                 <span class='ident'>sha3</span>.<span class='ident'>update</span>(<span class='ident'>name</span>);
-                <span class='ident'>sha3</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>serialise</span>(<span class='ident'>tag</span>)));
+                <span class='ident'>sha3</span>.<span class='ident'>update</span>(<span class='kw-2'>&amp;</span><span class='ident'>serialise</span>(<span class='ident'>tag</span>)<span class='question-mark'>?</span>);
                 <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>res</span>: [<span class='ident'>u8</span>; <span class='number'>32</span>] <span class='op'>=</span> [<span class='number'>0</span>; <span class='number'>32</span>];
                 <span class='ident'>sha3</span>.<span class='ident'>finalize</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>res</span>);
                 <span class='prelude-val'>Ok</span>(<span class='ident'>res</span>)
@@ -472,11 +472,9 @@
     <script>
         window.rootPath = "../../../../";
         window.currentCrate = "data_chain";
-        window.playgroundUrl = "";
     </script>
     <script src="../../../../jquery.js"></script>
     <script src="../../../../main.js"></script>
-    
     <script defer src="../../../../search-index.js"></script>
 </body>
 </html>

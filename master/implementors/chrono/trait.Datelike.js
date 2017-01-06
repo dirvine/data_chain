@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["chrono"] = [];
+implementors["chrono"] = [];implementors["maidsafe_utilities"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

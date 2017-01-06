@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/unicode-bidi-0.2.3/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/unicode-bidi-0.2.4/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -1068,6 +1068,7 @@
 <span id="1024">1024</span>
 <span id="1025">1025</span>
 <span id="1026">1026</span>
+<span id="1027">1027</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 The html5ever Project Developers. See the</span>
 <span class='comment'>// COPYRIGHT file at the top-level directory of this distribution.</span>
@@ -1209,6 +1210,7 @@
 <span class='doccomment'>/// http://www.unicode.org/reports/tr9/#BD2</span>
 <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>is_ltr</span>(<span class='ident'>level</span>: <span class='ident'>u8</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> { <span class='ident'>level</span> <span class='op'>%</span> <span class='number'>2</span> <span class='op'>==</span> <span class='number'>0</span> }
 
+<span class='attribute'>#[<span class='ident'>inline</span>]</span>
 <span class='doccomment'>/// Odd levels are right-to-left.</span>
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// http://www.unicode.org/reports/tr9/#BD2</span>
@@ -2152,11 +2154,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "unicode_bidi";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

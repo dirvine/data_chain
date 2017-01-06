@@ -50,15 +50,15 @@
                </span><a id='src-59' class='srclink' href='../src/antidote/lib.rs.html#85' title='goto source code'>[src]</a></span></h1>
 <pre class='rust struct'>pub struct Condvar(_);</pre><div class='docblock'><p>Like <code>std::sync::Condvar</code>.</p>
 </div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../antidote/struct.Condvar.html' title='antidote::Condvar'>Condvar</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-62' class='srclink' href='../src/antidote/lib.rs.html#87-121' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.new' class='method'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../antidote/struct.Condvar.html' title='antidote::Condvar'>Condvar</a></code></h4>
+<div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>() -&gt; <a class='struct' href='../antidote/struct.Condvar.html' title='antidote::Condvar'>Condvar</a></code></span></h4>
 <div class='docblock'><p>Like <code>std::sync::Condvar::new</code>.</p>
-</div><h4 id='method.wait' class='method'><code>fn <a href='#method.wait' class='fnname'>wait</a>&lt;'a,&nbsp;T&gt;(&amp;self, guard: <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a,&nbsp;T&gt;) -&gt; <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a,&nbsp;T&gt;</code></h4>
+</div><h4 id='method.wait' class='method'><span id='wait.v' class='invisible'><code>fn <a href='#method.wait' class='fnname'>wait</a>&lt;'a, T&gt;(&amp;self, guard: <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a, T&gt;) -&gt; <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a, T&gt;</code></span></h4>
 <div class='docblock'><p>Like <code>std::sync::Condvar::wait</code>.</p>
-</div><h4 id='method.wait_timeout' class='method'><code>fn <a href='#method.wait_timeout' class='fnname'>wait_timeout</a>&lt;'a,&nbsp;T&gt;(&amp;self, guard: <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a,&nbsp;T&gt;, dur: <a class='struct' href='https://doc.rust-lang.org/nightly/std/time/duration/struct.Duration.html' title='std::time::duration::Duration'>Duration</a>) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a,&nbsp;T&gt;, <a class='struct' href='../antidote/struct.WaitTimeoutResult.html' title='antidote::WaitTimeoutResult'>WaitTimeoutResult</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></h4>
+</div><h4 id='method.wait_timeout' class='method'><span id='wait_timeout.v' class='invisible'><code>fn <a href='#method.wait_timeout' class='fnname'>wait_timeout</a>&lt;'a, T&gt;(&amp;self,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; guard: <a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a, T&gt;,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; dur: <a class='struct' href='https://doc.rust-lang.org/nightly/std/time/duration/struct.Duration.html' title='std::time::duration::Duration'>Duration</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>(</a><a class='struct' href='../antidote/struct.MutexGuard.html' title='antidote::MutexGuard'>MutexGuard</a>&lt;'a, T&gt;, <a class='struct' href='../antidote/struct.WaitTimeoutResult.html' title='antidote::WaitTimeoutResult'>WaitTimeoutResult</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.tuple.html'>)</a></code></span></h4>
 <div class='docblock'><p>Like <code>std::sync::Condvar::wait_timeout</code>.</p>
-</div><h4 id='method.notify_one' class='method'><code>fn <a href='#method.notify_one' class='fnname'>notify_one</a>(&amp;self)</code></h4>
+</div><h4 id='method.notify_one' class='method'><span id='notify_one.v' class='invisible'><code>fn <a href='#method.notify_one' class='fnname'>notify_one</a>(&amp;self)</code></span></h4>
 <div class='docblock'><p>Like <code>std::sync::Condvar::notify_one</code>.</p>
-</div><h4 id='method.notify_all' class='method'><code>fn <a href='#method.notify_all' class='fnname'>notify_all</a>(&amp;self)</code></h4>
+</div><h4 id='method.notify_all' class='method'><span id='notify_all.v' class='invisible'><code>fn <a href='#method.notify_all' class='fnname'>notify_all</a>(&amp;self)</code></span></h4>
 <div class='docblock'><p>Like <code>std::sync::Condvar::notify_all</code>.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -116,11 +116,9 @@
     <script>
         window.rootPath = "../";
         window.currentCrate = "antidote";
-        window.playgroundUrl = "";
     </script>
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
-    
     <script defer src="../search-index.js"></script>
 </body>
 </html>

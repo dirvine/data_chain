@@ -1,5 +1,5 @@
 (function() {var implementors = {};
-implementors["unsafe_any"] = [];
+implementors["unsafe_any"] = [];implementors["maidsafe_utilities"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/minmax.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.5.8/src/minmax.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>minmax.rs.html -- source</title>
@@ -160,7 +160,7 @@
 
 <span class='doccomment'>/// `MinMaxResult` is an enum returned by `minmax`. See `Itertools::minmax()` for</span>
 <span class='doccomment'>/// more detail.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Copy</span>, <span class='ident'>Clone</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>MinMaxResult</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// Empty iterator</span>
     <span class='ident'>NoElements</span>,
@@ -176,9 +176,9 @@
 <span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>: <span class='ident'>Clone</span><span class='op'>&gt;</span> <span class='ident'>MinMaxResult</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='doccomment'>/// `into_option` creates an `Option` of type `(T, T)`. The returned `Option`</span>
     <span class='doccomment'>/// has variant `None` if and only if the `MinMaxResult` has variant</span>
-    <span class='doccomment'>/// `NoElements`. Otherwise variant `Some(x, y)` is returned where `x &lt;= y`.</span>
-    <span class='doccomment'>/// If `MinMaxResult` has variant `OneElement(x)`, performing this operation</span>
-    <span class='doccomment'>/// will make one clone of `x`.</span>
+    <span class='doccomment'>/// `NoElements`. Otherwise `Some((x, y))` is returned where `x &lt;= y`.</span>
+    <span class='doccomment'>/// If the `MinMaxResult` has variant `OneElement(x)`, performing this</span>
+    <span class='doccomment'>/// operation will make one clone of `x`.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// # Examples</span>
     <span class='doccomment'>///</span>
@@ -328,11 +328,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "itertools";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

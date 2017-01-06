@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.4.19/src/zip_longest.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/itertools-0.5.8/src/zip_longest.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>zip_longest.rs.html -- source</title>
@@ -136,8 +136,6 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
-<span id="95">95</span>
-<span id="96">96</span>
 </pre><pre class='rust '>
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cmp</span>::<span class='ident'>Ordering</span>::{<span class='ident'>Equal</span>, <span class='ident'>Greater</span>, <span class='ident'>Less</span>};
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>size_hint</span>;
@@ -151,7 +149,7 @@
 <span class='doccomment'>///</span>
 <span class='doccomment'>/// This iterator is *fused*.</span>
 <span class='doccomment'>///</span>
-<span class='doccomment'>/// See [`.zip_longest()`](trait.Itertools.html#method.zip_longest) for more information.</span>
+<span class='doccomment'>/// See [`.zip_longest()`](../trait.Itertools.html#method.zip_longest) for more information.</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='attribute'>#[<span class='ident'>must_use</span> <span class='op'>=</span> <span class='string'>&quot;iterator adaptors are lazy and do nothing unless consumed&quot;</span>]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>ZipLongest</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
@@ -159,16 +157,14 @@
     <span class='ident'>b</span>: <span class='ident'>Fuse</span><span class='op'>&lt;</span><span class='ident'>U</span><span class='op'>&gt;</span>,
 }
 
-<span class='kw'>impl</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span> <span class='ident'>ZipLongest</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span>
+<span class='doccomment'>/// Create a new `ZipLongest` iterator.</span>
+<span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>zip_longest</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span>(<span class='ident'>a</span>: <span class='ident'>T</span>, <span class='ident'>b</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>ZipLongest</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span> 
     <span class='kw'>where</span> <span class='ident'>T</span>: <span class='ident'>Iterator</span>,
           <span class='ident'>U</span>: <span class='ident'>Iterator</span>
 {
-    <span class='doccomment'>/// Create a new `ZipLongest` iterator.</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>a</span>: <span class='ident'>T</span>, <span class='ident'>b</span>: <span class='ident'>U</span>) <span class='op'>-&gt;</span> <span class='ident'>ZipLongest</span><span class='op'>&lt;</span><span class='ident'>T</span>, <span class='ident'>U</span><span class='op'>&gt;</span> {
-        <span class='ident'>ZipLongest</span> {
-            <span class='ident'>a</span>: <span class='ident'>a</span>.<span class='ident'>fuse</span>(),
-            <span class='ident'>b</span>: <span class='ident'>b</span>.<span class='ident'>fuse</span>(),
-        }
+    <span class='ident'>ZipLongest</span> {
+        <span class='ident'>a</span>: <span class='ident'>a</span>.<span class='ident'>fuse</span>(),
+        <span class='ident'>b</span>: <span class='ident'>b</span>.<span class='ident'>fuse</span>(),
     }
 }
 
@@ -292,11 +288,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "itertools";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>

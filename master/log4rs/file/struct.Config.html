@@ -47,18 +47,16 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-1458' class='srclink' href='../../src/log4rs/file/mod.rs.html#232-236' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct Config {
-    // some fields omitted
-}</pre><div class='docblock'><p>A deserialized log4rs configuration file.</p>
-</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../log4rs/file/struct.Config.html' title='log4rs::file::Config'>Config</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-1462' class='srclink' href='../../src/log4rs/file/mod.rs.html#238-320' title='goto source code'>[src]</a></span></h3>
-<div class='impl-items'><h4 id='method.parse' class='method'><code>fn <a href='#method.parse' class='fnname'>parse</a>(config: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>, format: <a class='enum' href='../../log4rs/file/enum.Format.html' title='log4rs::file::Format'>Format</a>, deserializers: &amp;<a class='struct' href='../../log4rs/file/struct.Deserializers.html' title='log4rs::file::Deserializers'>Deserializers</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../log4rs/file/struct.Config.html' title='log4rs::file::Config'>Config</a>,&nbsp;<a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;&gt;</code></h4>
+               </span><a id='src-719' class='srclink' href='../../src/log4rs/file/mod.rs.html#232-236' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct Config { /* fields omitted */ }</pre><div class='docblock'><p>A deserialized log4rs configuration file.</p>
+</div><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../../log4rs/file/struct.Config.html' title='log4rs::file::Config'>Config</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-723' class='srclink' href='../../src/log4rs/file/mod.rs.html#238-320' title='goto source code'>[src]</a></span></h3>
+<div class='impl-items'><h4 id='method.parse' class='method'><span id='parse.v' class='invisible'><code>fn <a href='#method.parse' class='fnname'>parse</a>(config: &amp;<a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.str.html'>str</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; format: <a class='enum' href='../../log4rs/file/enum.Format.html' title='log4rs::file::Format'>Format</a>,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; deserializers: &amp;<a class='struct' href='../../log4rs/file/struct.Deserializers.html' title='log4rs::file::Deserializers'>Deserializers</a>)<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../../log4rs/file/struct.Config.html' title='log4rs::file::Config'>Config</a>, <a class='struct' href='https://doc.rust-lang.org/nightly/alloc/boxed/struct.Box.html' title='alloc::boxed::Box'>Box</a>&lt;<a class='trait' href='https://doc.rust-lang.org/nightly/std/error/trait.Error.html' title='std::error::Error'>Error</a>&gt;&gt;</code></span></h4>
 <div class='docblock'><p>Creates a log4rs <code>Config</code> from the specified config string and <code>Deserializers</code>.</p>
-</div><h4 id='method.refresh_rate' class='method'><code>fn <a href='#method.refresh_rate' class='fnname'>refresh_rate</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/time/duration/struct.Duration.html' title='std::time::duration::Duration'>Duration</a>&gt;</code></h4>
+</div><h4 id='method.refresh_rate' class='method'><span id='refresh_rate.v' class='invisible'><code>fn <a href='#method.refresh_rate' class='fnname'>refresh_rate</a>(&amp;self) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='struct' href='https://doc.rust-lang.org/nightly/std/time/duration/struct.Duration.html' title='std::time::duration::Duration'>Duration</a>&gt;</code></span></h4>
 <div class='docblock'><p>Returns the requested refresh rate.</p>
-</div><h4 id='method.into_config' class='method'><code>fn <a href='#method.into_config' class='fnname'>into_config</a>(self) -&gt; <a class='struct' href='../../log4rs/config/struct.Config.html' title='log4rs::config::Config'>Config</a></code></h4>
+</div><h4 id='method.into_config' class='method'><span id='into_config.v' class='invisible'><code>fn <a href='#method.into_config' class='fnname'>into_config</a>(self) -&gt; <a class='struct' href='../../log4rs/config/struct.Config.html' title='log4rs::config::Config'>Config</a></code></span></h4>
 <div class='docblock'><p>Returns the log4rs <code>Config</code>.</p>
-</div><h4 id='method.errors' class='method'><code>fn <a href='#method.errors' class='fnname'>errors</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../log4rs/file/enum.Error.html' title='log4rs::file::Error'>Error</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></h4>
+</div><h4 id='method.errors' class='method'><span id='errors.v' class='invisible'><code>fn <a href='#method.errors' class='fnname'>errors</a>(&amp;self) -&gt; <a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>&amp;[</a><a class='enum' href='../../log4rs/file/enum.Error.html' title='log4rs::file::Error'>Error</a><a class='primitive' href='https://doc.rust-lang.org/nightly/std/primitive.slice.html'>]</a></code></span></h4>
 <div class='docblock'><p>Returns any nonfatal errors encountered when deserializing the config.</p>
 </div></div></section>
     <section id='search' class="content hidden"></section>
@@ -116,11 +114,9 @@
     <script>
         window.rootPath = "../../";
         window.currentCrate = "log4rs";
-        window.playgroundUrl = "";
     </script>
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
-    
     <script defer src="../../search-index.js"></script>
 </body>
 </html>
