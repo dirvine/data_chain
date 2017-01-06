@@ -21,8 +21,10 @@ use data::DataIdentifier;
 
 /// Ledger type (delete or keep)
 pub type Ledger = bool;
-/// Represents the xored close group for the new group on churn etc.
-/// This is signed by each group member.
+
+/// Hash of the public keys of all group members (keys are lexicographically sorted before hashing).
+///
+/// Each node in the group signs this to form a `Proof`.
 pub type LinkDescriptor = [u8; 32];
 
 /// Data identifiers for use in a data Chain.
@@ -35,11 +37,8 @@ pub enum BlockIdentifier {
     ImmutableData([u8; 32]),
     ///           hash     name (identity + tag) (stored localy as name in data store)
     StructuredData([u8; 32], DataIdentifier),
-    /// This array represents **this nodes** current close group
-    /// The array is all nodes xored together
-    /// This is unique to this node, but known by all nodes connected to it
-    /// in this group.
-    Link(LinkDescriptor), // hash of group (all current close group id's)
+    /// Hash of group members' public keys (see `LinkDescriptor`).
+    Link(LinkDescriptor),
 }
 
 impl BlockIdentifier {
