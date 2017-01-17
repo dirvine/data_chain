@@ -443,8 +443,8 @@ impl Debug for DataChain {
 #[cfg(test)]
 mod tests {
     use chain::block::Block;
-    use chain::block_identifier::BlockIdentifier;
-    use chain::node_block::{self, NodeBlock};
+    use chain::block_identifier::{BlockIdentifier, create_link_descriptor};
+    use chain::node_block::NodeBlock;
     use data::DataIdentifier;
     use itertools::Itertools;
     use rust_sodium::crypto;
@@ -460,8 +460,8 @@ mod tests {
             .collect_vec();
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
+        let link_desc1 = create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = create_link_descriptor(&pub2[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
         let identifier3 = BlockIdentifier::ImmutableData(hash(b"a"));
@@ -514,9 +514,9 @@ mod tests {
         // ########################################################################################
         // create link descriptors, which form the Block identifier
         // ########################################################################################
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
-        let link_desc3 = node_block::create_link_descriptor(&pub3[..]).unwrap();
+        let link_desc1 = create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = create_link_descriptor(&pub2[..]).unwrap();
+        let link_desc3 = create_link_descriptor(&pub3[..]).unwrap();
         // ########################################################################################
         // The block  identifier is the part of a Block/NodeBlock that
         // describes the block, here it is links, but could be StructuredData / ImmutableData
@@ -619,7 +619,7 @@ mod tests {
         assert!(pub1.len() == 3);
         assert!(pub2.len() == 3);
         assert!(pub3.len() == 3);
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc1 = create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
         let sd1_ident =
@@ -711,7 +711,7 @@ mod tests {
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
         let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc1 = create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
         let sd1_ident =
