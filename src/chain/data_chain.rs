@@ -315,7 +315,7 @@ impl DataChain {
         self.chain
             .iter()
             .cloned()
-            .filter(|x| !x.identifier().is_link() && x.valid)
+            .filter(|x| !x.identifier().is_block() && x.valid)
             .collect_vec()
     }
 
