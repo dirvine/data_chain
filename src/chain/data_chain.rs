@@ -127,7 +127,7 @@ impl DataChain {
     pub fn validate_ownership(&mut self, my_group: &[PublicKey]) -> bool {
         // ensure all links are good
         self.mark_blocks_valid();
-        // ensure last good ink contains majority of current group
+        // ensure last good link contains majority of current group
         if let Some(last_link) = self.last_valid_link() {
             return (last_link.proofs()
                 .iter()
@@ -204,15 +204,8 @@ impl DataChain {
     }
 
     /// find block by name from top (only first occurrence)
-    pub fn find_name(&self, name: &[u8]) -> Option<&Block> {
-        self.chain.iter().rev().find(|x| {
-            x.valid &&
-            if let Some(y) = x.identifier().name() {
-                y == name
-            } else {
-                false
-            }
-        })
+    pub fn find_name(&self, name: &[u8; 32]) -> Option<&Block> {
+        self.chain.iter().rev().find(|x| x.valid && Some(name) == x.identifier().name())
     }
 
     /// Remove a block, will ignore Links
@@ -386,7 +379,7 @@ impl DataChain {
         let mut start_pos = 0;
         for new in chain.chain().iter().filter(|x| x.identifier().is_block()) {
             let mut insert = false;
-            for (pos, val) in self.chain.iter().skip(start_pos).enumerate() {
+            for (pos, val) in self.chain.iter().enumerate().skip(start_pos) {
                 if DataChain::validate_block_with_proof(new, val, self.group_size) {
                     start_pos = pos;
                     insert = true;
@@ -441,6 +434,7 @@ impl Debug for DataChain {
 }
 
 #[cfg(test)]
+#[cfg_attr(rustfmt, rustfmt_skip)]
 mod tests {
     use chain::block::Block;
     use chain::block_identifier::BlockIdentifier;
