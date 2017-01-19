@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.19/src/unix/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/libc-0.2.20/src/unix/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -927,6 +927,7 @@
 <span id="883">883</span>
 <span id="884">884</span>
 <span id="885">885</span>
+<span id="886">886</span>
 </pre><pre class='rust '>
 <span class='doccomment'>//! Definitions found commonly among almost all Unix derivatives</span>
 <span class='doccomment'>//!</span>
@@ -1296,6 +1297,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>access</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>amode</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>alarm</span>(<span class='ident'>seconds</span>: ::<span class='ident'>c_uint</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_uint</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chdir</span>(<span class='ident'>dir</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>fchdir</span>(<span class='ident'>dirfd</span>: ::<span class='ident'>c_int</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>chown</span>(<span class='ident'>path</span>: <span class='op'>*</span><span class='kw'>const</span> <span class='ident'>c_char</span>, <span class='ident'>uid</span>: <span class='ident'>uid_t</span>,
                  <span class='ident'>gid</span>: <span class='ident'>gid_t</span>) <span class='op'>-&gt;</span> ::<span class='ident'>c_int</span>;
     <span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>all</span>(<span class='ident'>target_os</span> <span class='op'>=</span> <span class='string'>&quot;macos&quot;</span>, <span class='ident'>target_arch</span> <span class='op'>=</span> <span class='string'>&quot;x86&quot;</span>),

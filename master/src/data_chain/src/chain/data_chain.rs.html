@@ -825,12 +825,6 @@
 <span id="781">781</span>
 <span id="782">782</span>
 <span id="783">783</span>
-<span id="784">784</span>
-<span id="785">785</span>
-<span id="786">786</span>
-<span id="787">787</span>
-<span id="788">788</span>
-<span id="789">789</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -961,7 +955,7 @@
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>validate_ownership</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>my_group</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>PublicKey</span>]) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
         <span class='comment'>// ensure all links are good</span>
         <span class='self'>self</span>.<span class='ident'>mark_blocks_valid</span>();
-        <span class='comment'>// ensure last good ink contains majority of current group</span>
+        <span class='comment'>// ensure last good link contains majority of current group</span>
         <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>last_link</span>) <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>last_valid_link</span>() {
             <span class='kw'>return</span> (<span class='ident'>last_link</span>.<span class='ident'>proofs</span>()
                 .<span class='ident'>iter</span>()
@@ -1038,15 +1032,8 @@
     }
 
     <span class='doccomment'>/// find block by name from top (only first occurrence)</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>find_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> {
-            <span class='ident'>x</span>.<span class='ident'>valid</span> <span class='op'>&amp;&amp;</span>
-            <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>y</span>) <span class='op'>=</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>name</span>() {
-                <span class='ident'>y</span> <span class='op'>==</span> <span class='ident'>name</span>
-            } <span class='kw'>else</span> {
-                <span class='bool-val'>false</span>
-            }
-        })
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>find_name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>name</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
+        <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>rev</span>().<span class='ident'>find</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>valid</span> <span class='op'>&amp;&amp;</span> <span class='prelude-val'>Some</span>(<span class='ident'>name</span>) <span class='op'>==</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>name</span>())
     }
 
     <span class='doccomment'>/// Remove a block, will ignore Links</span>
@@ -1220,7 +1207,7 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>start_pos</span> <span class='op'>=</span> <span class='number'>0</span>;
         <span class='kw'>for</span> <span class='ident'>new</span> <span class='kw'>in</span> <span class='ident'>chain</span>.<span class='ident'>chain</span>().<span class='ident'>iter</span>().<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_block</span>()) {
             <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>insert</span> <span class='op'>=</span> <span class='bool-val'>false</span>;
-            <span class='kw'>for</span> (<span class='ident'>pos</span>, <span class='ident'>val</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>skip</span>(<span class='ident'>start_pos</span>).<span class='ident'>enumerate</span>() {
+            <span class='kw'>for</span> (<span class='ident'>pos</span>, <span class='ident'>val</span>) <span class='kw'>in</span> <span class='self'>self</span>.<span class='ident'>chain</span>.<span class='ident'>iter</span>().<span class='ident'>enumerate</span>().<span class='ident'>skip</span>(<span class='ident'>start_pos</span>) {
                 <span class='kw'>if</span> <span class='ident'>DataChain</span>::<span class='ident'>validate_block_with_proof</span>(<span class='ident'>new</span>, <span class='ident'>val</span>, <span class='self'>self</span>.<span class='ident'>group_size</span>) {
                     <span class='ident'>start_pos</span> <span class='op'>=</span> <span class='ident'>pos</span>;
                     <span class='ident'>insert</span> <span class='op'>=</span> <span class='bool-val'>true</span>;
@@ -1275,6 +1262,7 @@
 }
 
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
+<span class='attribute'>#[<span class='ident'>cfg_attr</span>(<span class='ident'>rustfmt</span>, <span class='ident'>rustfmt_skip</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block</span>::<span class='ident'>Block</span>;
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
