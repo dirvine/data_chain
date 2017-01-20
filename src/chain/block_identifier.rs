@@ -16,13 +16,31 @@
 // relating to use of the SAFE Network Software.
 
 use data::DataIdentifier;
+use itertools::Itertools;
+use rust_sodium::crypto::sign::PublicKey;
 use std::fmt::{self, Debug, Formatter};
 use super::debug_bytes;
+use tiny_keccak::Keccak;
 
 /// Hash of the public keys of all group members (keys are lexicographically sorted before hashing).
 ///
 /// Each node in the group signs this to form a `Proof`.
 pub type LinkDescriptor = [u8; 32];
+
+/// Returns a link descriptor with the hash of the group members, or `None` if `group` is empty.
+pub fn create_link_descriptor(group: &[PublicKey]) -> Option<LinkDescriptor> {
+    if group.is_empty() {
+        None
+    } else {
+        let mut sha3 = Keccak::new_sha3_256();
+        for key_bytes in group.iter().map(|key| &key.0).sorted() {
+            sha3.update(key_bytes);
+        }
+        let mut res = [0u8; 32];
+        sha3.finalize(&mut res);
+        Some(res)
+    }
+}
 
 /// Data identifiers for use in a data Chain.
 /// The hash of each data type is available to ensure there is no confusion
