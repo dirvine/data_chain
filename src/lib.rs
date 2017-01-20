@@ -83,7 +83,6 @@ pub mod chain;
 /// Structured data (constant name with editable contents and ownership changes)
 /// this type is signed by at least one owner and can be a ledger type (never deleted)
 pub mod data;
-
 /// sha3 (keccak)
 pub mod sha3;
 

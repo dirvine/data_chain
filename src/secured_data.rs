@@ -88,7 +88,7 @@ impl SecuredData {
             .unwrap()
             .find_name(data_id.name()) {
             if block_id.valid {
-                return Ok(self.cs.get(&block_id.identifier().hash())?);
+                return Ok(self.cs.get(block_id.identifier().hash())?);
             } else {
                 return Err(Error::Validation);
             }

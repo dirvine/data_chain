@@ -82,8 +82,8 @@ impl Debug for ImmutableData {
 
 #[cfg(test)]
 mod tests {
-    use rustc_serialize::hex::ToHex;
     use super::*;
+    use rustc_serialize::hex::ToHex;
 
     #[test]
     fn deterministic_test() {
