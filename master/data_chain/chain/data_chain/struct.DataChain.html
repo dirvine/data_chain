@@ -78,8 +78,8 @@ Validation takes place from start of chain to now.
 Also confirm we can accept this chain, by comparing
 our current group with the majority of the last known link
 This method will NOT purge</p>
-</div><h4 id='method.add_node_block' class='method'><span id='add_node_block.v' class='invisible'><code>fn <a href='#method.add_node_block' class='fnname'>add_node_block</a>(&amp;mut self, block: <a class='struct' href='../../../data_chain/chain/node_block/struct.Vote.html' title='data_chain::chain::node_block::Vote'>Vote</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>&gt;</code></span></h4>
-<div class='docblock'><p>Add a nodeblock received from a peer
+</div><h4 id='method.add_vote' class='method'><span id='add_vote.v' class='invisible'><code>fn <a href='#method.add_vote' class='fnname'>add_vote</a>(&amp;mut self, block: <a class='struct' href='../../../data_chain/chain/vote/struct.Vote.html' title='data_chain::chain::vote::Vote'>Vote</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/option/enum.Option.html' title='core::option::Option'>Option</a>&lt;<a class='enum' href='../../../data_chain/enum.BlockIdentifier.html' title='data_chain::BlockIdentifier'>BlockIdentifier</a>&gt;</code></span></h4>
+<div class='docblock'><p>Add a vote received from a peer
 Uses  <code>lazy accumulation</code>
 If block becomes valid, then it is returned</p>
 </div><h4 id='method.chain' class='method'><span id='chain.v' class='invisible'><code>fn <a href='#method.chain' class='fnname'>chain</a>(&amp;self) -&gt; &amp;<a class='struct' href='https://doc.rust-lang.org/nightly/collections/vec/struct.Vec.html' title='collections::vec::Vec'>Vec</a>&lt;<a class='struct' href='../../../data_chain/struct.Block.html' title='data_chain::Block'>Block</a>&gt;</code></span></h4>

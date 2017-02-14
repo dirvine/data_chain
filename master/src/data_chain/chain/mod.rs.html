@@ -212,7 +212,7 @@
 <span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>data_chain</span>;
 
 <span class='doccomment'>/// A node block is a partial block, sent by group members to each other to create a `Block`</span>
-<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>node_block</span>;
+<span class='kw'>pub</span> <span class='kw'>mod</span> <span class='ident'>vote</span>;
 
 <span class='doccomment'>/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.</span>
 <span class='kw'>mod</span> <span class='ident'>block_identifier</span>;
@@ -220,7 +220,7 @@
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block</span>::<span class='ident'>Block</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
 <span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>data_chain</span>::<span class='ident'>DataChain</span>;
-<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::{<span class='ident'>Proof</span>, <span class='ident'>Vote</span>, <span class='ident'>create_link_descriptor</span>};
+<span class='kw'>pub</span> <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>vote</span>::{<span class='ident'>Proof</span>, <span class='ident'>Vote</span>, <span class='ident'>create_link_descriptor</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Write</span>;
 
 <span class='kw'>fn</span> <span class='ident'>debug_bytes</span><span class='op'>&lt;</span><span class='ident'>V</span>: <span class='ident'>AsRef</span><span class='op'>&lt;</span>[<span class='ident'>u8</span>]<span class='op'>&gt;&gt;</span>(<span class='ident'>input</span>: <span class='ident'>V</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {

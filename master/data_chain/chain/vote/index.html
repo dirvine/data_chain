@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="API documentation for the Rust `node_block` mod in crate `data_chain`.">
-    <meta name="keywords" content="rust, rustlang, rust-lang, node_block">
+    <meta name="description" content="API documentation for the Rust `vote` mod in crate `data_chain`.">
+    <meta name="keywords" content="rust, rustlang, rust-lang, vote">
 
-    <title>data_chain::chain::node_block - Rust</title>
+    <title>data_chain::chain::vote - Rust</title>
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
@@ -28,7 +28,7 @@
 
     <nav class="sidebar">
         <a href='../../../data_chain/index.html'><img src='https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png' alt='logo' width='100'></a>
-        <p class='location'><a href='../../index.html'>data_chain</a>::<wbr><a href='../index.html'>chain</a></p><script>window.sidebarCurrent = {name: 'node_block', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
+        <p class='location'><a href='../../index.html'>data_chain</a>::<wbr><a href='../index.html'>chain</a></p><script>window.sidebarCurrent = {name: 'vote', ty: 'mod', relpath: '../'};</script><script defer src="../sidebar-items.js"></script>
     </nav>
 
     <nav class="sub">
@@ -43,35 +43,35 @@
     </nav>
 
     <section id='main' class="content mod">
-<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>data_chain</a>::<wbr><a href='../index.html'>chain</a>::<wbr><a class='mod' href=''>node_block</a></span><span class='out-of-band'><span id='render-detail'>
+<h1 class='fqn'><span class='in-band'>Module <a href='../../index.html'>data_chain</a>::<wbr><a href='../index.html'>chain</a>::<wbr><a class='mod' href=''>vote</a></span><span class='out-of-band'><span id='render-detail'>
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../../src/data_chain/chain/node_block.rs.html#18-151' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../../src/data_chain/chain/vote.rs.html#18-151' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A node block is a partial block, sent by group members to each other to create a <code>Block</code></p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Proof.html'
-                                  title='data_chain::chain::node_block::Proof'>Proof</a></td>
+                                  title='data_chain::chain::vote::Proof'>Proof</a></td>
                            <td class='docblock-short'>
                                 <p>Proof as provided by a close group member</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
                            <td><a class='struct' href='struct.Vote.html'
-                                  title='data_chain::chain::node_block::Vote'>Vote</a></td>
+                                  title='data_chain::chain::vote::Vote'>Vote</a></td>
                            <td class='docblock-short'>
                                 <p>If data block then this is sent by any group member when data is <code>Put</code>, <code>Post</code> or <code>Delete</code>.
 If this is a link then it is sent with a <code>churn</code> event.
-A <code>Link</code> is a nodeblock that each member must send each other in times of churn.
+A <code>Link</code> is a vote that each member must send each other in times of churn.
 These will not accumulate but be <code>ManagedNode</code>  to <code>ManagedNode</code> messages in the routing layer</p>
                            </td>
                        </tr></table><h2 id='functions' class='section-header'><a href="#functions">Functions</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='fn' href='fn.create_link_descriptor.html'
-                                  title='data_chain::chain::node_block::create_link_descriptor'>create_link_descriptor</a></td>
+                                  title='data_chain::chain::vote::create_link_descriptor'>create_link_descriptor</a></td>
                            <td class='docblock-short'>
                                 <p>Returns a link descriptor with the hash of the group members, or <code>None</code> if <code>group</code> is empty.</p>
                            </td>

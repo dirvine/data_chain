@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `src/chain/node_block.rs`.">
+    <meta name="description" content="Source to the Rust file `src/chain/vote.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
-    <title>node_block.rs.html -- source</title>
+    <title>vote.rs.html -- source</title>
 
     <link rel="stylesheet" type="text/css" href="../../../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../../../main.css">
@@ -275,7 +275,7 @@
 
 <span class='doccomment'>/// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.</span>
 <span class='doccomment'>/// If this is a link then it is sent with a `churn` event.</span>
-<span class='doccomment'>/// A `Link` is a nodeblock that each member must send each other in times of churn.</span>
+<span class='doccomment'>/// A `Link` is a vote that each member must send each other in times of churn.</span>
 <span class='doccomment'>/// These will not accumulate but be `ManagedNode`  to `ManagedNode` messages in the routing layer</span>
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Debug</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Vote</span> {
@@ -328,7 +328,7 @@
     <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='kw'>fn</span> <span class='ident'>node_block_comparisons</span>() {
+    <span class='kw'>fn</span> <span class='ident'>vote_comparisons</span>() {
         ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
         <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>();
         <span class='kw'>let</span> <span class='ident'>test_data1</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));

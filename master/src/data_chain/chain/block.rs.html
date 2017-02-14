@@ -158,7 +158,7 @@
 <span class='comment'>// relating to use of the SAFE Network Software.</span>
 
 <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::<span class='ident'>BlockIdentifier</span>;
-<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>node_block</span>::{<span class='ident'>Proof</span>, <span class='ident'>Vote</span>};
+<span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>vote</span>::{<span class='ident'>Proof</span>, <span class='ident'>Vote</span>};
 <span class='kw'>use</span> <span class='ident'>error</span>::<span class='ident'>Error</span>;
 <span class='kw'>use</span> <span class='ident'>maidsafe_utilities</span>::<span class='ident'>serialisation</span>;
 
@@ -175,13 +175,13 @@
 
 <span class='kw'>impl</span> <span class='ident'>Block</span> {
     <span class='doccomment'>/// new block</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>node_block</span>: <span class='ident'>Vote</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
-        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>node_block</span>.<span class='ident'>validate</span>() {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>new</span>(<span class='ident'>vote</span>: <span class='ident'>Vote</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>Block</span>, <span class='ident'>Error</span><span class='op'>&gt;</span> {
+        <span class='kw'>if</span> <span class='op'>!</span><span class='ident'>vote</span>.<span class='ident'>validate</span>() {
             <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>Error</span>::<span class='ident'>Signature</span>);
         }
         <span class='prelude-val'>Ok</span>(<span class='ident'>Block</span> {
-            <span class='ident'>identifier</span>: <span class='ident'>node_block</span>.<span class='ident'>identifier</span>().<span class='ident'>clone</span>(),
-            <span class='ident'>proofs</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>node_block</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>()],
+            <span class='ident'>identifier</span>: <span class='ident'>vote</span>.<span class='ident'>identifier</span>().<span class='ident'>clone</span>(),
+            <span class='ident'>proofs</span>: <span class='macro'>vec</span><span class='macro'>!</span>[<span class='ident'>vote</span>.<span class='ident'>proof</span>().<span class='ident'>clone</span>()],
             <span class='ident'>valid</span>: <span class='bool-val'>false</span>,
         })
     }
