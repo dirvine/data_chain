@@ -93,6 +93,6 @@ pub mod secured_data;
 /// Persistant store on disk of the data itself as well as the `DataChain`.
 mod chunk_store;
 
-pub use chain::{Block, BlockIdentifier, DataChain, Proof, Vote, create_link_descriptor};
+pub use chain::{Block, BlockIdentifier, DataChain, Proof, Vote};
 
 pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, StructuredData};

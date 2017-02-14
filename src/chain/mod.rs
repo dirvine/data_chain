@@ -75,7 +75,7 @@ mod block_identifier;
 pub use chain::block::Block;
 pub use chain::block_identifier::BlockIdentifier;
 pub use chain::data_chain::DataChain;
-pub use chain::vote::{Proof, Vote, create_link_descriptor};
+pub use chain::vote::{Proof, Vote};
 use std::fmt::Write;
 
 fn debug_bytes<V: AsRef<[u8]>>(input: V) -> String {
