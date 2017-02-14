@@ -56,7 +56,6 @@
 extern crate bincode;
 extern crate fs2;
 extern crate itertools;
-#[macro_use]
 extern crate maidsafe_utilities;
 #[cfg(test)]
 extern crate rand;
