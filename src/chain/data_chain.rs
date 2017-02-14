@@ -18,7 +18,7 @@
 use bincode::rustc_serialize;
 use chain::block::Block;
 use chain::block_identifier::BlockIdentifier;
-use chain::node_block::Vote;
+use chain::vote::Vote;
 use error::Error;
 use fs2::FileExt;
 use itertools::Itertools;
@@ -139,10 +139,10 @@ impl DataChain {
         }
     }
 
-    /// Add a nodeblock received from a peer
+    /// Add a vote received from a peer
     /// Uses  `lazy accumulation`
     /// If block becomes valid, then it is returned
-    pub fn add_node_block(&mut self, block: Vote) -> Option<BlockIdentifier> {
+    pub fn add_vote(&mut self, block: Vote) -> Option<BlockIdentifier> {
         if !block.validate() {
             return None;
         }
@@ -438,7 +438,7 @@ impl Debug for DataChain {
 mod tests {
     use chain::block::Block;
     use chain::block_identifier::BlockIdentifier;
-    use chain::node_block::{self, Vote};
+    use chain::vote::{self, Vote};
     use data::DataIdentifier;
     use itertools::Itertools;
     use rust_sodium::crypto;
@@ -454,8 +454,8 @@ mod tests {
             .collect_vec();
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
+        let link_desc1 = vote::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = vote::create_link_descriptor(&pub2[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
         let identifier3 = BlockIdentifier::ImmutableData(hash(b"a"));
@@ -508,9 +508,9 @@ mod tests {
         // ########################################################################################
         // create link descriptors, which form the Block identifier
         // ########################################################################################
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
-        let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
-        let link_desc3 = node_block::create_link_descriptor(&pub3[..]).unwrap();
+        let link_desc1 = vote::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc2 = vote::create_link_descriptor(&pub2[..]).unwrap();
+        let link_desc3 = vote::create_link_descriptor(&pub3[..]).unwrap();
         // ########################################################################################
         // The block  identifier is the part of a Block/Vote that
         // describes the block, here it is links, but could be StructuredData / ImmutableData
@@ -549,12 +549,12 @@ mod tests {
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
         // ############# start adding blocks #####################
-        assert!(chain.add_node_block(link1_1.unwrap()).is_none());
+        assert!(chain.add_vote(link1_1.unwrap()).is_none());
         assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+        assert!(chain.add_vote(link1_2.unwrap()).is_some());
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_3.unwrap()).is_some());
+        assert!(chain.add_vote(link1_3.unwrap()).is_some());
         assert_eq!(chain.len(), 1);
         assert_eq!(chain.len(), 1);
         // ########################################################################################
@@ -565,16 +565,16 @@ mod tests {
         assert_eq!(chain.len(), 1);
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
-        assert!(chain.add_node_block(link2_1.unwrap()).is_none());
-        assert!(chain.add_node_block(link2_2.unwrap()).is_some()); // majority reached here
+        assert!(chain.add_vote(link2_1.unwrap()).is_none());
+        assert!(chain.add_vote(link2_2.unwrap()).is_some()); // majority reached here
         // assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
         assert_eq!(chain.links_len(), 2);
         assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(link2_3.unwrap()).is_some());
+        assert!(chain.add_vote(link2_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub2));
-        assert!(chain.add_node_block(link3_1.unwrap()).is_none());
-        assert!(chain.add_node_block(link3_2.unwrap()).is_some()); // majority reached here
-        assert!(chain.add_node_block(link3_3.unwrap()).is_some());
+        assert!(chain.add_vote(link3_1.unwrap()).is_none());
+        assert!(chain.add_vote(link3_2.unwrap()).is_some()); // majority reached here
+        assert!(chain.add_vote(link3_3.unwrap()).is_some());
         // ########################################################################################
         // Check blocks are validating as Votes are added, no need to call validate_all here,
         // should be automatic.
@@ -613,7 +613,7 @@ mod tests {
         assert!(pub1.len() == 3);
         assert!(pub2.len() == 3);
         assert!(pub3.len() == 3);
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc1 = vote::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
         let sd1_ident =
@@ -644,13 +644,13 @@ mod tests {
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
         // ############# start adding link #####################
-        assert!(chain.add_node_block(link1_1.unwrap()).is_none());
+        assert!(chain.add_vote(link1_1.unwrap()).is_none());
         assert!(chain.validate_ownership(&pub1));
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+        assert!(chain.add_vote(link1_2.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub1));
         assert_eq!(chain.len(), 1);
-        assert!(chain.add_node_block(link1_3.unwrap()).is_some());
+        assert!(chain.add_vote(link1_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
         assert_eq!(chain.len(), 1);
         // ########################################################################################
@@ -661,35 +661,35 @@ mod tests {
         assert_eq!(chain.len(), 1);
         assert_eq!(chain.blocks_len(), 0);
         assert_eq!(chain.links_len(), 1);
-        assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
-        assert!(chain.add_node_block(sd1_2.unwrap()).is_some());
+        assert!(chain.add_vote(sd1_1.unwrap()).is_none());
+        assert!(chain.add_vote(sd1_2.unwrap()).is_some());
         assert_eq!(chain.len(), 2);
         assert_eq!(chain.valid_len(), 2);
         assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+        assert!(chain.add_vote(sd1_3.unwrap()).is_some());
         assert!(chain.validate_ownership(&pub2));
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 1);
         assert_eq!(chain.len(), 2);
         let id1 = id_1.unwrap();
-        assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st id has valid signature
-        assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
-        assert!(chain.add_node_block(id_3.unwrap()).is_some());
+        assert!(chain.add_vote(id1.clone()).is_none()); // only 1st id has valid signature
+        assert!(chain.add_vote(id_2.unwrap()).is_some()); // will not get majority
+        assert!(chain.add_vote(id_3.unwrap()).is_some());
         assert_eq!(chain.links_len(), 1);
         assert_eq!(chain.blocks_len(), 2);
         assert_eq!(chain.len(), 3);
         chain.prune();
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 3);
-        assert!(chain.add_node_block(id1.clone()).is_none());
+        assert!(chain.add_vote(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 3);
         chain.remove(id1.identifier());
         assert_eq!(chain.len(), 2);
-        assert!(chain.add_node_block(id1.clone()).is_none());
+        assert!(chain.add_vote(id1.clone()).is_none());
         assert_eq!(chain.len(), 3);
         assert_eq!(chain.valid_len(), 2);
         assert!(chain.write().is_err());
@@ -705,7 +705,7 @@ mod tests {
         let pub1 = keys.iter().map(|x| x.0).take(3).collect_vec();
         let pub2 = keys.iter().map(|x| x.0).skip(1).take(3).collect_vec();
         let pub3 = keys.iter().map(|x| x.0).skip(2).take(3).collect_vec();
-        let link_desc1 = node_block::create_link_descriptor(&pub1[..]).unwrap();
+        let link_desc1 = vote::create_link_descriptor(&pub1[..]).unwrap();
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let id_ident = BlockIdentifier::ImmutableData(hash(b"id1hash"));
         let sd1_ident =
@@ -725,13 +725,13 @@ mod tests {
             if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf(), 999) {
                 assert!(chain.is_empty());
                 // ############# start adding link #####################
-                assert!(chain.add_node_block(link1_1.unwrap()).is_none());
+                assert!(chain.add_vote(link1_1.unwrap()).is_none());
                 assert!(chain.validate_ownership(&pub1));
                 assert_eq!(chain.len(), 1);
-                assert!(chain.add_node_block(link1_2.unwrap()).is_some());
+                assert!(chain.add_vote(link1_2.unwrap()).is_some());
                 assert!(chain.validate_ownership(&pub1));
                 assert_eq!(chain.len(), 1);
-                assert!(chain.add_node_block(link1_3.unwrap()).is_some());
+                assert!(chain.add_vote(link1_3.unwrap()).is_some());
                 assert!(chain.validate_ownership(&pub1)); // 1 link - all OK
                 assert_eq!(chain.len(), 1);
                 // ###############################################################################
@@ -742,35 +742,35 @@ mod tests {
                 assert_eq!(chain.len(), 1);
                 assert_eq!(chain.blocks_len(), 0);
                 assert_eq!(chain.links_len(), 1);
-                assert!(chain.add_node_block(sd1_1.unwrap()).is_none());
-                assert!(chain.add_node_block(sd1_2.unwrap()).is_some());
+                assert!(chain.add_vote(sd1_1.unwrap()).is_none());
+                assert!(chain.add_vote(sd1_2.unwrap()).is_some());
                 assert_eq!(chain.len(), 2);
                 assert_eq!(chain.valid_len(), 2);
                 assert!(chain.validate_ownership(&pub2)); // Ok as now 2 is in majority
                 assert_eq!(chain.links_len(), 1);
                 assert_eq!(chain.blocks_len(), 1);
                 assert_eq!(chain.len(), 2);
-                assert!(chain.add_node_block(sd1_3.unwrap()).is_some());
+                assert!(chain.add_vote(sd1_3.unwrap()).is_some());
                 assert!(chain.validate_ownership(&pub2));
                 assert_eq!(chain.links_len(), 1);
                 assert_eq!(chain.blocks_len(), 1);
                 assert_eq!(chain.len(), 2);
                 let id1 = id_1.unwrap();
-                assert!(chain.add_node_block(id1.clone()).is_none()); // only 1st is valid signature
-                assert!(chain.add_node_block(id_2.unwrap()).is_some()); // will not get majority
-                assert!(chain.add_node_block(id_3.unwrap()).is_some());
+                assert!(chain.add_vote(id1.clone()).is_none()); // only 1st is valid signature
+                assert!(chain.add_vote(id_2.unwrap()).is_some()); // will not get majority
+                assert!(chain.add_vote(id_3.unwrap()).is_some());
                 assert_eq!(chain.links_len(), 1);
                 assert_eq!(chain.blocks_len(), 2);
                 assert_eq!(chain.len(), 3);
                 chain.prune();
                 assert_eq!(chain.len(), 3);
                 assert_eq!(chain.valid_len(), 3);
-                assert!(chain.add_node_block(id1.clone()).is_none());
+                assert!(chain.add_vote(id1.clone()).is_none());
                 assert_eq!(chain.len(), 3);
                 assert_eq!(chain.valid_len(), 3);
                 chain.remove(id1.identifier());
                 assert_eq!(chain.len(), 2);
-                assert!(chain.add_node_block(id1.clone()).is_none());
+                assert!(chain.add_vote(id1.clone()).is_none());
                 assert_eq!(chain.len(), 3);
                 assert_eq!(chain.valid_len(), 2);
                 assert!(chain.write().is_ok());

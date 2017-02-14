@@ -16,7 +16,7 @@
 // relating to use of the SAFE Network Software.
 
 use chain::block_identifier::BlockIdentifier;
-use chain::node_block::{Proof, Vote};
+use chain::vote::{Proof, Vote};
 use error::Error;
 use maidsafe_utilities::serialisation;
 
@@ -33,13 +33,13 @@ pub struct Block {
 
 impl Block {
     /// new block
-    pub fn new(node_block: Vote) -> Result<Block, Error> {
-        if !node_block.validate() {
+    pub fn new(vote: Vote) -> Result<Block, Error> {
+        if !vote.validate() {
             return Err(Error::Signature);
         }
         Ok(Block {
-            identifier: node_block.identifier().clone(),
-            proofs: vec![node_block.proof().clone()],
+            identifier: vote.identifier().clone(),
+            proofs: vec![vote.proof().clone()],
             valid: false,
         })
     }

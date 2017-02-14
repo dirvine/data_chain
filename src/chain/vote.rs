@@ -79,7 +79,7 @@ impl Debug for Proof {
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
-/// A `Link` is a nodeblock that each member must send each other in times of churn.
+/// A `Link` is a vote that each member must send each other in times of churn.
 /// These will not accumulate but be `ManagedNode`  to `ManagedNode` messages in the routing layer
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
 pub struct Vote {
@@ -132,7 +132,7 @@ mod tests {
     use sha3::hash;
 
     #[test]
-    fn node_block_comparisons() {
+    fn vote_comparisons() {
         ::rust_sodium::init();
         let keys = sign::gen_keypair();
         let test_data1 = BlockIdentifier::Link(hash(b"1"));

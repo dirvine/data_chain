@@ -147,7 +147,7 @@ A [Vote] consists of the [BlockIdentifier] and a [Proof]. Nodes will create thes
 and send them as messages to group members when the network mutates. This will require that for
 every `Put` `Delete` or `Post` a new [BlockIdentifier] for that data item is created and sent to
 all group members. The [Proof] is this nodes `PublicKey` and `Signature`, allowing the receiving node
-to call the [DataChain]'s `fn add_nodeblock()` to try and add this to the data chain.
+to call the [DataChain]'s `fn add_vote()` to try and add this to the data chain.
 
 In times of network churn a node will create a separate `LinkDescriptor` to create the
 [BlockIdentifier] for this [Vote]. This `LinkDescriptor` is created by calling the
@@ -349,8 +349,8 @@ Not initially required, but should be considered in near future.
 
 [github]: https://github.com/dirvine/data_chain
 [Block]: https://dirvine.github.io/data_chain/master/data_chain/chain/block/struct.Block.html
-[Vote]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Vote.html
+[Vote]: https://dirvine.github.io/data_chain/master/data_chain/chain/vote/struct.Vote.html
 [DataChain]: https://dirvine.github.io/data_chain/master/data_chain/index.html
-[Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/struct.Proof.html
+[Proof]: https://dirvine.github.io/data_chain/master/data_chain/chain/vote/struct.Proof.html
 [BlockIdentifier]: https://dirvine.github.io/data_chain/master/data_chain/enum.BlockIdentifier.html
-[create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/node_block/fn.create_link_descriptor.html
+[create_link_descriptor()]: https://dirvine.github.io/data_chain/master/data_chain/chain/vote/fn.create_link_descriptor.html
