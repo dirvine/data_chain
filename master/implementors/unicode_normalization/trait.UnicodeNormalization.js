@@ -1,5 +1,7 @@
 (function() {var implementors = {};
-implementors["unicode_normalization"] = [];implementors["ws"] = [];implementors["maidsafe_utilities"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["unicode_normalization"] = [];
+implementors["ws"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

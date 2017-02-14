@@ -47,8 +47,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-70' class='srclink' href='../src/rayon/api.rs.html#215-217' title='goto source code'>[src]</a></span></h1>
-<pre class='rust struct'>pub struct ThreadPool { /* fields omitted */ }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-72' class='srclink' href='../src/rayon/api.rs.html#219-276' title='goto source code'>[src]</a></span></h3>
+               </span><a class='srclink' href='../src/rayon/api.rs.html#215-217' title='goto source code'>[src]</a></span></h1>
+<pre class='rust struct'>pub struct ThreadPool { /* fields omitted */ }</pre><h2 id='methods'>Methods</h2><h3 class='impl'><span class='in-band'><code>impl <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/rayon/api.rs.html#219-276' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.new' class='method'><span id='new.v' class='invisible'><code>fn <a href='#method.new' class='fnname'>new</a>(configuration: <a class='struct' href='../rayon/struct.Configuration.html' title='rayon::Configuration'>Configuration</a>) -&gt; <a class='enum' href='https://doc.rust-lang.org/nightly/core/result/enum.Result.html' title='core::result::Result'>Result</a>&lt;<a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a>, <a class='enum' href='../rayon/enum.InitError.html' title='rayon::InitError'>InitError</a>&gt;</code></span></h4>
 <div class='docblock'><p>Constructs a new thread pool with the given configuration. If
 the configuration is not valid, returns a suitable <code>Err</code>
@@ -76,7 +76,7 @@ during its lifetime, but thread indices may wind up being reused
 if threads are terminated and restarted. (If this winds up being
 an untenable policy, then a semver-incompatible version can be
 used.)</p>
-</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a id='src-86' class='srclink' href='../src/rayon/api.rs.html#278-282' title='goto source code'>[src]</a></span></h3>
+</div></div><h2 id='implementations'>Trait Implementations</h2><h3 class='impl'><span class='in-band'><code>impl <a class='trait' href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html' title='core::ops::Drop'>Drop</a> for <a class='struct' href='../rayon/struct.ThreadPool.html' title='rayon::ThreadPool'>ThreadPool</a></code></span><span class='out-of-band'><div class='ghost'></div><a class='srclink' href='../src/rayon/api.rs.html#278-282' title='goto source code'>[src]</a></span></h3>
 <div class='impl-items'><h4 id='method.drop' class='method'><span id='drop.v' class='invisible'><code>fn <a href='https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop' class='fnname'>drop</a>(&amp;mut self)</code></span></h4>
 <div class='docblock'><p>A method called when the value goes out of scope. <a href="https://doc.rust-lang.org/nightly/core/ops/trait.Drop.html#tymethod.drop">Read more</a></p>
 </div></div></section>

@@ -1,5 +1,6 @@
 (function() {var implementors = {};
-implementors["ws"] = [];implementors["maidsafe_utilities"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["ws"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

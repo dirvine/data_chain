@@ -1,5 +1,6 @@
 (function() {var implementors = {};
-implementors["rustc_serialize"] = [];implementors["maidsafe_utilities"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["rustc_serialize"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

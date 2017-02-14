@@ -1,5 +1,8 @@
 (function() {var implementors = {};
-implementors["rand"] = [];implementors["ws"] = [];implementors["maidsafe_utilities"] = [];implementors["rust_sodium_sys"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["rand"] = [];
+implementors["rust_sodium_sys"] = [];
+implementors["ws"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -47,8 +47,8 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a id='src-652' class='srclink' href='../src/itertools/free.rs.html#102-107' title='goto source code'>[src]</a></span></h1>
-<pre class='rust fn'>pub fn cloned&lt;'a, I, T:&nbsp;'a&gt;(iterable: I) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/core/iter/struct.Cloned.html' title='core::iter::Cloned'>Cloned</a>&lt;I::IntoIter&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html' title='core::iter::traits::IntoIterator'>IntoIterator</a>&lt;Item=&amp;'a T&gt;, T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a></span></pre><div class='docblock'><p>Create an iterator that clones each element from &amp;T to T</p>
+               </span><a class='srclink' href='../src/itertools/free.rs.html#102-107' title='goto source code'>[src]</a></span></h1>
+<pre class='rust fn'>pub fn cloned&lt;'a, I, T:&nbsp;'a&gt;(iterable: I) -&gt; <a class='struct' href='https://doc.rust-lang.org/nightly/core/iter/struct.Cloned.html' title='core::iter::Cloned'>Cloned</a>&lt;I::<a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html' title='core::iter::traits::IntoIterator'>IntoIter</a>&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/traits/trait.IntoIterator.html' title='core::iter::traits::IntoIterator'>IntoIterator</a>&lt;Item=&amp;'a T&gt;, T: <a class='trait' href='https://doc.rust-lang.org/nightly/core/clone/trait.Clone.html' title='core::clone::Clone'>Clone</a></span></pre><div class='docblock'><p>Create an iterator that clones each element from &amp;T to T</p>
 
 <p><code>IntoIterator</code> enabled version of <code>i.cloned()</code>.</p>
 

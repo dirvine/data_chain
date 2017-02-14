@@ -1,5 +1,6 @@
 (function() {var implementors = {};
-implementors["log4rs"] = [];implementors["maidsafe_utilities"] = [];
+implementors["log4rs"] = [];
+implementors["maidsafe_utilities"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

@@ -1,5 +1,6 @@
 (function() {var implementors = {};
-implementors["aho_corasick"] = [];implementors["maidsafe_utilities"] = [];
+implementors["aho_corasick"] = [];
+implementors["maidsafe_utilities"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

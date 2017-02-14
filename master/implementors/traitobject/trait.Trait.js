@@ -1,5 +1,6 @@
 (function() {var implementors = {};
-implementors["traitobject"] = [];implementors["maidsafe_utilities"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["traitobject"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);

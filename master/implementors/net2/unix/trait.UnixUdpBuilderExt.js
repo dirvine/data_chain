@@ -1,5 +1,8 @@
 (function() {var implementors = {};
-implementors["net2"] = [];implementors["mio"] = [];implementors["ws"] = [];implementors["maidsafe_utilities"] = [];
+implementors["maidsafe_utilities"] = [];
+implementors["mio"] = [];
+implementors["net2"] = [];
+implementors["ws"] = [];
 
             if (window.register_implementors) {
                 window.register_implementors(implementors);
