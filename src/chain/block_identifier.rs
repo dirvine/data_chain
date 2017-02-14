@@ -15,9 +15,9 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+use super::debug_bytes;
 use data::DataIdentifier;
 use std::fmt::{self, Debug, Formatter};
-use super::debug_bytes;
 
 /// Hash of the public keys of all group members (keys are lexicographically sorted before hashing).
 ///
@@ -100,9 +100,9 @@ impl Debug for BlockIdentifier {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use data::DataIdentifier;
     use sha3::hash;
-    use super::*;
 
     #[test]
     fn create_validate_link_identifier() {

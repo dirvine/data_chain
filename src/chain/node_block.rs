@@ -15,13 +15,13 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
+use super::debug_bytes;
 use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
 use error::Error;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::{self, PublicKey, SecretKey, Signature};
 use std::fmt::{self, Debug, Formatter};
-use super::debug_bytes;
 use tiny_keccak::Keccak;
 
 /// Returns a link descriptor with the hash of the group members, or `None` if `group` is empty.
@@ -82,20 +82,20 @@ impl Debug for Proof {
 /// A `Link` is a nodeblock that each member must send each other in times of churn.
 /// These will not accumulate but be `ManagedNode`  to `ManagedNode` messages in the routing layer
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
-pub struct NodeBlock {
+pub struct Vote {
     identifier: BlockIdentifier,
     proof: Proof,
 }
 
-impl NodeBlock {
+impl Vote {
     /// Create a Block (used by nodes in network to send to holders of `DataChains`)
     pub fn new(pub_key: &PublicKey,
                secret_key: &SecretKey,
                data_identifier: BlockIdentifier)
-               -> Result<NodeBlock, Error> {
+               -> Result<Vote, Error> {
         let signature = sign::sign_detached(&serialisation::serialise(&data_identifier)?[..],
                                             secret_key);
-        Ok(NodeBlock {
+        Ok(Vote {
             identifier: data_identifier,
             proof: Proof::new(*pub_key, signature),
         })
@@ -126,10 +126,10 @@ impl NodeBlock {
 
 #[cfg(test)]
 mod tests {
+    use super::*;
     use chain::block_identifier::BlockIdentifier;
     use rust_sodium::crypto::sign;
     use sha3::hash;
-    use super::*;
 
     #[test]
     fn node_block_comparisons() {
@@ -138,9 +138,9 @@ mod tests {
         let test_data1 = BlockIdentifier::Link(hash(b"1"));
         let test_data2 = BlockIdentifier::Link(hash(b"1"));
         let test_data3 = BlockIdentifier::ImmutableData(hash(b"1"));
-        let test_node_data_block1 = NodeBlock::new(&keys.0, &keys.1, test_data1).expect("fail1");
-        let test_node_data_block2 = NodeBlock::new(&keys.0, &keys.1, test_data2).expect("fail2");
-        let test_node_data_block3 = NodeBlock::new(&keys.0, &keys.1, test_data3).expect("fail3");
+        let test_node_data_block1 = Vote::new(&keys.0, &keys.1, test_data1).expect("fail1");
+        let test_node_data_block2 = Vote::new(&keys.0, &keys.1, test_data2).expect("fail2");
+        let test_node_data_block3 = Vote::new(&keys.0, &keys.1, test_data3).expect("fail3");
         assert!(test_node_data_block1.validate());
         assert!(test_node_data_block2.validate());
         assert!(test_node_data_block3.validate());

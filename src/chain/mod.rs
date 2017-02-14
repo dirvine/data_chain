@@ -43,7 +43,7 @@
 //!
 //! The link is a group agreement chain component which is created by sorting the closest nodes
 //! to a network node (Address) and sending this hash, signed to that node.
-//! The recipient will then receive these, `NodeBlocks` and create the chain link.
+//! The recipient will then receive these, `Votes` and create the chain link.
 //! This link will allow the agreed members of the group so sign `DataBlocks` for the chain
 //! If a majority of the link members sign the data, it is validly in the chain.
 //! On group membership changes, a new link is constructed in the chain and the process repeats.
@@ -75,7 +75,7 @@ mod block_identifier;
 pub use chain::block::Block;
 pub use chain::block_identifier::BlockIdentifier;
 pub use chain::data_chain::DataChain;
-pub use chain::node_block::{NodeBlock, Proof, create_link_descriptor};
+pub use chain::node_block::{Proof, Vote, create_link_descriptor};
 use std::fmt::Write;
 
 fn debug_bytes<V: AsRef<[u8]>>(input: V) -> String {

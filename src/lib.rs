@@ -73,7 +73,7 @@ extern crate unwrap;
 pub mod error;
 
 /// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or
-/// links. When enough blocks (`NodeBlock`s) are received from other nodes a block
+/// links. When enough blocks (`Vote`s) are received from other nodes a block
 /// becomes valid. This is a cetnral type to the security of republishable data
 /// on the network.
 pub mod chain;
@@ -94,6 +94,6 @@ pub mod secured_data;
 /// Persistant store on disk of the data itself as well as the `DataChain`.
 mod chunk_store;
 
-pub use chain::{Block, BlockIdentifier, DataChain, NodeBlock, Proof, create_link_descriptor};
+pub use chain::{Block, BlockIdentifier, DataChain, Proof, Vote, create_link_descriptor};
 
 pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, StructuredData};

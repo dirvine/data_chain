@@ -18,7 +18,7 @@
 use bincode::rustc_serialize;
 use chain::block::Block;
 use chain::block_identifier::BlockIdentifier;
-use chain::node_block::NodeBlock;
+use chain::node_block::Vote;
 use error::Error;
 use fs2::FileExt;
 use itertools::Itertools;
@@ -142,7 +142,7 @@ impl DataChain {
     /// Add a nodeblock received from a peer
     /// Uses  `lazy accumulation`
     /// If block becomes valid, then it is returned
-    pub fn add_node_block(&mut self, block: NodeBlock) -> Option<BlockIdentifier> {
+    pub fn add_node_block(&mut self, block: Vote) -> Option<BlockIdentifier> {
         if !block.validate() {
             return None;
         }
@@ -438,7 +438,7 @@ impl Debug for DataChain {
 mod tests {
     use chain::block::Block;
     use chain::block_identifier::BlockIdentifier;
-    use chain::node_block::{self, NodeBlock};
+    use chain::node_block::{self, Vote};
     use data::DataIdentifier;
     use itertools::Itertools;
     use rust_sodium::crypto;
@@ -459,15 +459,15 @@ mod tests {
         let identifier1 = BlockIdentifier::Link(link_desc1);
         let identifier2 = BlockIdentifier::Link(link_desc2);
         let identifier3 = BlockIdentifier::ImmutableData(hash(b"a"));
-        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
-        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
-        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
-        let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
-        let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
-        let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
-        let id1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
-        let id2 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier3.clone());
-        let id3 = NodeBlock::new(&keys[4].0, &keys[4].1, identifier3);
+        let link1_1 = Vote::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = Vote::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = Vote::new(&keys[2].0, &keys[2].1, identifier1);
+        let link2_1 = Vote::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link2_2 = Vote::new(&keys[2].0, &keys[2].1, identifier2.clone());
+        let link2_3 = Vote::new(&keys[3].0, &keys[3].1, identifier2);
+        let id1 = Vote::new(&keys[2].0, &keys[2].1, identifier3.clone());
+        let id2 = Vote::new(&keys[3].0, &keys[3].1, identifier3.clone());
+        let id3 = Vote::new(&keys[4].0, &keys[4].1, identifier3);
 
         let mut block1 = Block::new(link1_1.unwrap()).unwrap();
         assert!(block1.add_proof(link1_2.unwrap().proof().clone()).is_ok());
@@ -512,7 +512,7 @@ mod tests {
         let link_desc2 = node_block::create_link_descriptor(&pub2[..]).unwrap();
         let link_desc3 = node_block::create_link_descriptor(&pub3[..]).unwrap();
         // ########################################################################################
-        // The block  identifier is the part of a Block/NodeBlock that
+        // The block  identifier is the part of a Block/Vote that
         // describes the block, here it is links, but could be StructuredData / ImmutableData
         // ########################################################################################
         let identifier1 = BlockIdentifier::Link(link_desc1);
@@ -522,20 +522,20 @@ mod tests {
         assert!(identifier1 != identifier3);
         assert!(identifier2 != identifier3);
         // ########################################################################################
-        // Create NodeBlocks, these are what nodes send to each other
+        // Create Votes, these are what nodes send to each other
         // Here they are all links only. For Put Delete Post
         // these would be Identifiers for the data types that includes a hash of the serialised data
         // ########################################################################################
-        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
-        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
-        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
-        let link2_1 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier2.clone());
+        let link1_1 = Vote::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = Vote::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = Vote::new(&keys[2].0, &keys[2].1, identifier1);
+        let link2_1 = Vote::new(&keys[1].0, &keys[1].1, identifier2.clone());
         // here we need to add 2_1 again as 2_1 will be purged as part of test later on
-        let link2_2 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier2.clone());
-        let link2_3 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier2);
-        let link3_1 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier3.clone());
-        let link3_2 = NodeBlock::new(&keys[3].0, &keys[3].1, identifier3.clone());
-        let link3_3 = NodeBlock::new(&keys[4].0, &keys[4].1, identifier3);
+        let link2_2 = Vote::new(&keys[2].0, &keys[2].1, identifier2.clone());
+        let link2_3 = Vote::new(&keys[3].0, &keys[3].1, identifier2);
+        let link3_1 = Vote::new(&keys[2].0, &keys[2].1, identifier3.clone());
+        let link3_2 = Vote::new(&keys[3].0, &keys[3].1, identifier3.clone());
+        let link3_3 = Vote::new(&keys[4].0, &keys[4].1, identifier3);
         assert!(link1_1.is_ok());
         assert!(link1_2.is_ok());
         assert!(link1_3.is_ok());
@@ -576,7 +576,7 @@ mod tests {
         assert!(chain.add_node_block(link3_2.unwrap()).is_some()); // majority reached here
         assert!(chain.add_node_block(link3_3.unwrap()).is_some());
         // ########################################################################################
-        // Check blocks are validating as NodeBlocks are added, no need to call validate_all here,
+        // Check blocks are validating as Votes are added, no need to call validate_all here,
         // should be automatic.
         // ########################################################################################
         assert_eq!(chain.links_len(), 3);
@@ -627,19 +627,19 @@ mod tests {
         assert!(id_ident != sd1_ident);
         assert!(sd1_ident != sd2_ident);
         // ########################################################################################
-        // Create NodeBlocks, these are what nodes send to each other
+        // Create Votes, these are what nodes send to each other
         // Here they are all links only. For Put Delete Post
         // these would be Identifiers for the data types that includes a hash of the serialised data
         // ########################################################################################
-        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
-        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
-        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
-        let sd1_1 = NodeBlock::new(&keys[1].0, &keys[1].1, sd1_ident.clone());
-        let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
-        let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident);
-        let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
-        let id_2 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone()); // fail w/wrong keys
-        let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
+        let link1_1 = Vote::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = Vote::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = Vote::new(&keys[2].0, &keys[2].1, identifier1);
+        let sd1_1 = Vote::new(&keys[1].0, &keys[1].1, sd1_ident.clone());
+        let sd1_2 = Vote::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
+        let sd1_3 = Vote::new(&keys[3].0, &keys[3].1, sd1_ident);
+        let id_1 = Vote::new(&keys[2].0, &keys[2].1, id_ident.clone());
+        let id_2 = Vote::new(&keys[1].0, &keys[1].1, id_ident.clone()); // fail w/wrong keys
+        let id_3 = Vote::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
@@ -711,15 +711,15 @@ mod tests {
         let sd1_ident =
             BlockIdentifier::StructuredData(hash(b"sd1hash"),
                                             DataIdentifier::Structured(hash(b"sd1name"), 0));
-        let link1_1 = NodeBlock::new(&keys[0].0, &keys[0].1, identifier1.clone());
-        let link1_2 = NodeBlock::new(&keys[1].0, &keys[1].1, identifier1.clone());
-        let link1_3 = NodeBlock::new(&keys[2].0, &keys[2].1, identifier1);
-        let sd1_1 = NodeBlock::new(&keys[1].0, &keys[1].1, sd1_ident.clone());
-        let sd1_2 = NodeBlock::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
-        let sd1_3 = NodeBlock::new(&keys[3].0, &keys[3].1, sd1_ident);
-        let id_1 = NodeBlock::new(&keys[2].0, &keys[2].1, id_ident.clone());
-        let id_2 = NodeBlock::new(&keys[1].0, &keys[1].1, id_ident.clone()); // fail w/wrong keys
-        let id_3 = NodeBlock::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
+        let link1_1 = Vote::new(&keys[0].0, &keys[0].1, identifier1.clone());
+        let link1_2 = Vote::new(&keys[1].0, &keys[1].1, identifier1.clone());
+        let link1_3 = Vote::new(&keys[2].0, &keys[2].1, identifier1);
+        let sd1_1 = Vote::new(&keys[1].0, &keys[1].1, sd1_ident.clone());
+        let sd1_2 = Vote::new(&keys[2].0, &keys[2].1, sd1_ident.clone());
+        let sd1_3 = Vote::new(&keys[3].0, &keys[3].1, sd1_ident);
+        let id_1 = Vote::new(&keys[2].0, &keys[2].1, id_ident.clone());
+        let id_2 = Vote::new(&keys[1].0, &keys[1].1, id_ident.clone()); // fail w/wrong keys
+        let id_3 = Vote::new(&keys[4].0, &keys[4].1, id_ident); // fail w/wrong keys
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
             if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf(), 999) {

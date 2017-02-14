@@ -15,7 +15,7 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use chain::{BlockIdentifier, DataChain, NodeBlock};
+use chain::{BlockIdentifier, DataChain, Vote};
 use chunk_store::ChunkStore;
 use data::{Data, DataIdentifier};
 use error::Error;
@@ -65,9 +65,9 @@ impl SecuredData {
         self.dc.clone()
     }
 
-    /// Add a NodeBlock from another node
+    /// Add a Vote from another node
     /// If block is valid will return BlockIdentifier
-    pub fn add_node_block(&mut self, nb: NodeBlock) -> Option<BlockIdentifier> {
+    pub fn add_node_block(&mut self, nb: Vote) -> Option<BlockIdentifier> {
         self.dc.lock().unwrap().add_node_block(nb.clone())
     }
 
@@ -111,9 +111,9 @@ impl SecuredData {
         }
     }
     /// Add received data, return Result false if we do not have the corresponding
-    /// **valid** NodeBlock for this data. Will return a BlockIDentifier from us
-    /// that we must use to create a NodeBlock to send to peers. We also **must**
-    /// add this NodeBlock ourselves to this container. This is done in this manner to
+    /// **valid** Vote for this data. Will return a BlockIDentifier from us
+    /// that we must use to create a Vote to send to peers. We also **must**
+    /// add this Vote ourselves to this container. This is done in this manner to
     /// prevent coupling with keypairs etc.
     ///
     /// **Versioned ledger structured data will be Put and paid for**
