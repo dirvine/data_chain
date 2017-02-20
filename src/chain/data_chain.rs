@@ -159,7 +159,7 @@ impl DataChain {
                     blk.valid = true;
                     return Some(blk.identifier().clone());
                 }
-            } else if vote.is_self_vote() {
+            } else if vote.identifier().is_link() && vote.is_self_vote() {
                 return None;
             }
         }
