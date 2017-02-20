@@ -141,48 +141,56 @@ impl DataChain {
 
     /// Add a vote received from a peer
     /// Uses  `lazy accumulation`
-    /// If block becomes valid, then it is returned
-    pub fn add_vote(&mut self, block: Vote) -> Option<BlockIdentifier> {
-        if !block.validate() {
+    /// If vote becomes valid, then it is returned
+    pub fn add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
+        if !vote.validate() {
             return None;
         }
         let len;
         let links;
         let group_size;
         {
-            links = self.valid_links_at_block_id(block.identifier());
+            links = self.valid_links_at_block_id(vote.identifier());
             len = self.chain.len();
             group_size = self.group_size;
             if self.chain.is_empty() {
-                if let Ok(blk) = Block::new(block.clone()) {
-                    self.chain.push(blk);
-                    return None;
+                if let Ok(mut blk) = Block::new(vote.clone()) {
+                    self.chain.push(blk.clone());
+                    blk.valid = true;
+                    return Some(blk.identifier().clone());
                 }
+            } else if vote.is_self_vote() {
+                return None;
             }
         }
         for blk in &mut self.chain {
-            if blk.identifier() == block.identifier() {
-                if blk.proofs().iter().any(|x| x.key() == block.proof().key()) {
+            if blk.identifier() == vote.identifier() {
+                if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
+                    info!("duplicate proof");
                     return None;
                 }
 
-                let _ = blk.add_proof(block.proof().clone());
-
-                if len == 1 ||
+                blk.add_proof(vote.proof().clone()).unwrap();
+                info!("links length {:?}", links.len());
+                info!("chain  length {:?}", len);
+                if len <= 2 ||
                    links.iter()
-                    .filter(|x| x.identifier() != blk.identifier())
+                    .filter(|x| x.identifier() != vote.identifier())
                     .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
                     blk.valid = true;
                     return Some(blk.identifier().clone());
                 } else {
+                    info!("in else block of add_vote");
                     blk.valid = false;
                     return None;
                 }
             }
         }
-        if let Ok(blk) = Block::new(block) {
-            self.chain.push(blk);
+        if let Ok(blk) = Block::new(vote) {
+            self.chain.push(blk.clone());
+            return Some(blk.identifier().clone());
         }
+        info!("Could not find any vlock for this proof");
         None
 
     }
@@ -373,6 +381,7 @@ impl DataChain {
     }
 
     /// Merge any blocks from a given chain
+    /// FIXME - this needs a complete rewrite
     pub fn merge_chain(&mut self, chain: &mut DataChain) {
         chain.mark_blocks_valid();
         chain.prune();
@@ -399,7 +408,7 @@ impl DataChain {
             .iter()
             .filter(|&y| block.proofs().iter().any(|p| p.key() == y.key()))
             .count();
-        (p_len * 2 > proof.proofs().len()) || (p_len == group_size)
+        (p_len * 2 > proof.proofs().len()) || (p_len == group_size) || p_len <= 2
     }
 }
 
@@ -436,15 +445,50 @@ impl Debug for DataChain {
 #[cfg(test)]
 #[cfg_attr(rustfmt, rustfmt_skip)]
 mod tests {
+    extern crate env_logger;
     // use chain::block::Block;
-    // use chain::block_identifier::BlockIdentifier;
-    // use chain::vote::{self, Vote};
+    use chain::block_identifier::{LinkDescriptor, BlockIdentifier};
+    use chain::vote::Vote;
     // use data::DataIdentifier;
-    // use itertools::Itertools;
-    // use rust_sodium::crypto;
+    use itertools::Itertools;
+    use rust_sodium::crypto;
     // use sha3::hash;
-    // use super::*;
+    use super::*;
     // use tempdir::TempDir;
+
+#[test]
+    fn genesis() {
+
+        let _ = env_logger::init();
+        ::rust_sodium::init();
+        let keys = (0..10)
+            .map(|_| crypto::sign::gen_keypair())
+            .collect_vec();
+        let add_node_1 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[1].0.clone()));
+        let add_node_2 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[2].0.clone()));
+        // let add_node_3 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[3].0.clone()));
+        // let add_node_4 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[4].0.clone()));
+        // let add_node_5 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[5].0.clone()));
+        // let remove_node_1 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[1].0.clone()));
+        // let remove_node_2 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[2].0.clone()));
+        // let remove_node_3 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[3].0.clone()));
+        // let remove_node_4 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[4].0.clone()));
+        // let remove_node_5 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[5].0.clone()));
+
+        let mut chain = DataChain::default();
+        assert!(chain.is_empty());
+        info!("Add first node, should accumulate as valid.");
+        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_1) .unwrap()).is_some());
+        info!("Node2 adds link claiming to be from it. Should be none  as this node is not in chain.");
+        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_2.clone()).unwrap()).is_none());
+        // This vote should count and validate vote on it's own. Node 2 should not be able to vote
+        // for itself being added.
+        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_2.clone()).unwrap()).is_some());
+        // again check node2 cannot vote for itself.
+        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_2) .unwrap()).is_none());
+
+
+    }
 
     // #[test]
     // fn validate_with_proof() {

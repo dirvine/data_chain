@@ -15,50 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use super::debug_bytes;
 use chain::block_identifier::BlockIdentifier;
+use chain::proof::Proof;
 use error::Error;
 use maidsafe_utilities::serialisation;
-use rust_sodium::crypto::sign::{self, PublicKey, SecretKey, Signature};
-use std::fmt::{self, Debug, Formatter};
-
-/// Proof as provided by a close group member
-#[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Clone)]
-pub struct Proof {
-    key: PublicKey,
-    sig: Signature,
-}
-
-impl Proof {
-    /// cstr
-    pub fn new(key: PublicKey, sig: Signature) -> Proof {
-        Proof {
-            key: key,
-            sig: sig,
-        }
-    }
-
-    /// getter
-    pub fn key(&self) -> &PublicKey {
-        &self.key
-    }
-
-    /// getter
-    pub fn sig(&self) -> &Signature {
-        &self.sig
-    }
-
-    /// Validates `data` against this `Proof`'s `key` and `sig`.
-    pub fn validate(&self, data: &[u8]) -> bool {
-        sign::verify_detached(&self.sig, data, &self.key)
-    }
-}
-
-impl Debug for Proof {
-    fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        write!(formatter, "Proof {{ key: {}, .. }}", debug_bytes(self.key))
-    }
-}
+use rust_sodium::crypto::sign::{self, PublicKey, SecretKey};
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
@@ -98,8 +59,14 @@ impl Vote {
         self.validate_detached(&self.identifier)
     }
 
+    /// Check vote is not for self added/removed
+    pub fn is_self_vote(&self) -> bool {
+        &self.proof.key().0 == self.identifier.hash()
+    }
+
     /// validate signed correctly
     pub fn validate_detached(&self, identifier: &BlockIdentifier) -> bool {
+
         match serialisation::serialise(identifier) {
             Ok(data) => self.proof.validate(&data[..]),
             _ => false,

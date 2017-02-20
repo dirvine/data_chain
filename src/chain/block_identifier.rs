@@ -17,15 +17,24 @@
 
 use super::debug_bytes;
 use data::DataIdentifier;
+use rust_sodium::crypto::sign::PublicKey;
 use std::fmt::{self, Debug, Formatter};
 
-/// Each node in the group signs this to form a `Proof`.
+/// What caused group to change?
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub enum LinkDescriptor {
-    NodeLost([u8; 32]),
-    NodeGained([u8; 32]),
+    NodeLost(PublicKey),
+    NodeGained(PublicKey),
 }
 
+impl LinkDescriptor {
+    pub fn hash(&self) -> &[u8; 32] {
+        match *self {
+            LinkDescriptor::NodeLost(ref h) => &h.0,
+            LinkDescriptor::NodeGained(ref h) => &h.0,
+        }
+    }
+}
 /// Data identifiers for use in a data Chain.
 /// The hash of each data type is available to ensure there is no confusion
 /// over the validity of any data presented by this chain
@@ -34,7 +43,7 @@ pub enum LinkDescriptor {
 pub enum BlockIdentifier {
     ///           hash is also name of data stored locally
     ImmutableData([u8; 32]),
-    ///           hash     name (identity + tag) (stored localy as name in data store)
+    ///           hash   name (identity + tag) (stored localy as name in data store)
     StructuredData([u8; 32], DataIdentifier),
     /// Hash of group members' public keys (see `LinkDescriptor`).
     Link(LinkDescriptor),
@@ -49,15 +58,9 @@ impl BlockIdentifier {
         match *self {
             BlockIdentifier::StructuredData(ref hash, _name) => hash,
             BlockIdentifier::ImmutableData(ref hash) => hash,
-            BlockIdentifier::Link(ref hash) => {
-                match *hash {
-                    LinkDescriptor::NodeLost(ref h) => h,
-                    LinkDescriptor::NodeGained(ref h) => h,
-                }
-            }
+            BlockIdentifier::Link(ref link) => link.hash(),
         }
     }
-
     /// structured data name != hash of the data or block
     pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
@@ -116,18 +119,20 @@ impl Debug for BlockIdentifier {
 mod tests {
     use super::*;
     use data::DataIdentifier;
+    use rust_sodium::crypto;
     use sha3::hash;
 
-    // #[test]
-    // fn create_validate_link_identifier() {
-    //     ::rust_sodium::init();
-    //     let link = BlockIdentifier::Link(hash(b"1"));
-    //
-    //     assert!(link.is_link());
-    //     assert!(!link.is_block());
-    //     assert!(link.name().is_none());
-    // }
-    //
+    #[test]
+    fn create_validate_link_identifier() {
+        ::rust_sodium::init();
+        let keys = crypto::sign::gen_keypair();
+        let link = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys.0));
+
+        assert!(link.is_link());
+        assert!(!link.is_block());
+        assert!(link.name().is_none());
+    }
+
     #[test]
     fn create_validate_immutable_data_identifier() {
         let id_block = BlockIdentifier::ImmutableData(hash(b"1"));

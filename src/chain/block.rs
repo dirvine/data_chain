@@ -16,7 +16,8 @@
 // relating to use of the SAFE Network Software.
 
 use chain::block_identifier::BlockIdentifier;
-use chain::vote::{Proof, Vote};
+use chain::proof::Proof;
+use chain::vote::Vote;
 use error::Error;
 use maidsafe_utilities::serialisation;
 
