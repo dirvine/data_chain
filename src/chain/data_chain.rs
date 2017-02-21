@@ -173,8 +173,7 @@ impl DataChain {
                 blk.add_proof(vote.proof().clone()).unwrap();
                 info!("links length {:?}", links.len());
                 info!("chain  length {:?}", len);
-                if len <= 2 ||
-                   links.iter()
+                if links.iter()
                     .filter(|x| x.identifier() != vote.identifier())
                     .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
                     blk.valid = true;
@@ -190,7 +189,7 @@ impl DataChain {
             self.chain.push(blk.clone());
             return Some(blk.identifier().clone());
         }
-        info!("Could not find any vlock for this proof");
+        info!("Could not find any block for this proof");
         None
 
     }
