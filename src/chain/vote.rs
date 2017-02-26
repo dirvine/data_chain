@@ -61,7 +61,11 @@ impl Vote {
 
     /// Check vote is not for self added/removed
     pub fn is_self_vote(&self) -> bool {
-        &self.proof.key().0 == self.identifier.hash()
+        if let Some(name) = self.identifier.name() {
+            &self.proof.key().0 == name
+        } else {
+            false
+        }
     }
 
     /// validate signed correctly

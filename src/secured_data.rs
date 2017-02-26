@@ -77,7 +77,11 @@ impl SecuredData {
             .lock()
             .unwrap()
             .find_name(data_id.name()) {
-            return self.cs.has(id.identifier().hash());
+            if let Some(name) = id.identifier().name() {
+
+                return self.cs.has(name);
+            }
+            return false;
         }
         false
     }
@@ -88,7 +92,10 @@ impl SecuredData {
             .unwrap()
             .find_name(data_id.name()) {
             if block_id.valid {
-                return Ok(self.cs.get(block_id.identifier().hash())?);
+                if let Some(name) = block_id.identifier().name() {
+                    return Ok(self.cs.get(name)?);
+                }
+
             } else {
                 return Err(Error::Validation);
             }
@@ -170,7 +177,10 @@ impl SecuredData {
             .unwrap()
             .find_name(data_id.name()) {
             // if !block_id.identifier().is_ledger() {
-            let _ = self.cs.delete(block_id.identifier().hash());
+            if let Some(name) = block_id.identifier().name() {
+                let _ = self.cs.delete(name);
+            }
+
             self.dc.lock().unwrap().remove(block_id.identifier());
             return Ok(block_id.identifier().clone());
             // }
@@ -190,9 +200,14 @@ impl SecuredData {
                                    .cloned()
                                    .filter(|x| x.valid)
                                    .filter(|x| {
-                                       x.identifier().is_link() ||
-                                       keys.contains(x.identifier().hash())
-                                   })
+                x.identifier().is_link() ||
+                if let Some(name) = x.identifier().name() {
+                    keys.contains(name)
+                } else {
+                    false
+                }
+
+            })
                                    .collect_vec(),
                                group_size)
     }
@@ -207,10 +222,17 @@ impl SecuredData {
             .iter()
             .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| cs_keys.contains(x.identifier().hash())) {
-            // only throws error on IO error not missing data
-            // TODO test this !!
-            self.cs.delete(dc_key.identifier().hash())?;
+            .filter(|x| if let Some(name) = x.identifier().name() {
+                cs_keys.contains(name)
+            } else {
+                false
+            })
+        // only throws error on IO error not missing data
+        // TODO test this !!
+        {
+            if let Some(name) = dc_key.identifier().name() {
+                self.cs.delete(name)?;
+            }
         }
         Ok(())
     }
@@ -249,7 +271,11 @@ impl SecuredData {
             .chain()
             .iter()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| !keys.contains(x.identifier().hash()))
+            .filter(|x| if let Some(name) = x.identifier().name() {
+                keys.contains(name)
+            } else {
+                false
+            })
             .map(|x| x.identifier().clone())
             .collect_vec()
     }

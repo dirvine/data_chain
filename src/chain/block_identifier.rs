@@ -25,13 +25,15 @@ use std::fmt::{self, Debug, Formatter};
 pub enum LinkDescriptor {
     NodeLost(PublicKey),
     NodeGained(PublicKey),
+    TBD(),
 }
 
 impl LinkDescriptor {
-    pub fn hash(&self) -> &[u8; 32] {
+    pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
-            LinkDescriptor::NodeLost(ref h) => &h.0,
-            LinkDescriptor::NodeGained(ref h) => &h.0,
+            LinkDescriptor::NodeLost(ref h) => Some(&h.0),
+            LinkDescriptor::NodeGained(ref h) => Some(&h.0),
+            _ => None,
         }
     }
 }
@@ -54,19 +56,19 @@ impl BlockIdentifier {
     /// not change the name (such as with structured data and versions etc.)
     /// In this module we do not care about other info and any validation is outwith this area
     /// Therefore we will delete before insert etc. based on name alone of the data element
-    pub fn hash(&self) -> &[u8; 32] {
-        match *self {
-            BlockIdentifier::StructuredData(ref hash, _name) => hash,
-            BlockIdentifier::ImmutableData(ref hash) => hash,
-            BlockIdentifier::Link(ref link) => link.hash(),
-        }
-    }
+    // pub fn hash(&self) -> &[u8; 32] {
+    //     match *self {
+    //         BlockIdentifier::StructuredData(ref hash, _name) => hash,
+    //         BlockIdentifier::ImmutableData(ref hash) => hash,
+    //         BlockIdentifier::Link(ref link) => link.hash(),
+    //     }
+    // }
     /// structured data name != hash of the data or block
     pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
             BlockIdentifier::ImmutableData(ref hash) => Some(hash),
             BlockIdentifier::StructuredData(_hash, ref id) => Some(id.name()),
-            BlockIdentifier::Link(_) => None,
+            BlockIdentifier::Link(ref link) => link.name(),
         }
     }
 
@@ -109,6 +111,7 @@ impl Debug for BlockIdentifier {
                     LinkDescriptor::NodeGained(ref h) => {
                         write!(formatter, "NodeGained Link({})", debug_bytes(h))
                     }
+                    _ => write!(formatter, "TBD"),
                 }
             }
         }
@@ -130,7 +133,7 @@ mod tests {
 
         assert!(link.is_link());
         assert!(!link.is_block());
-        assert!(link.name().is_none());
+        assert!(link.name().is_some());
     }
 
     #[test]
@@ -138,19 +141,19 @@ mod tests {
         let id_block = BlockIdentifier::ImmutableData(hash(b"1"));
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
-        assert_eq!(*id_block.hash(), hash(b"1"));
+        assert_eq!(*id_block.name().unwrap(), hash(b"1"));
         assert!(id_block.name().is_some());
     }
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(hash(b"hash"),
+        let sd_block = BlockIdentifier::StructuredData(hash(b"name"),
                                                        DataIdentifier::Structured(hash(b"name"),
                                                                                   1));
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
-        assert_eq!(*sd_block.hash(), hash(b"hash"));
+        assert_eq!(*sd_block.name().unwrap(), hash(b"name"));
         assert!(sd_block.name().is_some());
         assert_eq!(*sd_block.name().expect("sd name"), hash(b"name"))
     }
