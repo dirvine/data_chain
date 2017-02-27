@@ -20,12 +20,17 @@ use data::DataIdentifier;
 use rust_sodium::crypto::sign::PublicKey;
 use std::fmt::{self, Debug, Formatter};
 
+/// TODO USe real prefix
+#[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
+pub struct Prefix(u64);
+
 /// What caused group to change?
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub enum LinkDescriptor {
     NodeLost(PublicKey),
     NodeGained(PublicKey),
-    TBD(),
+    SplitFrom(Prefix),
+    MergeTo(Prefix),
 }
 
 impl LinkDescriptor {
