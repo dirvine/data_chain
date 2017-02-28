@@ -17,7 +17,7 @@
 
 use bincode::rustc_serialize;
 use chain::block::Block;
-use chain::block_identifier::BlockIdentifier;
+use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
 use chain::vote::Vote;
 use error::Error;
 use fs2::FileExt;
@@ -44,6 +44,7 @@ pub struct DataChain {
     chain: Vec<Block>,
     group_size: usize,
     path: Option<PathBuf>,
+    valid_nodes: Vec<PublicKey>,
 }
 
 type Blocks = Vec<Block>;
@@ -60,6 +61,7 @@ impl DataChain {
             chain: Blocks::default(),
             group_size: group_size,
             path: Some(path),
+            valid_nodes: Vec::new(),
         })
     }
 
@@ -75,6 +77,7 @@ impl DataChain {
             chain: serialisation::deserialise::<Blocks>(&buf[..])?,
             group_size: group_size,
             path: Some(path),
+            valid_nodes: Vec::new(),
         })
     }
 
@@ -84,6 +87,7 @@ impl DataChain {
             chain: blocks,
             group_size: group_size,
             path: None,
+            valid_nodes: Vec::new(),
         }
     }
 
@@ -94,7 +98,7 @@ impl DataChain {
                 .write(true)
                 .create(false)
                 .open(&path.as_path())?;
-            return Ok(file.write_all(&serialisation::serialise(&self.chain)?)?);
+            return Ok(file.write_all(&serialisation::serialise(&self)?)?);
         }
         Err(Error::NoFile)
     }
@@ -139,10 +143,45 @@ impl DataChain {
         }
     }
 
+    // The following is a memoisation to increase efficiency
+    fn check_voter_valid(&self, vote: &Vote) -> bool {
+        self.valid_nodes.contains(&vote.proof().key())
+    }
+
+    // The following is a memoisation to increase efficiency
+    fn add_valid_voter(&mut self, key: &PublicKey) {
+        self.valid_nodes.push(key.clone());
+    }
+
+    // The following is a memoisation to increase efficiency
+    fn remove_valid_voter(&mut self, key: &PublicKey) {
+        self.valid_nodes.retain(|x| x == key);
+    }
+
+    fn update_valid_voters(&mut self, vote: &Vote) {
+        match vote.identifier() {
+            &BlockIdentifier::Link(ref link) => {
+                match *link {
+                    LinkDescriptor::NodeLost(ref key) => self.remove_valid_voter(key),
+                    LinkDescriptor::NodeGained(ref key) => self.add_valid_voter(key),
+                    _ => {}
+                }
+            }
+            _ => {}
+        }
+    }
+
     /// Add a vote received from a peer
     /// Uses  `lazy accumulation`
     /// If vote becomes valid, then it is returned
     pub fn add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
+        if let Some(id) = self.actually_add_vote(vote.clone()) {
+            self.update_valid_voters(&vote);
+            return Some(id);
+        }
+        None
+    }
+    fn actually_add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
         if !vote.validate() {
             return None;
         }
@@ -164,6 +203,9 @@ impl DataChain {
             } else if vote.identifier().is_link() && vote.is_self_vote() {
                 return None;
             }
+        }
+        if !self.check_voter_valid(&vote) {
+            // return None;
         }
         for blk in &mut self.chain {
             if blk.identifier() == vote.identifier() {
