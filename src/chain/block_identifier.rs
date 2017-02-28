@@ -20,7 +20,7 @@ use data::DataIdentifier;
 use rust_sodium::crypto::sign::PublicKey;
 use std::fmt::{self, Debug, Formatter};
 
-/// TODO USe real prefix
+/// TODO Use real prefix
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub struct Prefix(u64);
 

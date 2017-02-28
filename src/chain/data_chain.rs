@@ -458,64 +458,113 @@ mod tests {
     use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
     use chain::vote::Vote;
     use itertools::Itertools;
-    use rust_sodium::crypto;
+    use rust_sodium::crypto::sign::{self, PublicKey, SecretKey};
     use tempdir::TempDir;
+
+    pub struct Node {
+        pub sec_key: SecretKey,
+        pub pub_key: PublicKey,
+    }
+
+    pub fn node() -> Node {
+        let keys = sign::gen_keypair();
+        Node {
+            sec_key: keys.1,
+            pub_key: keys.0,
+        }
+    }
 
     #[test]
     fn genesis() {
         let _ = env_logger::init();
         ::rust_sodium::init();
-        info!("creating keys");
-        let keys = (0..10)
-            .map(|_| crypto::sign::gen_keypair())
-            .collect_vec();
-        let add_node_1 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[1].0.clone()));
-        let add_node_2 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[2].0.clone()));
-        let add_node_3 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[3].0.clone()));
-        let add_node_4 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[4].0.clone()));
-        let remove_node_3 = BlockIdentifier::Link(LinkDescriptor::NodeLost(keys[3].0.clone()));
+        let nodes = (0..100).map(|_| node()).collect_vec();
+        let add_node_1 =
+            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[1].pub_key.clone()));
+        let add_node_2 =
+            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[2].pub_key.clone()));
+        let add_node_3 =
+            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[3].pub_key.clone()));
+        let add_node_4 =
+            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[4].pub_key.clone()));
+        let remove_node_3 =
+            BlockIdentifier::Link(LinkDescriptor::NodeLost(nodes[3].pub_key.clone()));
 
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
-        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_1).unwrap()).is_some(),
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1)
+                        .unwrap())
+                    .is_some(),
                 "Add first node, should accumulate as valid.");
-        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_2.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2.clone())
+                        .unwrap())
                     .is_none(),
                 "Node2 adds link claiming to be from it. Should be none  as this node is not in \
                  chain.");
-        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_2.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_2.clone())
+                        .unwrap())
                     .is_some(),
                 "This vote should count and validate vote on it's own. Node 2 should not be able \
                  to vote for itself being added.");
-        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_2).unwrap()).is_none(),
+        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2)
+                        .unwrap())
+                    .is_none(),
                 "Again check node2 cannot vote for itself.");
-        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_3.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_3.clone())
+                        .unwrap())
                     .is_some(),
                 "Node2 can vote for next new node, but no quorum");
         assert_eq!(chain.links_len(),
                    2,
                    "quorum should not be met so block invalid");
-        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_3.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_3.clone())
+                        .unwrap())
                     .is_some(),
                 "Node1 can vote for next new node and match quorum.");
         assert_eq!(chain.links_len(), 3, "quorum should be met so block valid");
-        assert!(chain.add_vote(Vote::new(&keys[3].0, &keys[3].1, add_node_4.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[3].pub_key, &nodes[3].sec_key, add_node_4.clone())
+                .unwrap())
             .is_some());
-        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_4.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_4.clone())
+                .unwrap())
             .is_some());
-        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_4.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_4.clone())
+                .unwrap())
             .is_some());
         assert_eq!(chain.links_len(), 4, "quorum should be met so block valid");
         // Now we remove a node
-        assert!(chain.add_vote(Vote::new(&keys[3].0, &keys[3].1, remove_node_3.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[3].pub_key,
+                                        &nodes[3].sec_key,
+                                        remove_node_3.clone())
+                        .unwrap())
                     .is_none(),
                 "A node cannot remove itself either");
-        assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, remove_node_3.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, remove_node_3.clone()).unwrap())
             .is_some());
-        assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, remove_node_3.clone()).unwrap())
+        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, remove_node_3.clone()).unwrap())
             .is_some());
         assert_eq!(chain.links_len(), 5, "quorum should be met so block valid");
         info!("{:?}", chain);
+    }
+
+    #[test]
+    fn network() {
+        let nodes = (0..100).map(|_| node()).collect_vec();
+        let mut chain = DataChain::default();
+        let add_node_1 =
+            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[1].pub_key.clone()));
+        // let add_node_2 =
+        //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[2].pub_key.clone()));
+        // let add_node_3 =
+        //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[3].pub_key.clone()));
+        // let add_node_4 =
+        //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[4].pub_key.clone()));
+        // let remove_node_3 =
+        //     BlockIdentifier::Link(LinkDescriptor::NodeLost(nodes[3].pub_key.clone()));
+        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1)
+                        .unwrap())
+                    .is_some(),
+                "Add first node, should accumulate as valid.");
     }
 
     #[test]
@@ -524,7 +573,7 @@ mod tests {
         ::rust_sodium::init();
         info!("creating keys");
         let keys = (0..10)
-            .map(|_| crypto::sign::gen_keypair())
+            .map(|_| sign::gen_keypair())
             .collect_vec();
         let add_node_1 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[1].0.clone()));
         let add_node_2 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[2].0.clone()));
