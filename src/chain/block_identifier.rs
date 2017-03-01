@@ -77,6 +77,15 @@ impl BlockIdentifier {
         }
     }
 
+    /// Get LinkDescriptor if any
+    pub fn link_descriptor(&self) -> Option<&LinkDescriptor> {
+        match *self {
+            BlockIdentifier::ImmutableData(_) |
+            BlockIdentifier::StructuredData(..) => None,
+            BlockIdentifier::Link(ref link) => Some(link),
+        }
+    }
+
     /// Is this a link
     pub fn is_link(&self) -> bool {
         match *self {

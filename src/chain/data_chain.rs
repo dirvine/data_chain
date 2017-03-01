@@ -46,8 +46,6 @@ pub struct DataChain {
     path: Option<PathBuf>,
 }
 
-type Blocks = Vec<Block>;
-
 impl DataChain {
     /// Create a new chain backed up on disk
     /// Provide the directory to create the files in
@@ -57,7 +55,7 @@ impl DataChain {
         // hold a lock on the file for the whole session
         file.lock_exclusive()?;
         Ok(DataChain {
-            chain: Blocks::default(),
+            chain: Vec::<Block>::default(),
             group_size: group_size,
             path: Some(path),
         })
@@ -72,7 +70,7 @@ impl DataChain {
         let mut buf = Vec::<u8>::new();
         let _ = file.read_to_end(&mut buf)?;
         Ok(DataChain {
-            chain: serialisation::deserialise::<Blocks>(&buf[..])?,
+            chain: serialisation::deserialise::<Vec<Block>>(&buf[..])?,
             group_size: group_size,
             path: Some(path),
         })
@@ -183,7 +181,7 @@ impl DataChain {
                     info!("vote good  - marked block {:?} valid", blk.identifier());
                     return Some(blk.identifier().clone());
                 } else {
-                    info!("Vote Ok so block invalid  No quorum for block {:?}",
+                    info!("Vote Ok but block not yet valid No quorum for block {:?}",
                           blk.identifier());
                     blk.valid = false;
                     return None;
