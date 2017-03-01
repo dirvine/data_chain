@@ -36,7 +36,7 @@ pub enum LinkDescriptor {
 impl LinkDescriptor {
     pub fn name(&self) -> Option<&[u8; 32]> {
         match *self {
-            LinkDescriptor::NodeLost(ref h) => Some(&h.0),
+            LinkDescriptor::NodeLost(ref h) |
             LinkDescriptor::NodeGained(ref h) => Some(&h.0),
             _ => None,
         }
