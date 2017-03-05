@@ -216,6 +216,9 @@
 <span id="172">172</span>
 <span id="173">173</span>
 <span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -247,9 +250,12 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>LinkDescriptor</span> {
     <span class='ident'>NodeLost</span>(<span class='ident'>PublicKey</span>),
+    <span class='ident'>CancelNodeLost</span>(<span class='ident'>PublicKey</span>),
     <span class='ident'>NodeGained</span>(<span class='ident'>PublicKey</span>),
     <span class='ident'>SplitFrom</span>(<span class='ident'>Prefix</span>),
+    <span class='ident'>CancelSplitFrom</span>(<span class='ident'>Prefix</span>),
     <span class='ident'>MergeTo</span>(<span class='ident'>Prefix</span>),
+    <span class='ident'>CheckPoint</span>(<span class='ident'>Prefix</span>),
 }
 
 <span class='kw'>impl</span> <span class='ident'>LinkDescriptor</span> {
