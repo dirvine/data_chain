@@ -68,7 +68,7 @@ impl SecuredData {
     /// Add a Vote from another node
     /// If block is valid will return BlockIdentifier
     pub fn add_vote(&mut self, nb: Vote) -> Option<BlockIdentifier> {
-        self.dc.lock().unwrap().add_vote(nb.clone())
+        self.dc.lock().unwrap().add_vote(nb)
     }
 
     /// Do we have the data on disk.

@@ -28,9 +28,12 @@ pub struct Prefix(u64);
 #[derive(RustcEncodable, RustcDecodable, PartialEq, Clone)]
 pub enum LinkDescriptor {
     NodeLost(PublicKey),
+    CancelNodeLost(PublicKey),
     NodeGained(PublicKey),
     SplitFrom(Prefix),
+    CancelSplitFrom(Prefix),
     MergeTo(Prefix),
+    CheckPoint(Prefix),
 }
 
 impl LinkDescriptor {

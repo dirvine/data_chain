@@ -141,6 +141,22 @@ impl DataChain {
     /// Uses  `lazy accumulation`
     /// If vote becomes valid, then it is returned
     pub fn add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
+        if let Some((el, pos)) = self.add_vote_detail(vote) {
+            if pos > 0 && el.is_link() {
+                // As link block becomes valid move to top of chain
+                let el = self.chain.remove(pos);
+                self.chain.push(el.clone());
+                return Some(el.identifier().clone());
+            }
+            return Some(el);
+
+        } else {
+            return None;
+        }
+
+    }
+
+    fn add_vote_detail(&mut self, vote: Vote) -> Option<(BlockIdentifier, usize)> {
         if !vote.validate() {
             return None;
         }
@@ -157,13 +173,13 @@ impl DataChain {
                     info!("vote good (chain start)  - marked block {:?} valid",
                           blk.identifier());
                     self.chain.push(blk.clone());
-                    return Some(blk.identifier().clone());
+                    return Some((blk.identifier().clone(), 0));
                 }
             } else if vote.identifier().is_link() && vote.is_self_vote() {
                 return None;
             }
         }
-        for blk in &mut self.chain {
+        for (pos, mut blk) in &mut self.chain.iter_mut().enumerate() {
             if blk.identifier() == vote.identifier() {
                 if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
                     info!("duplicate proof");
@@ -179,7 +195,7 @@ impl DataChain {
                     .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
                     blk.valid = true;
                     info!("vote good  - marked block {:?} valid", blk.identifier());
-                    return Some(blk.identifier().clone());
+                    return Some((blk.identifier().clone(), pos));
                 } else {
                     info!("Vote Ok but block not yet valid No quorum for block {:?}",
                           blk.identifier());
@@ -193,7 +209,7 @@ impl DataChain {
                 blk.valid = true;
             }
             self.chain.push(blk.clone());
-            return Some(blk.identifier().clone());
+            return Some((blk.identifier().clone(), 0));
         }
         info!("Could not find any block for this proof");
         None
