@@ -59,7 +59,6 @@ extern crate bincode;
 extern crate fs2;
 extern crate itertools;
 extern crate maidsafe_utilities;
-#[cfg(test)]
 extern crate rand;
 extern crate rust_sodium;
 extern crate rustc_serialize;
@@ -87,10 +86,14 @@ pub mod data;
 /// sha3 (keccak)
 pub mod sha3;
 
+/// Xor name handling
+pub mod xor;
+
 /// API
 /// This is the entry point to this crate and allows the crate to be
 /// used as a secured data store for all data types mentioned above.
 pub mod secured_data;
+
 
 /// Persistant store on disk of the data itself as well as the `DataChain`.
 mod chunk_store;
@@ -98,3 +101,7 @@ mod chunk_store;
 pub use chain::{Block, BlockIdentifier, DataChain, Proof, Vote};
 
 pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, StructuredData};
+pub use xor::prefix::Prefix;
+// /// Xor name handlers
+pub use xor::xor_name::{XOR_NAME_BITS, XOR_NAME_LEN, XorName, XorNameFromHexError};
+pub use xor::xorable::Xorable;
