@@ -47,7 +47,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/data_chain/chain/mod.rs.html#18-100' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/data_chain/chain/mod.rs.html#18-104' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>A block is a type that contains a <code>BlockIdentifier</code> and a <code>Proof</code>. These can be data blocks or
 links. When enough blocks (<code>Vote</code>s) are received from other nodes a block
 becomes valid. This is a cetnral type to the security of republishable data
@@ -93,13 +93,20 @@ of a network. It is not well enough understoof the validity of this action, but 
 valuable in the event of network restarts.
 Please also see <a href="https://github.com/dirvine/data_chain/blob/master/docs/0029-data-blocks.md">RFC</a></p>
 </div><h2 id='reexports' class='section-header'><a href="#reexports">Reexports</a></h2>
-<table><tr><td><code>pub use chain::data_chain::<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>;</code></td></tr><tr><td><code>pub use chain::vote::<a class='struct' href='../../data_chain/chain/vote/struct.Proof.html' title='data_chain::chain::vote::Proof'>Proof</a>;</code></td></tr><tr><td><code>pub use chain::vote::<a class='struct' href='../../data_chain/chain/vote/struct.Vote.html' title='data_chain::chain::vote::Vote'>Vote</a>;</code></td></tr><tr><td><code>pub use chain::vote::<a class='fn' href='../../data_chain/chain/vote/fn.create_link_descriptor.html' title='data_chain::chain::vote::create_link_descriptor'>create_link_descriptor</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
+<table><tr><td><code>pub use chain::data_chain::<a class='struct' href='../../data_chain/chain/data_chain/struct.DataChain.html' title='data_chain::chain::data_chain::DataChain'>DataChain</a>;</code></td></tr><tr><td><code>pub use chain::proof::<a class='struct' href='../../data_chain/chain/proof/struct.Proof.html' title='data_chain::chain::proof::Proof'>Proof</a>;</code></td></tr><tr><td><code>pub use chain::vote::<a class='struct' href='../../data_chain/chain/vote/struct.Vote.html' title='data_chain::chain::vote::Vote'>Vote</a>;</code></td></tr></table><h2 id='modules' class='section-header'><a href="#modules">Modules</a></h2>
 <table>
                        <tr class=' module-item'>
                            <td><a class='mod' href='data_chain/index.html'
                                   title='data_chain::chain::data_chain'>data_chain</a></td>
                            <td class='docblock-short'>
                                 <p>A container of <code>links</code> (validated group membership blocks) and normal <code>blocks</code> (data elements)</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class='mod' href='proof/index.html'
+                                  title='data_chain::chain::proof'>proof</a></td>
+                           <td class='docblock-short'>
+                                <p>A sig and id (<code>PublickKey</code>) that may form a <code>Vote</code> and also a <code>Block</code></p>
                            </td>
                        </tr>
                        <tr class=' module-item'>

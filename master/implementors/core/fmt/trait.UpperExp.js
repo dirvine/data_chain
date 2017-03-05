@@ -3,7 +3,6 @@ implementors["antidote"] = [];
 implementors["chrono"] = [];
 implementors["humantime"] = [];
 implementors["itertools"] = ["impl&lt;'a, I&gt; <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.UpperExp.html' title='core::fmt::UpperExp'>UpperExp</a> for <a class='struct' href='itertools/structs/struct.Format.html' title='itertools::structs::Format'>Format</a>&lt;'a, I&gt; <span class='where'>where I: <a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Iterator</a>, I::<a class='trait' href='https://doc.rust-lang.org/nightly/core/iter/iterator/trait.Iterator.html' title='core::iter::iterator::Iterator'>Item</a>: <a class='trait' href='https://doc.rust-lang.org/nightly/core/fmt/trait.UpperExp.html' title='core::fmt::UpperExp'>UpperExp</a></span>",];
-implementors["lazy_static"] = [];
 implementors["libc"] = [];
 implementors["maidsafe_utilities"] = [];
 implementors["mio"] = [];

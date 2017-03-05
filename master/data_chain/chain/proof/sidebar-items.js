@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Proof","Proof as provided by a close group member This nay be extracted from a `Vote` to be inserted into a `Block`"]]});

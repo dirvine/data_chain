@@ -180,6 +180,42 @@
 <span id="136">136</span>
 <span id="137">137</span>
 <span id="138">138</span>
+<span id="139">139</span>
+<span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -200,13 +236,31 @@
 
 <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>debug_bytes</span>;
 <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>DataIdentifier</span>;
+<span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>PublicKey</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Debug</span>, <span class='ident'>Formatter</span>};
 
-<span class='doccomment'>/// Hash of the public keys of all group members (keys are lexicographically sorted before hashing).</span>
-<span class='doccomment'>///</span>
-<span class='doccomment'>/// Each node in the group signs this to form a `Proof`.</span>
-<span class='kw'>pub</span> <span class='kw'>type</span> <span class='ident'>LinkDescriptor</span> <span class='op'>=</span> [<span class='ident'>u8</span>; <span class='number'>32</span>];
+<span class='doccomment'>/// TODO Use real prefix</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Prefix</span>(<span class='ident'>u64</span>);
 
+<span class='doccomment'>/// What caused group to change?</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>RustcEncodable</span>, <span class='ident'>RustcDecodable</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Clone</span>)]</span>
+<span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>LinkDescriptor</span> {
+    <span class='ident'>NodeLost</span>(<span class='ident'>PublicKey</span>),
+    <span class='ident'>NodeGained</span>(<span class='ident'>PublicKey</span>),
+    <span class='ident'>SplitFrom</span>(<span class='ident'>Prefix</span>),
+    <span class='ident'>MergeTo</span>(<span class='ident'>Prefix</span>),
+}
+
+<span class='kw'>impl</span> <span class='ident'>LinkDescriptor</span> {
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>]<span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+            <span class='ident'>LinkDescriptor</span>::<span class='ident'>NodeLost</span>(<span class='kw-2'>ref</span> <span class='ident'>h</span>) <span class='op'>|</span>
+            <span class='ident'>LinkDescriptor</span>::<span class='ident'>NodeGained</span>(<span class='kw-2'>ref</span> <span class='ident'>h</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='kw-2'>&amp;</span><span class='ident'>h</span>.<span class='number'>0</span>),
+            _ <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+        }
+    }
+}
 <span class='doccomment'>/// Data identifiers for use in a data Chain.</span>
 <span class='doccomment'>/// The hash of each data type is available to ensure there is no confusion</span>
 <span class='doccomment'>/// over the validity of any data presented by this chain</span>
@@ -215,7 +269,7 @@
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>BlockIdentifier</span> {
     <span class='doccomment'>///           hash is also name of data stored locally</span>
     <span class='ident'>ImmutableData</span>([<span class='ident'>u8</span>; <span class='number'>32</span>]),
-    <span class='doccomment'>///           hash     name (identity + tag) (stored localy as name in data store)</span>
+    <span class='doccomment'>///           hash   name (identity + tag) (stored localy as name in data store)</span>
     <span class='ident'>StructuredData</span>([<span class='ident'>u8</span>; <span class='number'>32</span>], <span class='ident'>DataIdentifier</span>),
     <span class='doccomment'>/// Hash of group members&#39; public keys (see `LinkDescriptor`).</span>
     <span class='ident'>Link</span>(<span class='ident'>LinkDescriptor</span>),
@@ -226,20 +280,28 @@
     <span class='doccomment'>/// not change the name (such as with structured data and versions etc.)</span>
     <span class='doccomment'>/// In this module we do not care about other info and any validation is outwith this area</span>
     <span class='doccomment'>/// Therefore we will delete before insert etc. based on name alone of the data element</span>
-    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>hash</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>] {
-        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='kw-2'>ref</span> <span class='ident'>hash</span>, <span class='ident'>_name</span>) <span class='op'>=&gt;</span> <span class='ident'>hash</span>,
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='kw-2'>ref</span> <span class='ident'>hash</span>) <span class='op'>|</span>
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='kw-2'>ref</span> <span class='ident'>hash</span>) <span class='op'>=&gt;</span> <span class='ident'>hash</span>,
-        }
-    }
-
+    <span class='comment'>// pub fn hash(&amp;self) -&gt; &amp;[u8; 32] {</span>
+    <span class='comment'>//     match *self {</span>
+    <span class='comment'>//         BlockIdentifier::StructuredData(ref hash, _name) =&gt; hash,</span>
+    <span class='comment'>//         BlockIdentifier::ImmutableData(ref hash) =&gt; hash,</span>
+    <span class='comment'>//         BlockIdentifier::Link(ref link) =&gt; link.hash(),</span>
+    <span class='comment'>//     }</span>
+    <span class='comment'>// }</span>
     <span class='doccomment'>/// structured data name != hash of the data or block</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>name</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span>[<span class='ident'>u8</span>; <span class='number'>32</span>]<span class='op'>&gt;</span> {
         <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='kw-2'>ref</span> <span class='ident'>hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>hash</span>),
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>_hash</span>, <span class='kw-2'>ref</span> <span class='ident'>id</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>id</span>.<span class='ident'>name</span>()),
-            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>_hash</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='kw-2'>ref</span> <span class='ident'>link</span>) <span class='op'>=&gt;</span> <span class='ident'>link</span>.<span class='ident'>name</span>(),
+        }
+    }
+
+    <span class='doccomment'>/// Get LinkDescriptor if any</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>link_descriptor</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='ident'>LinkDescriptor</span><span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='op'>*</span><span class='self'>self</span> {
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(_) <span class='op'>|</span>
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(..) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
+            <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='kw-2'>ref</span> <span class='ident'>link</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='ident'>link</span>),
         }
     }
 
@@ -275,7 +337,15 @@
                        <span class='ident'>name</span>)
             }
             <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='kw-2'>ref</span> <span class='ident'>descriptor</span>) <span class='op'>=&gt;</span> {
-                <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>formatter</span>, <span class='string'>&quot;Link({})&quot;</span>, <span class='ident'>debug_bytes</span>(<span class='ident'>descriptor</span>))
+                <span class='kw'>match</span> <span class='op'>*</span><span class='ident'>descriptor</span> {
+                    <span class='ident'>LinkDescriptor</span>::<span class='ident'>NodeLost</span>(<span class='kw-2'>ref</span> <span class='ident'>h</span>) <span class='op'>=&gt;</span> {
+                        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>formatter</span>, <span class='string'>&quot;NodeLost Link({})&quot;</span>, <span class='ident'>debug_bytes</span>(<span class='ident'>h</span>))
+                    }
+                    <span class='ident'>LinkDescriptor</span>::<span class='ident'>NodeGained</span>(<span class='kw-2'>ref</span> <span class='ident'>h</span>) <span class='op'>=&gt;</span> {
+                        <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>formatter</span>, <span class='string'>&quot;NodeGained Link({})&quot;</span>, <span class='ident'>debug_bytes</span>(<span class='ident'>h</span>))
+                    }
+                    _ <span class='op'>=&gt;</span> <span class='macro'>write</span><span class='macro'>!</span>(<span class='ident'>formatter</span>, <span class='string'>&quot;TBD&quot;</span>),
+                }
             }
         }
     }
@@ -285,16 +355,18 @@
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>data</span>::<span class='ident'>DataIdentifier</span>;
+    <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>;
     <span class='kw'>use</span> <span class='ident'>sha3</span>::<span class='ident'>hash</span>;
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>create_validate_link_identifier</span>() {
         ::<span class='ident'>rust_sodium</span>::<span class='ident'>init</span>();
-        <span class='kw'>let</span> <span class='ident'>link</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
+        <span class='kw'>let</span> <span class='ident'>keys</span> <span class='op'>=</span> <span class='ident'>crypto</span>::<span class='ident'>sign</span>::<span class='ident'>gen_keypair</span>();
+        <span class='kw'>let</span> <span class='ident'>link</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>Link</span>(<span class='ident'>LinkDescriptor</span>::<span class='ident'>NodeGained</span>(<span class='ident'>keys</span>.<span class='number'>0</span>));
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>link</span>.<span class='ident'>is_link</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>link</span>.<span class='ident'>is_block</span>());
-        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>link</span>.<span class='ident'>name</span>().<span class='ident'>is_none</span>());
+        <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>link</span>.<span class='ident'>name</span>().<span class='ident'>is_some</span>());
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
@@ -302,19 +374,19 @@
         <span class='kw'>let</span> <span class='ident'>id_block</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>ImmutableData</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>id_block</span>.<span class='ident'>is_link</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>id_block</span>.<span class='ident'>is_block</span>());
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>id_block</span>.<span class='ident'>hash</span>(), <span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>id_block</span>.<span class='ident'>name</span>().<span class='ident'>unwrap</span>(), <span class='ident'>hash</span>(<span class='string'>b&quot;1&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>id_block</span>.<span class='ident'>name</span>().<span class='ident'>is_some</span>());
     }
 
     <span class='attribute'>#[<span class='ident'>test</span>]</span>
     <span class='kw'>fn</span> <span class='ident'>create_validate_structured_data_identifier</span>() {
-        <span class='kw'>let</span> <span class='ident'>sd_block</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;hash&quot;</span>),
+        <span class='kw'>let</span> <span class='ident'>sd_block</span> <span class='op'>=</span> <span class='ident'>BlockIdentifier</span>::<span class='ident'>StructuredData</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>),
                                                        <span class='ident'>DataIdentifier</span>::<span class='ident'>Structured</span>(<span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>),
                                                                                   <span class='number'>1</span>));
 
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='op'>!</span><span class='ident'>sd_block</span>.<span class='ident'>is_link</span>());
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>is_block</span>());
-        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>sd_block</span>.<span class='ident'>hash</span>(), <span class='ident'>hash</span>(<span class='string'>b&quot;hash&quot;</span>));
+        <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>unwrap</span>(), <span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>));
         <span class='macro'>assert</span><span class='macro'>!</span>(<span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>is_some</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='op'>*</span><span class='ident'>sd_block</span>.<span class='ident'>name</span>().<span class='ident'>expect</span>(<span class='string'>&quot;sd name&quot;</span>), <span class='ident'>hash</span>(<span class='string'>b&quot;name&quot;</span>))
     }

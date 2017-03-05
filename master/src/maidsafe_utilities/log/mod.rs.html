@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/maidsafe_utilities-0.10.0/src/log/mod.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/maidsafe_utilities-0.10.1/src/log/mod.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>mod.rs.html -- source</title>
@@ -768,6 +768,10 @@
 <span class='kw'>mod</span> <span class='ident'>web_socket</span>;
 
 
+
+<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>async_log</span>::{<span class='ident'>AsyncConsoleAppender</span>, <span class='ident'>AsyncConsoleAppenderCreator</span>, <span class='ident'>AsyncFileAppender</span>,
+                      <span class='ident'>AsyncFileAppenderCreator</span>, <span class='ident'>AsyncServerAppender</span>, <span class='ident'>AsyncServerAppenderCreator</span>,
+                      <span class='ident'>AsyncWebSockAppender</span>, <span class='ident'>AsyncWebSockAppenderCreator</span>};
 <span class='kw'>use</span> <span class='ident'>config_file_handler</span>::<span class='ident'>FileHandler</span>;
 <span class='kw'>use</span> <span class='ident'>log4rs</span>;
 <span class='kw'>use</span> <span class='ident'>log4rs</span>::<span class='ident'>config</span>::{<span class='ident'>Appender</span>, <span class='ident'>Config</span>, <span class='ident'>Logger</span>, <span class='ident'>Root</span>};
@@ -775,10 +779,6 @@
 <span class='kw'>use</span> <span class='ident'>log4rs</span>::<span class='ident'>file</span>::<span class='ident'>Deserializers</span>;
 <span class='kw'>use</span> <span class='ident'>logger</span>::<span class='ident'>LogLevelFilter</span>;
 <span class='kw'>use</span> <span class='ident'>rand</span>;
-
-<span class='kw'>use</span> <span class='self'>self</span>::<span class='ident'>async_log</span>::{<span class='ident'>AsyncConsoleAppender</span>, <span class='ident'>AsyncConsoleAppenderCreator</span>, <span class='ident'>AsyncFileAppender</span>,
-                      <span class='ident'>AsyncFileAppenderCreator</span>, <span class='ident'>AsyncServerAppender</span>, <span class='ident'>AsyncServerAppenderCreator</span>,
-                      <span class='ident'>AsyncWebSockAppender</span>, <span class='ident'>AsyncWebSockAppenderCreator</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>borrow</span>::<span class='ident'>Borrow</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>env</span>;
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::{<span class='self'>self</span>, <span class='ident'>Display</span>, <span class='ident'>Formatter</span>};
@@ -1119,6 +1119,8 @@
 <span class='attribute'>#[<span class='ident'>cfg</span>(<span class='ident'>test</span>)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
 
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>parse_loggers</span>;
     <span class='kw'>use</span> <span class='ident'>logger</span>::<span class='ident'>LogLevelFilter</span>;
 
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>net</span>::<span class='ident'>TcpListener</span>;
@@ -1126,8 +1128,6 @@
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>sync</span>::<span class='ident'>mpsc</span>::{<span class='self'>self</span>, <span class='ident'>Sender</span>};
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>thread</span>;
     <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>time</span>::<span class='ident'>Duration</span>;
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='ident'>parse_loggers</span>;
     <span class='kw'>use</span> <span class='ident'>ws</span>;
     <span class='kw'>use</span> <span class='ident'>ws</span>::{<span class='ident'>Handler</span>, <span class='ident'>Message</span>};
 

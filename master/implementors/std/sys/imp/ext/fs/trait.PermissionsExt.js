@@ -3,7 +3,6 @@ implementors["antidote"] = [];
 implementors["chrono"] = [];
 implementors["humantime"] = [];
 implementors["itertools"] = [];
-implementors["lazy_static"] = [];
 implementors["libc"] = [];
 implementors["maidsafe_utilities"] = [];
 implementors["mio"] = [];
