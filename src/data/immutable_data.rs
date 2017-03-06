@@ -17,8 +17,8 @@
 
 use data::DataIdentifier;
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
-use sha3::hash;
 use std::fmt::{self, Debug, Formatter};
+use tiny_keccak::sha3_256;
 
 /// An immutable chunk of data.
 #[derive(Hash, Clone, Eq, PartialEq, Ord, PartialOrd)]
@@ -31,7 +31,7 @@ impl ImmutableData {
     /// Creates a new instance of `ImmutableData`
     pub fn new(value: Vec<u8>) -> ImmutableData {
         ImmutableData {
-            name: hash(&value),
+            name: sha3_256(&value),
             value: value,
         }
     }
@@ -68,7 +68,7 @@ impl Decodable for ImmutableData {
     fn decode<D: Decoder>(decoder: &mut D) -> Result<ImmutableData, D::Error> {
         let value: Vec<u8> = Decodable::decode(decoder)?;
         Ok(ImmutableData {
-            name: hash(&value),
+            name: sha3_256(&value),
             value: value,
         })
     }

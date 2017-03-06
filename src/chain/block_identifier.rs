@@ -140,7 +140,7 @@ mod tests {
     use super::*;
     use data::DataIdentifier;
     use rust_sodium::crypto;
-    use sha3::hash;
+    use tiny_keccak::sha3_256;
 
     #[test]
     fn create_validate_link_identifier() {
@@ -155,23 +155,23 @@ mod tests {
 
     #[test]
     fn create_validate_immutable_data_identifier() {
-        let id_block = BlockIdentifier::ImmutableData(hash(b"1"));
+        let id_block = BlockIdentifier::ImmutableData(sha3_256(b"1"));
         assert!(!id_block.is_link());
         assert!(id_block.is_block());
-        assert_eq!(*id_block.name().unwrap(), hash(b"1"));
+        assert_eq!(*id_block.name().unwrap(), sha3_256(b"1"));
         assert!(id_block.name().is_some());
     }
 
     #[test]
     fn create_validate_structured_data_identifier() {
-        let sd_block = BlockIdentifier::StructuredData(hash(b"name"),
-                                                       DataIdentifier::Structured(hash(b"name"),
-                                                                                  1));
+        let sd_block =
+            BlockIdentifier::StructuredData(sha3_256(b"name"),
+                                            DataIdentifier::Structured(sha3_256(b"name"), 1));
 
         assert!(!sd_block.is_link());
         assert!(sd_block.is_block());
-        assert_eq!(*sd_block.name().unwrap(), hash(b"name"));
+        assert_eq!(*sd_block.name().unwrap(), sha3_256(b"name"));
         assert!(sd_block.name().is_some());
-        assert_eq!(*sd_block.name().expect("sd name"), hash(b"name"))
+        assert_eq!(*sd_block.name().expect("sd name"), sha3_256(b"name"))
     }
 }

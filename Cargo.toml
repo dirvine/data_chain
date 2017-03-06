@@ -13,11 +13,11 @@ fs2 = "0.4.1"
 itertools = "0.5.8"
 log = "~0.3.6"
 maidsafe_utilities = "~0.10.0"
+rand = "~0.3.15"
 rayon = "~0.6.0"
 rust_sodium = "~0.1.1"
 rustc-serialize = "~0.3.19"
-tiny-keccak = "~1.1.1"
-rand = "~0.3.15"
+tiny-keccak = "~1.2.0"
 
 [dev-dependencies]
 env_logger = "~0.4.0"

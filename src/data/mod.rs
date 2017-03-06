@@ -126,7 +126,7 @@ mod tests {
     use super::*;
     use rand;
     use rust_sodium::crypto::sign;
-    use sha3::hash;
+    use tiny_keccak::sha3_256;
 
     #[test]
     fn data_name() {
@@ -192,7 +192,7 @@ mod tests {
 
     #[test]
     fn data_request_name() {
-        let name = hash(&[]);
+        let name = sha3_256(&[]);
 
         // name() resolves correctly for StructuredData
         let tag = 0;

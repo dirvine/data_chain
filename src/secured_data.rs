@@ -22,10 +22,10 @@ use error::Error;
 use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::{PublicKey, Signature};
-use sha3::hash;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+use tiny_keccak::sha3_256;
 
 /// API for data based operations.
 pub struct SecuredData {
@@ -125,7 +125,7 @@ impl SecuredData {
     ///
     /// **Versioned ledger structured data will be Put and paid for**
     pub fn put_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = hash(&serialisation::serialise(&data)?);
+        let hash = sha3_256(&serialisation::serialise(&data)?);
         let id = match *data {
             Data::Immutable(ref im) if *im.name() == hash => BlockIdentifier::ImmutableData(hash),
             Data::Structured(ref sd) if sd.version() == 0 || sd.ledger() => {
@@ -143,7 +143,7 @@ impl SecuredData {
     ///
     /// **Will not accept versioned ledger based structuredData !**
     pub fn post_data(&mut self, data: &Data) -> Result<BlockIdentifier, Error> {
-        let hash = hash(&serialisation::serialise(&data)?);
+        let hash = sha3_256(&serialisation::serialise(&data)?);
         let id = match *data {
             Data::Structured(ref sd) if !sd.ledger() => {
                 BlockIdentifier::StructuredData(hash, sd.identifier())
