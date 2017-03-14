@@ -23,6 +23,7 @@ use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::{PublicKey, Signature};
 use sha3::hash;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -217,25 +218,20 @@ impl SecuredData {
 
     /// Remove any data on disk that we do not have a valid Block for
     pub fn purge_disk(&mut self) -> Result<(), Error> {
-        let cs_keys = self.cs.keys();
-        for dc_key in self.dc
+        let mut invalid_names: HashSet<_> = self.cs.keys().into_iter().collect();
+        for valid_name in self.dc
             .lock()
             .unwrap()
             .chain()
             .iter()
-            .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| if let Some(name) = x.identifier().name() {
-                cs_keys.contains(name)
-            } else {
-                false
-            })
+            .filter_map(|x| x.identifier().name()) {
+            let _existed = invalid_names.remove(valid_name);
+        }
         // only throws error on IO error not missing data
         // TODO test this !!
-        {
-            if let Some(name) = dc_key.identifier().name() {
-                self.cs.delete(name)?;
-            }
+        for name in invalid_names {
+            self.cs.delete(&name)?;
         }
         Ok(())
     }
@@ -261,12 +257,10 @@ impl SecuredData {
             .count()
     }
 
-    /// Find any data we should have but are missing,
-    /// given our current chain.
-    /// The output of this gives an identifier we should send to other
-    /// nodes to get the data.
-    /// This is not a `DataIdentifier` as expected as this contains the
-    /// hash we know the data must match.
+    /// Find any data we should have but are missing, given our current chain.
+    /// The output of this gives an identifier we should send to other nodes to get the data.
+    /// This is not a `DataIdentifier` as expected as this contains the hash we know the data must
+    /// match.
     pub fn required_data(&self) -> Vec<BlockIdentifier> {
         let keys = self.cs.keys();
         self.dc
@@ -276,7 +270,7 @@ impl SecuredData {
             .iter()
             .filter(|x| !x.identifier().is_link() && x.valid)
             .filter(|x| if let Some(name) = x.identifier().name() {
-                keys.contains(name)
+                !keys.contains(name)
             } else {
                 false
             })
