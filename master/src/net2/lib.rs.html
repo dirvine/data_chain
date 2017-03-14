@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/net2-0.2.26/src/lib.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/net2-0.2.27/src/lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -165,6 +165,8 @@
 <span id="121">121</span>
 <span id="122">122</span>
 <span id="123">123</span>
+<span id="124">124</span>
+<span id="125">125</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -274,6 +276,8 @@
 }
 
 <span class='kw'>fn</span> <span class='ident'>hton</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>NetInt</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>I</span> { <span class='ident'>i</span>.<span class='ident'>to_be</span>() }
+
+<span class='kw'>fn</span> <span class='ident'>ntoh</span><span class='op'>&lt;</span><span class='ident'>I</span>: <span class='ident'>NetInt</span><span class='op'>&gt;</span>(<span class='ident'>i</span>: <span class='ident'>I</span>) <span class='op'>-&gt;</span> <span class='ident'>I</span> { <span class='ident'>I</span>::<span class='ident'>from_be</span>(<span class='ident'>i</span>) }
 
 <span class='kw'>trait</span> <span class='ident'>AsInner</span> {
     <span class='kw'>type</span> <span class='ident'>Inner</span>;

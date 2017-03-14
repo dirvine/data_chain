@@ -653,9 +653,6 @@
 <span id="609">609</span>
 <span id="610">610</span>
 <span id="611">611</span>
-<span id="612">612</span>
-<span id="613">613</span>
-<span id="614">614</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2015 MaidSafe.net limited.</span>
 <span class='comment'>//</span>
@@ -991,7 +988,7 @@
             .<span class='ident'>collect_vec</span>()
     }
 
-    <span class='doccomment'>/// Validates and returns all links in chain</span>
+    <span class='doccomment'>/// Validates and returns all valid data blocks in chain</span>
     <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>valid_data</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>Block</span><span class='op'>&gt;</span> {
         <span class='self'>self</span>.<span class='ident'>mark_blocks_valid</span>();
         <span class='self'>self</span>.<span class='ident'>chain</span>
@@ -1020,20 +1017,17 @@
             .<span class='ident'>cloned</span>()
             .<span class='ident'>skip_while</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>block_id</span>)
             .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>x</span>.<span class='ident'>valid</span>)
-            .<span class='ident'>take</span>(<span class='number'>4</span>)
-            .<span class='ident'>collect_vec</span>();
+            .<span class='ident'>take</span>(<span class='number'>4</span>);
 
-        <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>bottom_links</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>
+        <span class='kw'>let</span> <span class='ident'>bottom_links</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>chain</span>
             .<span class='ident'>iter</span>()
             .<span class='ident'>rev</span>()
             .<span class='ident'>cloned</span>()
             .<span class='ident'>skip_while</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>() <span class='op'>!=</span> <span class='ident'>block_id</span>)
             .<span class='ident'>filter</span>(<span class='op'>|</span><span class='ident'>x</span><span class='op'>|</span> <span class='ident'>x</span>.<span class='ident'>identifier</span>().<span class='ident'>is_link</span>() <span class='op'>&amp;&amp;</span> <span class='ident'>x</span>.<span class='ident'>valid</span>)
-            .<span class='ident'>take</span>(<span class='number'>4</span>)
-            .<span class='ident'>collect_vec</span>();
-        <span class='ident'>bottom_links</span>.<span class='ident'>extend</span>(<span class='ident'>top_links</span>);
+            .<span class='ident'>take</span>(<span class='number'>4</span>);
 
-        <span class='ident'>bottom_links</span>
+        <span class='ident'>top_links</span>.<span class='ident'>chain</span>(<span class='ident'>bottom_links</span>).<span class='ident'>collect</span>()
 
     }
 
@@ -1127,11 +1121,11 @@
 <span class='comment'>//#[cfg_attr(rustfmt, rustfmt_skip)]</span>
 <span class='kw'>mod</span> <span class='ident'>tests</span> {
     <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>env_logger</span>;
-    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>block_identifier</span>::{<span class='ident'>BlockIdentifier</span>, <span class='ident'>LinkDescriptor</span>};
     <span class='kw'>use</span> <span class='ident'>chain</span>::<span class='ident'>vote</span>::<span class='ident'>Vote</span>;
     <span class='kw'>use</span> <span class='ident'>itertools</span>::<span class='ident'>Itertools</span>;
     <span class='kw'>use</span> <span class='ident'>rust_sodium</span>::<span class='ident'>crypto</span>::<span class='ident'>sign</span>::{<span class='self'>self</span>, <span class='ident'>PublicKey</span>, <span class='ident'>SecretKey</span>};
+    <span class='kw'>use</span> <span class='kw'>super</span>::<span class='op'>*</span>;
     <span class='kw'>use</span> <span class='ident'>tempdir</span>::<span class='ident'>TempDir</span>;
 
     <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Node</span> {
