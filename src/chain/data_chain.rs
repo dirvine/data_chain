@@ -332,7 +332,7 @@ impl DataChain {
             .collect_vec()
     }
 
-    /// Validates and returns all links in chain
+    /// Validates and returns all valid data blocks in chain
     pub fn valid_data(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
         self.chain
@@ -361,20 +361,17 @@ impl DataChain {
             .cloned()
             .skip_while(|x| x.identifier() != block_id)
             .filter(|x| x.identifier().is_link() && x.valid)
-            .take(4)
-            .collect_vec();
+            .take(4);
 
-        let mut bottom_links = self.chain
+        let bottom_links = self.chain
             .iter()
             .rev()
             .cloned()
             .skip_while(|x| x.identifier() != block_id)
             .filter(|x| x.identifier().is_link() && x.valid)
-            .take(4)
-            .collect_vec();
-        bottom_links.extend(top_links);
+            .take(4);
 
-        bottom_links
+        top_links.chain(bottom_links).collect()
 
     }
 
@@ -468,11 +465,11 @@ impl Debug for DataChain {
 //#[cfg_attr(rustfmt, rustfmt_skip)]
 mod tests {
     extern crate env_logger;
-    use super::*;
     use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
     use chain::vote::Vote;
     use itertools::Itertools;
     use rust_sodium::crypto::sign::{self, PublicKey, SecretKey};
+    use super::*;
     use tempdir::TempDir;
 
     pub struct Node {

@@ -23,6 +23,7 @@ use itertools::Itertools;
 use maidsafe_utilities::serialisation;
 use rust_sodium::crypto::sign::{PublicKey, Signature};
 use sha3::hash;
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
@@ -85,6 +86,7 @@ impl SecuredData {
         }
         false
     }
+
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
     pub fn get(&self, data_id: &DataIdentifier) -> Result<Data, Error> {
         if let Some(block_id) = self.dc
@@ -102,6 +104,7 @@ impl SecuredData {
         }
         Err(Error::NoFile)
     }
+
     /// Will not remove ledger items
     fn trim_previous_data(&mut self, hash: &[u8; 32]) {
         if let Ok(ref item) = self.cs.get(hash) {
@@ -117,6 +120,7 @@ impl SecuredData {
             }
         }
     }
+
     /// Add received data, return Result false if we do not have the corresponding
     /// **valid** Vote for this data. Will return a BlockIDentifier from us
     /// that we must use to create a Vote to send to peers. We also **must**
@@ -214,25 +218,20 @@ impl SecuredData {
 
     /// Remove any data on disk that we do not have a valid Block for
     pub fn purge_disk(&mut self) -> Result<(), Error> {
-        let cs_keys = self.cs.keys();
-        for dc_key in self.dc
+        let mut invalid_names: HashSet<_> = self.cs.keys().into_iter().collect();
+        for valid_name in self.dc
             .lock()
             .unwrap()
             .chain()
             .iter()
-            .cloned()
             .filter(|x| !x.identifier().is_link() && x.valid)
-            .filter(|x| if let Some(name) = x.identifier().name() {
-                cs_keys.contains(name)
-            } else {
-                false
-            })
+            .filter_map(|x| x.identifier().name()) {
+            let _existed = invalid_names.remove(valid_name);
+        }
         // only throws error on IO error not missing data
         // TODO test this !!
-        {
-            if let Some(name) = dc_key.identifier().name() {
-                self.cs.delete(name)?;
-            }
+        for name in invalid_names {
+            self.cs.delete(&name)?;
         }
         Ok(())
     }
@@ -257,12 +256,11 @@ impl SecuredData {
             .take_while(|x| x.proofs().iter().any(|z| z.key() == node))
             .count()
     }
-    /// Find any data we should have but are missing,
-    /// given our current chain.
-    /// The output of this gives an identifier we should send to other
-    /// nodes to get the data.
-    /// This is not a `DataIdentifier` as expected as this contains the
-    /// hash we know the data must match.
+
+    /// Find any data we should have but are missing, given our current chain.
+    /// The output of this gives an identifier we should send to other nodes to get the data.
+    /// This is not a `DataIdentifier` as expected as this contains the hash we know the data must
+    /// match.
     pub fn required_data(&self) -> Vec<BlockIdentifier> {
         let keys = self.cs.keys();
         self.dc
@@ -272,7 +270,7 @@ impl SecuredData {
             .iter()
             .filter(|x| !x.identifier().is_link() && x.valid)
             .filter(|x| if let Some(name) = x.identifier().name() {
-                keys.contains(name)
+                !keys.contains(name)
             } else {
                 false
             })
