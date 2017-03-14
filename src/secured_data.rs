@@ -85,6 +85,7 @@ impl SecuredData {
         }
         false
     }
+
     /// Retrieve data we have on disk, that is also marked valid in the data chain.
     pub fn get(&self, data_id: &DataIdentifier) -> Result<Data, Error> {
         if let Some(block_id) = self.dc
@@ -102,6 +103,7 @@ impl SecuredData {
         }
         Err(Error::NoFile)
     }
+
     /// Will not remove ledger items
     fn trim_previous_data(&mut self, hash: &[u8; 32]) {
         if let Ok(ref item) = self.cs.get(hash) {
@@ -117,6 +119,7 @@ impl SecuredData {
             }
         }
     }
+
     /// Add received data, return Result false if we do not have the corresponding
     /// **valid** Vote for this data. Will return a BlockIDentifier from us
     /// that we must use to create a Vote to send to peers. We also **must**
@@ -257,6 +260,7 @@ impl SecuredData {
             .take_while(|x| x.proofs().iter().any(|z| z.key() == node))
             .count()
     }
+
     /// Find any data we should have but are missing,
     /// given our current chain.
     /// The output of this gives an identifier we should send to other
