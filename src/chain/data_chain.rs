@@ -141,22 +141,6 @@ impl DataChain {
     /// Uses  `lazy accumulation`
     /// If vote becomes valid, then it is returned
     pub fn add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
-        if let Some((el, pos)) = self.add_vote_detail(vote) {
-            if pos > 0 && el.is_link() {
-                // As link block becomes valid move to top of chain
-                let el = self.chain.remove(pos);
-                self.chain.push(el.clone());
-                return Some(el.identifier().clone());
-            }
-            return Some(el);
-
-        } else {
-            return None;
-        }
-
-    }
-
-    fn add_vote_detail(&mut self, vote: Vote) -> Option<(BlockIdentifier, usize)> {
         if !vote.validate() {
             return None;
         }
@@ -173,43 +157,50 @@ impl DataChain {
                     info!("vote good (chain start)  - marked block {:?} valid",
                           blk.identifier());
                     self.chain.push(blk.clone());
-                    return Some((blk.identifier().clone(), 0));
+                    return Some(blk.identifier().clone());
                 }
             } else if vote.identifier().is_link() && vote.is_self_vote() {
                 return None;
             }
         }
-        for (pos, mut blk) in &mut self.chain.iter_mut().enumerate() {
-            if blk.identifier() == vote.identifier() {
-                if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
-                    info!("duplicate proof");
-                    return None;
-                }
-
-                blk.add_proof(vote.proof().clone()).unwrap();
-                info!("links length {:?}", links.len());
-                info!("chain  length {:?}", len);
-                if links.len() == 1 ||
-                   links.iter()
-                    .filter(|x| x.identifier() != vote.identifier())
-                    .any(|y| Self::validate_block_with_proof(blk, y, group_size)) {
-                    blk.valid = true;
-                    info!("vote good  - marked block {:?} valid", blk.identifier());
-                    return Some((blk.identifier().clone(), pos));
-                } else {
-                    info!("Vote Ok but block not yet valid No quorum for block {:?}",
-                          blk.identifier());
-                    blk.valid = false;
-                    return None;
-                }
+        if let Some(mut pos) = self.chain
+            .iter()
+            .position(|blk| blk.identifier() == vote.identifier()) {
+            if self.chain[pos].identifier().is_link() {
+                // Move link to top of chain
+                let el = self.chain.remove(pos);
+                pos = self.chain.len();
+                self.chain.push(el);
             }
+            let blk = self.chain.get_mut(pos).unwrap();
+            if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
+                info!("duplicate proof");
+                return None;
+            }
+
+            blk.add_proof(vote.proof().clone()).unwrap();
+            info!("chain length {:?}", len);
+            if links.map_or(false, |x| {
+                x.identifier() != vote.identifier() &&
+                Self::validate_block_with_proof(blk, &x, group_size)
+            }) {
+                blk.valid = true;
+                info!("vote good  - marked block {:?} valid", blk.identifier());
+                return Some(blk.identifier().clone());
+            } else {
+                info!("Vote Ok but block not yet valid No quorum for block {:?}",
+                      blk.identifier());
+                blk.valid = false;
+                return None;
+            }
+
         }
         if let Ok(ref mut blk) = Block::new(vote) {
             if self.links_len() == 1 {
                 blk.valid = true;
             }
             self.chain.push(blk.clone());
-            return Some((blk.identifier().clone(), 0));
+            return Some(blk.identifier().clone());
         }
         info!("Could not find any block for this proof");
         None
@@ -352,27 +343,15 @@ impl DataChain {
             .collect_vec()
     }
 
-    /// Validates and returns all valid links in chain 4 before and after target
-    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> Vec<Block> {
-        // FIXME the value of 4 is arbitrary
-        // instead the length of last link len() should perhaps be used
-        let top_links = self.chain
-            .iter()
-            .cloned()
-            .skip_while(|x| x.identifier() != block_id)
-            .filter(|x| x.identifier().is_link() && x.valid)
-            .take(4);
-
-        let bottom_links = self.chain
+    /// Validates and returns the previous valid link in chain before the target
+    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> Option<Block> {
+        self.chain
             .iter()
             .rev()
-            .cloned()
             .skip_while(|x| x.identifier() != block_id)
-            .filter(|x| x.identifier().is_link() && x.valid)
-            .take(4);
-
-        top_links.chain(bottom_links).collect()
-
+            .skip(1)
+            .find(|x| x.identifier().is_link() && x.valid)
+            .cloned()
     }
 
 
@@ -510,12 +489,12 @@ mod tests {
         assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2.clone())
                         .unwrap())
                     .is_none(),
-                "Node2 adds link claiming to be from it. Should be none  as this node is not in \
+                "Node2 adds link claiming to be from it. Should be none as this node is not in \
                  chain.");
         assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_2.clone())
                         .unwrap())
                     .is_some(),
-                "This vote should count and validate vote on it's own. Node 2 should not be able \
+                "This vote should count and validate vote on its own. Node 2 should not be able \
                  to vote for itself being added.");
         assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2)
                         .unwrap())
