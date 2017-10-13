@@ -30,9 +30,7 @@ pub enum LinkDescriptor {
     NodeLost(PublicKey),
     NodeGained(PublicKey),
     SplitFrom(Prefix),
-    CancelSplitFrom(Prefix),
     MergeTo(Prefix),
-    CheckPoint(Prefix),
 }
 
 impl LinkDescriptor {
@@ -143,7 +141,7 @@ mod tests {
 
     #[test]
     fn create_validate_link_identifier() {
-        ::rust_sodium::init();
+        let _ = ::rust_sodium::init();
         let keys = crypto::sign::gen_keypair();
         let link = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys.0));
 

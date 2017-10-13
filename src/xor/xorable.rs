@@ -5,8 +5,8 @@
 // licence you accepted on initial access to the Software (the "Licences").
 //
 // By contributing code to the SAFE Network Software, or to this project generally, you agree to be
-// bound by the terms of the MaidSafe Contributor Agreement, version 1.1.  This, along with the
-// Licenses can be found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
+// bound by the terms of the MaidSafe Contributor Agreement.  This, along with the Licenses can be
+// found in the root directory of this project at LICENSE, COPYING and CONTRIBUTOR.
 //
 // Unless required by applicable law or agreed to in writing, the SAFE Network Software distributed
 // under the GPL Licence is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
@@ -74,7 +74,12 @@ pub fn debug_format(input: String) -> String {
     if input.len() <= 20 {
         return input;
     }
-    input.chars().take(8).chain("...".chars()).chain(input.chars().skip(input.len() - 8)).collect()
+    input
+        .chars()
+        .take(8)
+        .chain("...".chars())
+        .chain(input.chars().skip(input.len() - 8))
+        .collect()
 }
 
 macro_rules! impl_xorable_for_array {
@@ -280,7 +285,7 @@ macro_rules! impl_xorable {
                     x <<= 4;
                     x <<= 4;
                     result = x.0;
-                    result |= From::from(*elem);
+                    result |= Into::<$t>::into(*elem);
                 }
                 result
             }
@@ -327,20 +332,34 @@ mod tests {
 
     #[test]
     fn cmp_distance_array() {
-        assert_eq!(Ordering::Equal,
-                   [1u8, 2, 3, 4].cmp_distance(&[2u8, 3, 4, 5], &[2u8, 3, 4, 5]));
-        assert_eq!(Ordering::Less,
-                   [1u8, 2, 3, 4].cmp_distance(&[2u8, 2, 4, 5], &[2u8, 3, 6, 5]));
-        assert_eq!(Ordering::Greater,
-                   [1u8, 2, 3, 4].cmp_distance(&[2u8, 3, 6, 5], &[2u8, 2, 4, 5]));
-        assert_eq!(Ordering::Less,
-                   [1u8, 2, 3, 4].cmp_distance(&[1, 2, 3, 8], &[1, 2, 8, 4]));
-        assert_eq!(Ordering::Greater,
-                   [1u8, 2, 3, 4].cmp_distance(&[1, 2, 8, 4], &[1, 2, 3, 8]));
-        assert_eq!(Ordering::Less,
-                   [1u8, 2, 3, 4].cmp_distance(&[1, 2, 7, 4], &[1, 2, 6, 4]));
-        assert_eq!(Ordering::Greater,
-                   [1u8, 2, 3, 4].cmp_distance(&[1, 2, 6, 4], &[1, 2, 7, 4]));
+        assert_eq!(
+            Ordering::Equal,
+            [1u8, 2, 3, 4].cmp_distance(&[2u8, 3, 4, 5], &[2u8, 3, 4, 5])
+        );
+        assert_eq!(
+            Ordering::Less,
+            [1u8, 2, 3, 4].cmp_distance(&[2u8, 2, 4, 5], &[2u8, 3, 6, 5])
+        );
+        assert_eq!(
+            Ordering::Greater,
+            [1u8, 2, 3, 4].cmp_distance(&[2u8, 3, 6, 5], &[2u8, 2, 4, 5])
+        );
+        assert_eq!(
+            Ordering::Less,
+            [1u8, 2, 3, 4].cmp_distance(&[1, 2, 3, 8], &[1, 2, 8, 4])
+        );
+        assert_eq!(
+            Ordering::Greater,
+            [1u8, 2, 3, 4].cmp_distance(&[1, 2, 8, 4], &[1, 2, 3, 8])
+        );
+        assert_eq!(
+            Ordering::Less,
+            [1u8, 2, 3, 4].cmp_distance(&[1, 2, 7, 4], &[1, 2, 6, 4])
+        );
+        assert_eq!(
+            Ordering::Greater,
+            [1u8, 2, 3, 4].cmp_distance(&[1, 2, 6, 4], &[1, 2, 7, 4])
+        );
     }
 
     #[test]
@@ -386,11 +405,15 @@ mod tests {
     #[test]
     fn set_remaining_array() {
         assert_eq!([13u8, 112, 9, 1].set_remaining(0, false), [0u8, 0, 0, 0]);
-        assert_eq!([13u8, 112, 9, 1].set_remaining(100, false),
-                   [13u8, 112, 9, 1]);
+        assert_eq!(
+            [13u8, 112, 9, 1].set_remaining(100, false),
+            [13u8, 112, 9, 1]
+        );
         assert_eq!([13u8, 112, 9, 1].set_remaining(10, false), [13u8, 64, 0, 0]);
-        assert_eq!([13u8, 112, 9, 1].set_remaining(10, true),
-                   [13u8, 127, 255, 255]);
+        assert_eq!(
+            [13u8, 112, 9, 1].set_remaining(10, true),
+            [13u8, 127, 255, 255]
+        );
     }
 
     #[test]

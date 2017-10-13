@@ -179,7 +179,7 @@ impl DataChain {
                 return None;
             }
         }
-        for (pos, mut blk) in &mut self.chain.iter_mut().enumerate() {
+        for (pos, blk) in &mut self.chain.iter_mut().enumerate() {
             if blk.identifier() == vote.identifier() {
                 if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
                     info!("duplicate proof");
@@ -491,7 +491,7 @@ mod tests {
     #[test]
     fn genesis() {
         let _ = env_logger::init();
-        ::rust_sodium::init();
+        let _ = ::rust_sodium::init();
         let nodes = (0..100).map(|_| node()).collect_vec();
         let add_node_1 =
             BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[1].pub_key.clone()));
@@ -584,7 +584,7 @@ mod tests {
     #[test]
     fn file_based_chain() {
         let _ = env_logger::init();
-        ::rust_sodium::init();
+        let _ = ::rust_sodium::init();
         info!("creating keys");
         let keys = (0..10)
             .map(|_| sign::gen_keypair())
