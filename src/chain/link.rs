@@ -15,7 +15,7 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use crate::chain::block_identifier::LinkDescriptor;
+use crate::chain::link_descriptor::LinkDescriptor;
 use crate::chain::proof::Proof;
 use crate::chain::vote::Vote;
 use crate::error::Error;

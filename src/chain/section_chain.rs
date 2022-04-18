@@ -15,8 +15,8 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use crate::chain::block::Block;
-use crate::chain::block_identifier::LinkDescriptor;
+use crate::chain::link::Block;
+use crate::chain::link_descriptor::LinkDescriptor;
 use crate::chain::vote::Vote;
 use crate::error::Error;
 use ed25519_dalek::PublicKey;
@@ -40,16 +40,16 @@ use std::path::PathBuf;
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
 #[derive(Default, PartialEq, Serialize, Deserialize)]
-pub struct DataChain {
+pub struct SectionChain {
     chain: Vec<Block>,
     group_size: usize,
     path: Option<PathBuf>,
 }
 
-impl DataChain {
+impl SectionChain {
     /// Create a new chain backed up on disk
     /// Provide the directory to create the files in
-    pub fn create_in_path(path: PathBuf, group_size: usize) -> io::Result<DataChain> {
+    pub fn create_in_path(path: PathBuf, group_size: usize) -> io::Result<SectionChain> {
         let path = path.join("data_chain");
         let file = fs::OpenOptions::new()
             .read(true)
@@ -58,7 +58,7 @@ impl DataChain {
             .open(&path)?;
         // hold a lock on the file for the whole session
         file.lock_exclusive()?;
-        Ok(DataChain {
+        Ok(SectionChain {
             chain: Vec::<Block>::default(),
             group_size: group_size,
             path: Some(path),
@@ -66,7 +66,7 @@ impl DataChain {
     }
 
     /// Open from existing directory
-    pub fn from_path(path: PathBuf, group_size: usize) -> Result<DataChain, Error> {
+    pub fn from_path(path: PathBuf, group_size: usize) -> Result<SectionChain, Error> {
         let path = path.join("data_chain");
         let mut file = fs::OpenOptions::new()
             .read(true)
@@ -77,7 +77,7 @@ impl DataChain {
         file.lock_exclusive()?;
         let mut buf = Vec::<u8>::new();
         let _ = file.read_to_end(&mut buf)?;
-        Ok(DataChain {
+        Ok(SectionChain {
             chain: <Vec<Block>>::deserialize(&mut Deserializer::new(&buf[..])).unwrap(),
             group_size: group_size,
             path: Some(path),
@@ -85,8 +85,8 @@ impl DataChain {
     }
 
     /// Create chain in memory from vector of blocks
-    pub fn from_blocks(blocks: Vec<Block>, group_size: usize) -> DataChain {
-        DataChain {
+    pub fn from_blocks(blocks: Vec<Block>, group_size: usize) -> SectionChain {
+        SectionChain {
             chain: blocks,
             group_size: group_size,
             path: None,
@@ -335,14 +335,14 @@ impl DataChain {
 
     /// Merge any blocks from a given chain
     /// FIXME - this needs a complete rewrite
-    pub fn merge_chain(&mut self, chain: &mut DataChain) {
+    pub fn merge_chain(&mut self, chain: &mut SectionChain) {
         chain.mark_blocks_valid();
         chain.prune();
         let mut start_pos = 0;
         for new in chain.chain().iter() {
             let mut insert = false;
             for (pos, val) in self.chain.iter().enumerate().skip(start_pos) {
-                if DataChain::validate_block_with_proof(new, val, self.group_size) {
+                if SectionChain::validate_block_with_proof(new, val, self.group_size) {
                     start_pos = pos;
                     insert = true;
                     break;
@@ -366,7 +366,7 @@ impl DataChain {
     }
 }
 
-impl Debug for DataChain {
+impl Debug for SectionChain {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         let print_block = |block: &Block| -> String {
             let mut output = format!(
@@ -404,7 +404,7 @@ impl Debug for DataChain {
 //#[cfg_attr(rustfmt, rustfmt_skip)]
 mod tests {
     use super::*;
-    use crate::chain::block_identifier::LinkDescriptor;
+    use crate::chain::link_descriptor::LinkDescriptor;
     use crate::chain::vote::Vote;
     use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signer, Verifier};
     use env_logger;
@@ -435,7 +435,7 @@ mod tests {
         let add_node_4 = LinkDescriptor::NodeGained(nodes[4].pub_key.clone());
         let remove_node_3 = LinkDescriptor::NodeLost(nodes[3].pub_key.clone());
 
-        let mut chain = DataChain::default();
+        let mut chain = SectionChain::default();
         assert!(chain.is_empty());
         assert!(
             chain
@@ -518,7 +518,7 @@ mod tests {
     #[test]
     fn network() {
         let nodes = (0..100).map(|_| node()).collect_vec();
-        let mut chain = DataChain::default();
+        let mut chain = SectionChain::default();
         let add_node_1 = LinkDescriptor::NodeGained(nodes[1].pub_key.clone());
         // let add_node_2 =
         //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[2].pub_key.clone()));
@@ -547,7 +547,7 @@ mod tests {
         let add_node_4 = LinkDescriptor::NodeGained(keys[4].public.clone());
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
-            if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf(), 999) {
+            if let Ok(mut chain) = SectionChain::create_in_path(dir.path().to_path_buf(), 999) {
                 assert!(chain
                     .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_1).unwrap())
                     .is_some());
@@ -570,7 +570,7 @@ mod tests {
                     .add_vote(Vote::new(&keys[2].public, &keys[2].secret, add_node_4.clone()).unwrap())
                     .is_some());
                 assert!(chain.write().is_ok());
-                let chain2 = DataChain::from_path(dir.path().to_path_buf(), 999);
+                let chain2 = SectionChain::from_path(dir.path().to_path_buf(), 999);
                 assert!(chain2.is_ok());
                 assert_eq!(chain2.unwrap(), chain);
             }

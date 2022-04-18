@@ -61,10 +61,10 @@
 
 /// A block is a type that contains a `BlockIdentifier` and a `Proof`. These can be data blocks or
 /// links
-mod block;
+mod link;
 
 /// A container of `links` (validated group membership blocks) and normal `blocks` (data elements)
-pub mod data_chain;
+pub mod section_chain;
 
 /// A node block is a partial block, sent by group members to each other to create a `Block`
 pub mod vote;
@@ -73,11 +73,11 @@ pub mod vote;
 pub mod proof;
 
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
-mod block_identifier;
+mod link_descriptor;
 
-pub use crate::chain::block::Block;
-pub use crate::chain::block_identifier::LinkDescriptor;
-pub use crate::chain::data_chain::DataChain;
+pub use crate::chain::link::Block;
+pub use crate::chain::link_descriptor::LinkDescriptor;
+pub use crate::chain::section_chain::SectionChain;
 pub use crate::chain::proof::Proof;
 pub use crate::chain::vote::Vote;
 use std::fmt::Write;
