@@ -32,40 +32,18 @@
 //!
 //! [Github repository](https://github.com/dirvine/data_chain)
 
-
-
-#![doc(html_logo_url =
-           "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
-       html_favicon_url = "http://maidsafe.net/img/favicon.ico",
-       html_root_url = "http://dirvine.github.io/data_chain")]
-
-// For explanation of lint checks, run `rustc -W help` or see
-// https://github.com/maidsafe/QA/blob/master/Documentation/Rust%20Lint%20Checks.md
-#![forbid(bad_style, exceeding_bitshifts, mutable_transmutes, no_mangle_const_items,
-          unknown_crate_types, warnings)]
-#![deny(deprecated, improper_ctypes, missing_docs, non_shorthand_field_patterns,
-        overflowing_literals, plugin_as_library, private_no_mangle_fns, private_no_mangle_statics,
-        stable_features, unconditional_recursion, unknown_lints, unsafe_code, unused,
-        unused_allocation, unused_attributes, unused_comparisons, unused_features, unused_parens,
-        while_true)]
-#![warn(trivial_casts, trivial_numeric_casts, unused_extern_crates, unused_import_braces,
-        unused_qualifications, unused_results)]
-#![allow(box_pointers, fat_ptr_transmutes, missing_copy_implementations,
-         missing_debug_implementations, variant_size_differences)]
+#![doc(
+    html_logo_url = "https://raw.githubusercontent.com/maidsafe/QA/master/Images/maidsafe_logo.png",
+    html_favicon_url = "http://maidsafe.net/img/favicon.ico",
+    html_root_url = "http://dirvine.github.io/data_chain"
+)]
 
 #[macro_use]
 extern crate log;
-extern crate bincode;
-extern crate fs2;
-extern crate itertools;
-extern crate maidsafe_utilities;
+
 #[cfg(test)]
 extern crate rand;
-extern crate rust_sodium;
-extern crate rustc_serialize;
-#[cfg(test)]
-extern crate tempdir;
-extern crate tiny_keccak;
+
 #[cfg(test)]
 #[macro_use]
 extern crate unwrap;
@@ -79,22 +57,6 @@ pub mod error;
 /// on the network.
 pub mod chain;
 
-/// Data types
-/// Immutable data (name == hash of content) and
-/// Structured data (constant name with editable contents and ownership changes)
-/// this type is signed by at least one owner and can be a ledger type (never deleted)
-pub mod data;
-/// sha3 (keccak)
 pub mod sha3;
 
-/// API
-/// This is the entry point to this crate and allows the crate to be
-/// used as a secured data store for all data types mentioned above.
-pub mod secured_data;
-
-/// Persistant store on disk of the data itself as well as the `DataChain`.
-mod chunk_store;
-
-pub use chain::{Block, BlockIdentifier, DataChain, Proof, Vote};
-
-pub use data::{Data, DataIdentifier, ImmutableData, MAX_BYTES, StructuredData};
+pub use chain::{Block, DataChain, LinkDescriptor, Proof, Vote};

@@ -6,20 +6,22 @@ name = "data_chain"
 readme = "README.md"
 repository = "https://github.com/dirvine/data_chain"
 version = "0.1.1"
+edition = "2021"
 
 [dependencies]
-bincode = "~0.6.1"
-fs2 = "0.4.1"
-itertools = "0.5.8"
-log = "~0.3.6"
-maidsafe_utilities = "~0.10.0"
-rayon = "~0.6.0"
-rust_sodium = "~0.1.1"
-rustc-serialize = "~0.3.19"
-tiny-keccak = "~1.1.1"
+bincode = "1.3.3"
+fs2 = "0.4.3"
+itertools = "0.10.3"
+log = "0.4.16"
+rayon = "1.5.2"
+tiny-keccak = {version = "2.0.2", features = ["sha3"]}
+serde = {version = "1.0.136", features =["derive"]}
+ed25519 = { version = "1.2.0", features = ["serde_bytes"] }
+ed25519-dalek = { version = "1.0.0", features = ["serde"] }
+rmp-serde = "1.0.0"
 
 [dev-dependencies]
-env_logger = "~0.4.0"
-rand = "~0.3.15"
-tempdir = "~0.3.5"
-unwrap = "~1.1.0"
+env_logger = "0.9.0"
+rand = "0.7.0"
+tempdir = "0.3.7"
+unwrap = "1.2.1"

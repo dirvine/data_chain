@@ -15,7 +15,6 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use maidsafe_utilities::serialisation;
 use std::{error, fmt, io};
 
 /// Error types.
@@ -24,7 +23,6 @@ use std::{error, fmt, io};
 #[allow(missing_docs)]
 #[derive(Debug)]
 pub enum Error {
-    Serialisation(serialisation::SerialisationError),
     Io(io::Error),
     Crypto,
     Validation,
@@ -39,7 +37,6 @@ pub enum Error {
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
-            Error::Serialisation(ref err) => err.fmt(f),
             Error::Io(ref err) => err.fmt(f),
             Error::Crypto => write!(f, "Crypto failure."),
             Error::Validation => write!(f, "Not enough signatures."),
@@ -56,7 +53,6 @@ impl fmt::Display for Error {
 impl error::Error for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::Serialisation(ref err) => err.description(),
             Error::Io(ref err) => err.description(),
             Error::Crypto => "Crypto failure.",
             Error::Validation => "Not enough signatures.",
@@ -76,11 +72,6 @@ impl From<io::Error> for Error {
     }
 }
 
-impl From<serialisation::SerialisationError> for Error {
-    fn from(orig_error: serialisation::SerialisationError) -> Self {
-        Error::Serialisation(orig_error)
-    }
-}
 
 impl From<()> for Error {
     fn from(_: ()) -> Self {

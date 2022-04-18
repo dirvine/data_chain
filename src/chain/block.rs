@@ -15,19 +15,20 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use chain::block_identifier::BlockIdentifier;
-use chain::proof::Proof;
-use chain::vote::Vote;
-use error::Error;
-use maidsafe_utilities::serialisation;
+use crate::chain::block_identifier::LinkDescriptor;
+use crate::chain::proof::Proof;
+use crate::chain::vote::Vote;
+use crate::error::Error;
+use rmp_serde::{Deserializer, Serializer};
+use serde::{Deserialize, Serialize};
 
 /// Used to validate chain
 /// Block can be a data item or
 /// a chain link.
 #[allow(missing_docs)]
-#[derive(Debug, RustcEncodable, RustcDecodable, PartialEq, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Block {
-    identifier: BlockIdentifier,
+    identifier: LinkDescriptor,
     proofs: Vec<Proof>,
     pub valid: bool,
 }
@@ -59,26 +60,23 @@ impl Block {
 
     /// validate signed correctly
     pub fn validate_proof(&self, proof: &Proof) -> bool {
-        match serialisation::serialise(&self.identifier) {
-            Ok(data) => proof.validate(&data[..]),
-            _ => false,
-        }
+        let mut buf = Vec::new();
+        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        proof.validate(&buf[..])
     }
 
     /// validate signed correctly
     pub fn validate_block_signatures(&self) -> bool {
-        match serialisation::serialise(&self.identifier) {
-            Ok(data) => self.proofs.iter().all(|proof| proof.validate(&data[..])),
-            _ => false,
-        }
+        let mut buf = Vec::new();
+        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        self.proofs.iter().all(|proof| proof.validate(&buf[..]))
     }
 
     /// Prune any bad signatures.
     pub fn remove_invalid_signatures(&mut self) {
-        match serialisation::serialise(&self.identifier) {
-            Ok(data) => self.proofs.retain(|proof| proof.validate(&data[..])),
-            _ => self.proofs.clear(),
-        }
+                let mut buf = Vec::new();
+        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        self.proofs.retain(|proof| proof.validate(&buf[..]));
     }
 
     /// getter
@@ -92,7 +90,7 @@ impl Block {
     }
 
     /// getter
-    pub fn identifier(&self) -> &BlockIdentifier {
+    pub fn identifier(&self) -> &LinkDescriptor {
         &self.identifier
     }
 }

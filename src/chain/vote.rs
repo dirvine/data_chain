@@ -15,30 +15,36 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use chain::block_identifier::BlockIdentifier;
-use chain::proof::Proof;
-use error::Error;
-use maidsafe_utilities::serialisation;
-use rust_sodium::crypto::sign::{self, PublicKey, SecretKey};
+use crate::chain::block_identifier::LinkDescriptor;
+use crate::chain::proof::Proof;
+use crate::error::Error;
+use ed25519_dalek::{ExpandedSecretKey, PublicKey, SecretKey, Signer};
+use rmp_serde::Serializer;
+use serde::{Deserialize, Serialize};
 
 /// If data block then this is sent by any group member when data is `Put`, `Post` or `Delete`.
 /// If this is a link then it is sent with a `churn` event.
 /// A `Link` is a vote that each member must send each other in times of churn.
 /// These will not accumulate but be `ManagedNode`  to `ManagedNode` messages in the routing layer
-#[derive(RustcEncodable, RustcDecodable, PartialEq, Debug, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
 pub struct Vote {
-    identifier: BlockIdentifier,
+    identifier: LinkDescriptor,
     proof: Proof,
 }
 
 impl Vote {
     /// Create a Block (used by nodes in network to send to holders of `DataChains`)
-    pub fn new(pub_key: &PublicKey,
-               secret_key: &SecretKey,
-               data_identifier: BlockIdentifier)
-               -> Result<Vote, Error> {
-        let signature = sign::sign_detached(&serialisation::serialise(&data_identifier)?[..],
-                                            secret_key);
+    pub fn new(
+        pub_key: &PublicKey,
+        secret_key: &SecretKey,
+        data_identifier: LinkDescriptor,
+    ) -> Result<Vote, Error> {
+        let mut buf = Vec::new();
+        let msg = data_identifier
+            .serialize(&mut Serializer::new(&mut buf))
+            .unwrap();
+        let key = ExpandedSecretKey::from(secret_key);
+        let signature = key.sign(&buf, pub_key);
         Ok(Vote {
             identifier: data_identifier,
             proof: Proof::new(*pub_key, signature),
@@ -46,7 +52,7 @@ impl Vote {
     }
 
     /// Getter
-    pub fn identifier(&self) -> &BlockIdentifier {
+    pub fn identifier(&self) -> &LinkDescriptor {
         &self.identifier
     }
     /// Getter
@@ -62,19 +68,17 @@ impl Vote {
     /// Check vote is not for self added/removed
     pub fn is_self_vote(&self) -> bool {
         if let Some(name) = self.identifier.name() {
-            &self.proof.key().0 == name
+            &self.proof.key() == &name
         } else {
             false
         }
     }
 
     /// validate signed correctly
-    pub fn validate_detached(&self, identifier: &BlockIdentifier) -> bool {
-
-        match serialisation::serialise(identifier) {
-            Ok(data) => self.proof.validate(&data[..]),
-            _ => false,
-        }
+    pub fn validate_detached(&self, identifier: &LinkDescriptor) -> bool {
+        let mut buf = Vec::new();
+        let data = identifier.serialize(&mut Serializer::new(&mut buf));
+        self.proof.validate(&buf)
     }
 }
 

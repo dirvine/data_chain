@@ -75,11 +75,11 @@ pub mod proof;
 /// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
 mod block_identifier;
 
-pub use chain::block::Block;
-pub use chain::block_identifier::BlockIdentifier;
-pub use chain::data_chain::DataChain;
-pub use chain::proof::Proof;
-pub use chain::vote::Vote;
+pub use crate::chain::block::Block;
+pub use crate::chain::block_identifier::LinkDescriptor;
+pub use crate::chain::data_chain::DataChain;
+pub use crate::chain::proof::Proof;
+pub use crate::chain::vote::Vote;
 use std::fmt::Write;
 
 fn debug_bytes<V: AsRef<[u8]>>(input: V) -> String {

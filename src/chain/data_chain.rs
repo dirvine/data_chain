@@ -15,15 +15,15 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use bincode::rustc_serialize;
-use chain::block::Block;
-use chain::block_identifier::BlockIdentifier;
-use chain::vote::Vote;
-use error::Error;
+use crate::chain::block::Block;
+use crate::chain::block_identifier::LinkDescriptor;
+use crate::chain::vote::Vote;
+use crate::error::Error;
+use ed25519_dalek::PublicKey;
 use fs2::FileExt;
 use itertools::Itertools;
-use maidsafe_utilities::serialisation;
-use rust_sodium::crypto::sign::PublicKey;
+use rmp_serde::{Deserializer, Serializer};
+use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug, Formatter};
 use std::fs;
 use std::io::{self, Read, Write};
@@ -39,7 +39,7 @@ use std::path::PathBuf;
 /// If there was a restart then the nodes should validate and continue.
 /// N:B this means all nodes can use a named directory for data store and clear if they restart
 /// as a new id. This allows clean-up of old data cache directories.
-#[derive(Default, PartialEq, RustcEncodable, RustcDecodable)]
+#[derive(Default, PartialEq, Serialize, Deserialize)]
 pub struct DataChain {
     chain: Vec<Block>,
     group_size: usize,
@@ -51,7 +51,11 @@ impl DataChain {
     /// Provide the directory to create the files in
     pub fn create_in_path(path: PathBuf, group_size: usize) -> io::Result<DataChain> {
         let path = path.join("data_chain");
-        let file = fs::OpenOptions::new().read(true).write(true).create_new(true).open(&path)?;
+        let file = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create_new(true)
+            .open(&path)?;
         // hold a lock on the file for the whole session
         file.lock_exclusive()?;
         Ok(DataChain {
@@ -64,13 +68,17 @@ impl DataChain {
     /// Open from existing directory
     pub fn from_path(path: PathBuf, group_size: usize) -> Result<DataChain, Error> {
         let path = path.join("data_chain");
-        let mut file = fs::OpenOptions::new().read(true).write(true).create(false).open(&path)?;
+        let mut file = fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(false)
+            .open(&path)?;
         // hold a lock on the file for the whole session
         file.lock_exclusive()?;
         let mut buf = Vec::<u8>::new();
         let _ = file.read_to_end(&mut buf)?;
         Ok(DataChain {
-            chain: serialisation::deserialise::<Vec<Block>>(&buf[..])?,
+            chain: <Vec<Block>>::deserialize(&mut Deserializer::new(&buf[..])).unwrap(),
             group_size: group_size,
             path: Some(path),
         })
@@ -87,23 +95,29 @@ impl DataChain {
 
     /// Write current data chain to supplied path
     pub fn write(&self) -> Result<(), Error> {
+        let mut buf = Vec::new();
         if let Some(path) = self.path.to_owned() {
-            let mut file = fs::OpenOptions::new().read(true)
+            let mut file = fs::OpenOptions::new()
+                .read(true)
                 .write(true)
                 .create(false)
                 .open(&path.as_path())?;
-            return Ok(file.write_all(&serialisation::serialise(&self.chain)?)?);
+            self.chain.serialize(&mut Serializer::new(&mut buf));
+            return Ok(file.write_all(&buf)?);
         }
         Err(Error::NoFile)
     }
 
     /// Write current data chain to supplied path
     pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), Error> {
-        let mut file = fs::OpenOptions::new().read(true)
+        let mut buf = Vec::new();
+        let mut file = fs::OpenOptions::new()
+            .read(true)
             .write(true)
             .create(false)
             .open(path.as_path())?;
-        file.write_all(&serialisation::serialise(&self.chain)?)?;
+        self.chain.serialize(&mut Serializer::new(&mut buf));
+        file.write_all(&buf)?;
         self.path = Some(path);
         Ok(file.lock_exclusive()?)
     }
@@ -127,11 +141,13 @@ impl DataChain {
         self.mark_blocks_valid();
         // ensure last good link contains majority of current group
         if let Some(last_link) = self.last_valid_link() {
-            return (last_link.proofs()
+            return (last_link
+                .proofs()
                 .iter()
-                .filter(|&k| my_group.iter().any(|&z| PublicKey(z.0) == *k.key()))
-                .count() * 2) > last_link.proofs().len();
-
+                .filter(|&k| my_group.iter().any(|&z| z == *k.key()))
+                .count()
+                * 2)
+                > last_link.proofs().len();
         } else {
             false
         }
@@ -140,7 +156,7 @@ impl DataChain {
     /// Add a vote received from a peer
     /// Uses  `lazy accumulation`
     /// If vote becomes valid, then it is returned
-    pub fn add_vote(&mut self, vote: Vote) -> Option<BlockIdentifier> {
+    pub fn add_vote(&mut self, vote: Vote) -> Option<LinkDescriptor> {
         if !vote.validate() {
             return None;
         }
@@ -154,24 +170,26 @@ impl DataChain {
             if self.chain.is_empty() {
                 if let Ok(mut blk) = Block::new(vote.clone()) {
                     blk.valid = true;
-                    info!("vote good (chain start)  - marked block {:?} valid",
-                          blk.identifier());
+                    info!(
+                        "vote good (chain start)  - marked block {:?} valid",
+                        blk.identifier()
+                    );
                     self.chain.push(blk.clone());
                     return Some(blk.identifier().clone());
                 }
-            } else if vote.identifier().is_link() && vote.is_self_vote() {
+            } else if vote.is_self_vote() {
                 return None;
             }
         }
-        if let Some(mut pos) = self.chain
+        if let Some(mut pos) = self
+            .chain
             .iter()
-            .position(|blk| blk.identifier() == vote.identifier()) {
-            if self.chain[pos].identifier().is_link() {
-                // Move link to top of chain
-                let el = self.chain.remove(pos);
-                pos = self.chain.len();
-                self.chain.push(el);
-            }
+            .position(|blk| blk.identifier() == vote.identifier())
+        {
+            // Move link to top of chain
+            let el = self.chain.remove(pos);
+            pos = self.chain.len();
+            self.chain.push(el);
             let blk = self.chain.get_mut(pos).unwrap();
             if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
                 info!("duplicate proof");
@@ -181,22 +199,23 @@ impl DataChain {
             blk.add_proof(vote.proof().clone()).unwrap();
             info!("chain length {:?}", len);
             if links.map_or(false, |x| {
-                x.identifier() != vote.identifier() &&
-                Self::validate_block_with_proof(blk, &x, group_size)
+                x.identifier() != vote.identifier()
+                    && Self::validate_block_with_proof(blk, &x, group_size)
             }) {
                 blk.valid = true;
                 info!("vote good  - marked block {:?} valid", blk.identifier());
                 return Some(blk.identifier().clone());
             } else {
-                info!("Vote Ok but block not yet valid No quorum for block {:?}",
-                      blk.identifier());
+                info!(
+                    "Vote Ok but block not yet valid No quorum for block {:?}",
+                    blk.identifier()
+                );
                 blk.valid = false;
                 return None;
             }
-
         }
         if let Ok(ref mut blk) = Block::new(vote) {
-            if self.links_len() == 1 {
+            if self.chain.len() == 1 {
                 blk.valid = true;
             }
             self.chain.push(blk.clone());
@@ -204,7 +223,6 @@ impl DataChain {
         }
         info!("Could not find any block for this proof");
         None
-
     }
 
     /// getter
@@ -212,47 +230,25 @@ impl DataChain {
         &self.chain
     }
 
-    // get size of chain for storing on disk
-    #[allow(unused)]
-    fn size_of(&self) -> u64 {
-        rustc_serialize::encoded_size(self)
-    }
-
     /// find a block (user required to test for validity)
-    pub fn find(&self, block_identifier: &BlockIdentifier) -> Option<&Block> {
-        self.chain.iter().find(|x| x.identifier() == block_identifier)
-    }
-
-    /// find block by name from top (only first occurrence)
-    pub fn find_name(&self, name: &[u8; 32]) -> Option<&Block> {
-        self.chain.iter().rev().find(|x| x.valid && Some(name) == x.identifier().name())
-    }
-
-    /// Remove a block, will ignore Links
-    pub fn remove(&mut self, data_id: &BlockIdentifier) {
-        self.chain.retain(|x| x.identifier() != data_id || x.identifier().is_link());
-    }
-
-    /// Retains only the blocks specified by the predicate.
-    pub fn retain<F>(&mut self, pred: F)
-        where F: FnMut(&Block) -> bool
-    {
-        self.chain.retain(pred);
-    }
-
-    /// Clear chain
-    pub fn clear(&mut self) {
-        self.chain.clear()
+    pub fn find(&self, block_identifier: &LinkDescriptor) -> Option<&Block> {
+        self.chain
+            .iter()
+            .find(|x| x.identifier() == block_identifier)
     }
 
     /// Check if chain contains a particular identifier
-    pub fn contains(&self, block_identifier: &BlockIdentifier) -> bool {
-        self.chain.iter().any(|x| x.identifier() == block_identifier)
+    pub fn contains(&self, block_identifier: &LinkDescriptor) -> bool {
+        self.chain
+            .iter()
+            .any(|x| x.identifier() == block_identifier)
     }
 
     /// Return position of block identifier
-    pub fn position(&self, block_identifier: &BlockIdentifier) -> Option<usize> {
-        self.chain.iter().position(|x| x.identifier() == block_identifier)
+    pub fn position(&self, block_identifier: &LinkDescriptor) -> Option<usize> {
+        self.chain
+            .iter()
+            .position(|x| x.identifier() == block_identifier)
     }
 
     /// Inserts an element at position index within the chain, shifting all elements
@@ -288,21 +284,6 @@ impl DataChain {
         self.chain.len()
     }
 
-    /// Number of valid blocks
-    pub fn valid_len(&self) -> usize {
-        self.blocks_len() + self.links_len()
-    }
-
-    /// number of valid data blocks
-    pub fn blocks_len(&self) -> usize {
-        self.chain.iter().filter(|x| x.identifier().is_block() && x.valid).count()
-    }
-
-    /// number of valid links
-    pub fn links_len(&self) -> usize {
-        self.chain.iter().filter(|x| x.identifier().is_link() && x.valid).count()
-    }
-
     /// Contains no blocks that are not valid
     pub fn is_empty(&self) -> bool {
         self.chain.is_empty()
@@ -310,70 +291,44 @@ impl DataChain {
 
     /// Should contain majority of the current common_close_group
     fn last_valid_link(&mut self) -> Option<&mut Block> {
-        self.chain.iter_mut().rev().find(|x| x.identifier().is_link() && x.valid)
+        self.chain.iter_mut().rev().find(|x| x.valid)
     }
 
     /// Returns all links in chain
     /// Does not perform validation on links
     pub fn all_links(&self) -> Vec<Block> {
-        self.chain
-            .iter()
-            .cloned()
-            .filter(|x| x.identifier().is_link())
-            .collect_vec()
-    }
-
-    /// Validates and returns all valid data blocks in chain
-    pub fn valid_data(&mut self) -> Vec<Block> {
-        self.mark_blocks_valid();
-        self.chain
-            .iter()
-            .cloned()
-            .filter(|x| !x.identifier().is_link() && x.valid)
-            .collect_vec()
+        self.chain.iter().cloned().collect_vec()
     }
 
     /// Validates and returns all links in chain
     pub fn valid_links(&mut self) -> Vec<Block> {
         self.mark_blocks_valid();
-        self.chain
-            .iter()
-            .cloned()
-            .filter(|x| x.identifier().is_link() && x.valid)
-            .collect_vec()
+        self.chain.iter().cloned().filter(|x| x.valid).collect_vec()
     }
 
     /// Validates and returns the previous valid link in chain before the target
-    pub fn valid_links_at_block_id(&mut self, block_id: &BlockIdentifier) -> Option<Block> {
+    pub fn valid_links_at_block_id(&mut self, block_id: &LinkDescriptor) -> Option<Block> {
         self.chain
             .iter()
             .rev()
             .skip_while(|x| x.identifier() != block_id)
             .skip(1)
-            .find(|x| x.identifier().is_link() && x.valid)
+            .find(|x| x.valid)
             .cloned()
     }
 
-
     /// Mark all links that are valid as such.
     pub fn mark_blocks_valid(&mut self) {
-        if let Some(mut first_link) =
-            self.chain
-                .iter()
-                .cloned()
-                .find(|x| x.identifier().is_link()) {
+        if let Some(mut first_link) = self.chain.clone().iter().next(){
             for block in &mut self.chain {
                 block.remove_invalid_signatures();
-                if Self::validate_block_with_proof(block, &first_link, self.group_size) {
+                if Self::validate_block_with_proof(&block, &first_link, self.group_size) {
                     block.valid = true;
-                    if block.identifier().is_link() {
-                        first_link = block.clone();
-                    }
+                    let first_link = &block.clone();
                 } else {
                     block.valid = false;
                 }
             }
-        } else {
             self.chain.clear();
         }
     }
@@ -384,7 +339,7 @@ impl DataChain {
         chain.mark_blocks_valid();
         chain.prune();
         let mut start_pos = 0;
-        for new in chain.chain().iter().filter(|x| x.identifier().is_block()) {
+        for new in chain.chain().iter() {
             let mut insert = false;
             for (pos, val) in self.chain.iter().enumerate().skip(start_pos) {
                 if DataChain::validate_block_with_proof(new, val, self.group_size) {
@@ -402,7 +357,8 @@ impl DataChain {
     }
 
     fn validate_block_with_proof(block: &Block, proof: &Block, group_size: usize) -> bool {
-        let p_len = proof.proofs()
+        let p_len = proof
+            .proofs()
             .iter()
             .filter(|&y| block.proofs().iter().any(|p| p.key() == y.key()))
             .count();
@@ -413,18 +369,22 @@ impl DataChain {
 impl Debug for DataChain {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
         let print_block = |block: &Block| -> String {
-            let mut output = format!("    Block {{\n        identifier: {:?}\n        valid: {}\n",
-                                     block.identifier(),
-                                     block.valid);
+            let mut output = format!(
+                "    Block {{\n        identifier: {:?}\n        valid: {}\n",
+                block.identifier(),
+                block.valid
+            );
             for proof in block.proofs() {
                 output.push_str(&format!("        {:?}\n", proof))
             }
             output.push_str("    }");
             output
         };
-        write!(formatter,
-               "DataChain {{\n    group_size: {}\n    path: ",
-               self.group_size)?;
+        write!(
+            formatter,
+            "DataChain {{\n    group_size: {}\n    path: ",
+            self.group_size
+        )?;
         match self.path {
             Some(ref path) => writeln!(formatter, "{}", path.display())?,
             None => writeln!(formatter, "None")?,
@@ -443,12 +403,12 @@ impl Debug for DataChain {
 #[cfg(test)]
 //#[cfg_attr(rustfmt, rustfmt_skip)]
 mod tests {
-    extern crate env_logger;
-    use chain::block_identifier::{BlockIdentifier, LinkDescriptor};
-    use chain::vote::Vote;
-    use itertools::Itertools;
-    use rust_sodium::crypto::sign::{self, PublicKey, SecretKey};
     use super::*;
+    use crate::chain::block_identifier::LinkDescriptor;
+    use crate::chain::vote::Vote;
+    use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signer, Verifier};
+    use env_logger;
+    use itertools::Itertools;
     use tempdir::TempDir;
 
     pub struct Node {
@@ -457,83 +417,101 @@ mod tests {
     }
 
     pub fn node() -> Node {
-        let keys = sign::gen_keypair();
+        let mut csprng = rand::thread_rng();
+        let keys = Keypair::generate(&mut csprng);
         Node {
-            sec_key: keys.1,
-            pub_key: keys.0,
+            sec_key: keys.secret,
+            pub_key: keys.public,
         }
     }
 
     #[test]
     fn genesis() {
         let _ = env_logger::init();
-        ::rust_sodium::init();
         let nodes = (0..100).map(|_| node()).collect_vec();
-        let add_node_1 =
-            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[1].pub_key.clone()));
-        let add_node_2 =
-            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[2].pub_key.clone()));
-        let add_node_3 =
-            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[3].pub_key.clone()));
-        let add_node_4 =
-            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[4].pub_key.clone()));
-        let remove_node_3 =
-            BlockIdentifier::Link(LinkDescriptor::NodeLost(nodes[3].pub_key.clone()));
+        let add_node_1 = LinkDescriptor::NodeGained(nodes[1].pub_key.clone());
+        let add_node_2 = LinkDescriptor::NodeGained(nodes[2].pub_key.clone());
+        let add_node_3 = LinkDescriptor::NodeGained(nodes[3].pub_key.clone());
+        let add_node_4 = LinkDescriptor::NodeGained(nodes[4].pub_key.clone());
+        let remove_node_3 = LinkDescriptor::NodeLost(nodes[3].pub_key.clone());
 
         let mut chain = DataChain::default();
         assert!(chain.is_empty());
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1)
-                        .unwrap())
-                    .is_some(),
-                "Add first node, should accumulate as valid.");
-        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2.clone())
-                        .unwrap())
-                    .is_none(),
-                "Node2 adds link claiming to be from it. Should be none as this node is not in \
-                 chain.");
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_2.clone())
-                        .unwrap())
-                    .is_some(),
-                "This vote should count and validate vote on its own. Node 2 should not be able \
-                 to vote for itself being added.");
-        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2)
-                        .unwrap())
-                    .is_none(),
-                "Again check node2 cannot vote for itself.");
-        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_3.clone())
-                        .unwrap())
-                    .is_some(),
-                "Node2 can vote for next new node, but no quorum");
-        assert_eq!(chain.links_len(),
-                   2,
-                   "quorum should not be met so block invalid");
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_3.clone())
-                        .unwrap())
-                    .is_some(),
-                "Node1 can vote for next new node and match quorum.");
-        assert_eq!(chain.links_len(), 3, "quorum should be met so block valid");
-        assert!(chain.add_vote(Vote::new(&nodes[3].pub_key, &nodes[3].sec_key, add_node_4.clone())
-                .unwrap())
+        assert!(
+            chain
+                .add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1).unwrap())
+                .is_some(),
+            "Add first node, should accumulate as valid."
+        );
+        assert!(
+            chain
+                .add_vote(
+                    Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2.clone()).unwrap()
+                )
+                .is_none(),
+            "Node2 adds link claiming to be from it. Should be none as this node is not in \
+                 chain."
+        );
+        assert!(
+            chain
+                .add_vote(
+                    Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_2.clone()).unwrap()
+                )
+                .is_some(),
+            "This vote should count and validate vote on its own. Node 2 should not be able \
+                 to vote for itself being added."
+        );
+        assert!(
+            chain
+                .add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_2).unwrap())
+                .is_none(),
+            "Again check node2 cannot vote for itself."
+        );
+        assert!(
+            chain
+                .add_vote(
+                    Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_3.clone()).unwrap()
+                )
+                .is_some(),
+            "Node2 can vote for next new node, but no quorum"
+        );
+        
+        assert!(
+            chain
+                .add_vote(
+                    Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_3.clone()).unwrap()
+                )
+                .is_some(),
+            "Node1 can vote for next new node and match quorum."
+        );
+        assert!(chain
+            .add_vote(Vote::new(&nodes[3].pub_key, &nodes[3].sec_key, add_node_4.clone()).unwrap())
             .is_some());
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_4.clone())
-                .unwrap())
+        assert!(chain
+            .add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_4.clone()).unwrap())
             .is_some());
-        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_4.clone())
-                .unwrap())
+        assert!(chain
+            .add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, add_node_4.clone()).unwrap())
             .is_some());
-        assert_eq!(chain.links_len(), 4, "quorum should be met so block valid");
         // Now we remove a node
-        assert!(chain.add_vote(Vote::new(&nodes[3].pub_key,
-                                        &nodes[3].sec_key,
-                                        remove_node_3.clone())
-                        .unwrap())
-                    .is_none(),
-                "A node cannot remove itself either");
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, remove_node_3.clone()).unwrap())
+        assert!(
+            chain
+                .add_vote(
+                    Vote::new(&nodes[3].pub_key, &nodes[3].sec_key, remove_node_3.clone()).unwrap()
+                )
+                .is_none(),
+            "A node cannot remove itself either"
+        );
+        assert!(chain
+            .add_vote(
+                Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, remove_node_3.clone()).unwrap()
+            )
             .is_some());
-        assert!(chain.add_vote(Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, remove_node_3.clone()).unwrap())
+        assert!(chain
+            .add_vote(
+                Vote::new(&nodes[2].pub_key, &nodes[2].sec_key, remove_node_3.clone()).unwrap()
+            )
             .is_some());
-        assert_eq!(chain.links_len(), 5, "quorum should be met so block valid");
         info!("{:?}", chain);
     }
 
@@ -541,8 +519,7 @@ mod tests {
     fn network() {
         let nodes = (0..100).map(|_| node()).collect_vec();
         let mut chain = DataChain::default();
-        let add_node_1 =
-            BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[1].pub_key.clone()));
+        let add_node_1 = LinkDescriptor::NodeGained(nodes[1].pub_key.clone());
         // let add_node_2 =
         //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[2].pub_key.clone()));
         // let add_node_3 =
@@ -551,35 +528,47 @@ mod tests {
         //     BlockIdentifier::Link(LinkDescriptor::NodeGained(nodes[4].pub_key.clone()));
         // let remove_node_3 =
         //     BlockIdentifier::Link(LinkDescriptor::NodeLost(nodes[3].pub_key.clone()));
-        assert!(chain.add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1)
-                        .unwrap())
-                    .is_some(),
-                "Add first node, should accumulate as valid.");
+        assert!(
+            chain
+                .add_vote(Vote::new(&nodes[1].pub_key, &nodes[1].sec_key, add_node_1).unwrap())
+                .is_some(),
+            "Add first node, should accumulate as valid."
+        );
     }
 
     #[test]
     fn file_based_chain() {
-        let _ = env_logger::init();
-        ::rust_sodium::init();
         info!("creating keys");
-        let keys = (0..10)
-            .map(|_| sign::gen_keypair())
-            .collect_vec();
-        let add_node_1 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[1].0.clone()));
-        let add_node_2 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[2].0.clone()));
-        let add_node_3 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[3].0.clone()));
-        let add_node_4 = BlockIdentifier::Link(LinkDescriptor::NodeGained(keys[4].0.clone()));
+        let mut csprng = rand::thread_rng();
+        let keys = (0..10).map(|_| Keypair::generate(&mut csprng)).collect_vec();
+        let add_node_1 = LinkDescriptor::NodeGained(keys[1].public.clone());
+        let add_node_2 = LinkDescriptor::NodeGained(keys[2].public.clone());
+        let add_node_3 = LinkDescriptor::NodeGained(keys[3].public.clone());
+        let add_node_4 = LinkDescriptor::NodeGained(keys[4].public.clone());
         // #################### Create chain ########################
         if let Ok(dir) = TempDir::new("test_data_chain") {
             if let Ok(mut chain) = DataChain::create_in_path(dir.path().to_path_buf(), 999) {
-                assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_1).unwrap())
+                assert!(chain
+                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_1).unwrap())
                     .is_some());
-                assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_2.clone()).unwrap()).is_some());
-                assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_3.clone()) .unwrap()).is_some());
-                assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_3.clone()) .unwrap()).is_some());
-                assert!(chain.add_vote(Vote::new(&keys[3].0, &keys[3].1, add_node_4.clone()) .unwrap()).is_some());
-                assert!(chain.add_vote(Vote::new(&keys[1].0, &keys[1].1, add_node_4.clone()).unwrap()).is_some());
-                assert!(chain.add_vote(Vote::new(&keys[2].0, &keys[2].1, add_node_4.clone()).unwrap()).is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_2.clone()).unwrap())
+                    .is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[2].public, &keys[2].secret, add_node_3.clone()).unwrap())
+                    .is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_3.clone()).unwrap())
+                    .is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[3].public, &keys[3].secret, add_node_4.clone()).unwrap())
+                    .is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_4.clone()).unwrap())
+                    .is_some());
+                assert!(chain
+                    .add_vote(Vote::new(&keys[2].public, &keys[2].secret, add_node_4.clone()).unwrap())
+                    .is_some());
                 assert!(chain.write().is_ok());
                 let chain2 = DataChain::from_path(dir.path().to_path_buf(), 999);
                 assert!(chain2.is_ok());

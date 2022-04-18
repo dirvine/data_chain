@@ -15,11 +15,11 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use tiny_keccak::Keccak;
+use tiny_keccak::{Sha3, Hasher};
 
 /// Simple wrapper around tiny-keccak
 pub fn hash(data: &[u8]) -> [u8; 32] {
-    let mut sha3 = Keccak::new_sha3_256();
+    let mut sha3 = Sha3::v256();
     sha3.update(data);
     let mut res = [0u8; 32];
     sha3.finalize(&mut res);

@@ -16,12 +16,13 @@
 // relating to use of the SAFE Network Software.
 
 use super::debug_bytes;
-use rust_sodium::crypto::sign::{self, PublicKey, Signature};
+use ed25519_dalek::{Signature, PublicKey, Verifier};
+use serde::{Serialize, Deserialize};
 use std::fmt::{self, Debug, Formatter};
 
 /// Proof as provided by a close group member
 /// This nay be extracted from a `Vote` to be inserted into a `Block`
-#[derive(RustcEncodable, RustcDecodable, PartialOrd, Ord, PartialEq, Eq, Clone)]
+#[derive(Serialize, Deserialize, PartialEq, Eq, Clone)]
 pub struct Proof {
     key: PublicKey,
     sig: Signature,
@@ -30,10 +31,7 @@ pub struct Proof {
 impl Proof {
     /// cstr
     pub fn new(key: PublicKey, sig: Signature) -> Proof {
-        Proof {
-            key: key,
-            sig: sig,
-        }
+        Proof { key: key, sig: sig }
     }
 
     /// getter
@@ -48,7 +46,7 @@ impl Proof {
 
     /// Validates `data` against this `Proof`'s `key` and `sig`.
     pub fn validate(&self, data: &[u8]) -> bool {
-        sign::verify_detached(&self.sig, data, &self.key)
+        self.key.verify(data, &self.sig).is_ok()
     }
 }
 
