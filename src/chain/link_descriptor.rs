@@ -15,7 +15,7 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use ed25519::signature::Signature;
+
 use ed25519_dalek::PublicKey;
 use serde::{Deserialize, Serialize};
 
@@ -39,7 +39,7 @@ impl LinkDescriptor {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::sha3::hash;
+    
     use ed25519_dalek::Keypair;
     use rand::rngs::OsRng;
 

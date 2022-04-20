@@ -15,10 +15,10 @@
 // Please review the Licences for the specific language governing permissions and limitations
 // relating to use of the SAFE Network Software.
 
-use crate::chain::link::Block;
+use crate::chain::link::Link;
 use crate::chain::link_descriptor::LinkDescriptor;
 use crate::chain::vote::Vote;
-use crate::error::Error;
+use crate::error::ChainError;
 use ed25519_dalek::PublicKey;
 use fs2::FileExt;
 use itertools::Itertools;
@@ -41,7 +41,7 @@ use std::path::PathBuf;
 /// as a new id. This allows clean-up of old data cache directories.
 #[derive(Default, PartialEq, Serialize, Deserialize)]
 pub struct SectionChain {
-    chain: Vec<Block>,
+    chain: Vec<Link>,
     group_size: usize,
     path: Option<PathBuf>,
 }
@@ -59,14 +59,14 @@ impl SectionChain {
         // hold a lock on the file for the whole session
         file.lock_exclusive()?;
         Ok(SectionChain {
-            chain: Vec::<Block>::default(),
+            chain: Vec::<Link>::default(),
             group_size: group_size,
             path: Some(path),
         })
     }
 
     /// Open from existing directory
-    pub fn from_path(path: PathBuf, group_size: usize) -> Result<SectionChain, Error> {
+    pub fn from_path(path: PathBuf, group_size: usize) -> Result<SectionChain, ChainError> {
         let path = path.join("data_chain");
         let mut file = fs::OpenOptions::new()
             .read(true)
@@ -78,14 +78,19 @@ impl SectionChain {
         let mut buf = Vec::<u8>::new();
         let _ = file.read_to_end(&mut buf)?;
         Ok(SectionChain {
-            chain: <Vec<Block>>::deserialize(&mut Deserializer::new(&buf[..])).unwrap(),
+            chain: <Vec<Link>>::deserialize(&mut Deserializer::new(&buf[..])).map_err(|err| {
+                ChainError::Serialisation(format!(
+                    "could not deserialize message payload with Msgpack: {}",
+                    err
+                ))
+            })?,
             group_size: group_size,
             path: Some(path),
         })
     }
 
     /// Create chain in memory from vector of blocks
-    pub fn from_blocks(blocks: Vec<Block>, group_size: usize) -> SectionChain {
+    pub fn from_blocks(blocks: Vec<Link>, group_size: usize) -> SectionChain {
         SectionChain {
             chain: blocks,
             group_size: group_size,
@@ -94,7 +99,7 @@ impl SectionChain {
     }
 
     /// Write current data chain to supplied path
-    pub fn write(&self) -> Result<(), Error> {
+    pub fn write(&self) -> Result<(), ChainError> {
         let mut buf = Vec::new();
         if let Some(path) = self.path.to_owned() {
             let mut file = fs::OpenOptions::new()
@@ -102,14 +107,21 @@ impl SectionChain {
                 .write(true)
                 .create(false)
                 .open(&path.as_path())?;
-            self.chain.serialize(&mut Serializer::new(&mut buf));
-            return Ok(file.write_all(&buf)?);
+            self.chain
+                .serialize(&mut Serializer::new(&mut buf))
+                .map_err(|err| {
+                    ChainError::Serialisation(format!(
+                        "could not serialize message payload with Msgpack: {}",
+                        err
+                    ))
+                })?;
+            return file.write_all(&buf).map_err(|err| ChainError::Io(err));
+        } else {
+            Err(ChainError::NoFile)
         }
-        Err(Error::NoFile)
     }
-
     /// Write current data chain to supplied path
-    pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), Error> {
+    pub fn write_to_new_path(&mut self, path: PathBuf) -> Result<(), ChainError> {
         let mut buf = Vec::new();
         let mut file = fs::OpenOptions::new()
             .read(true)
@@ -168,7 +180,7 @@ impl SectionChain {
             len = self.chain.len();
             group_size = self.group_size;
             if self.chain.is_empty() {
-                if let Ok(mut blk) = Block::new(vote.clone()) {
+                if let Ok(mut blk) = Link::new(vote.clone()) {
                     blk.valid = true;
                     info!(
                         "vote good (chain start)  - marked block {:?} valid",
@@ -190,7 +202,7 @@ impl SectionChain {
             let el = self.chain.remove(pos);
             pos = self.chain.len();
             self.chain.push(el);
-            let blk = self.chain.get_mut(pos).unwrap();
+            let blk = self.chain.get_mut(pos)?;
             if blk.proofs().iter().any(|x| x.key() == vote.proof().key()) {
                 info!("duplicate proof");
                 return None;
@@ -214,7 +226,7 @@ impl SectionChain {
                 return None;
             }
         }
-        if let Ok(ref mut blk) = Block::new(vote) {
+        if let Ok(ref mut blk) = Link::new(vote) {
             if self.chain.len() == 1 {
                 blk.valid = true;
             }
@@ -226,12 +238,12 @@ impl SectionChain {
     }
 
     /// getter
-    pub fn chain(&self) -> &Vec<Block> {
+    pub fn chain(&self) -> &Vec<Link> {
         &self.chain
     }
 
     /// find a block (user required to test for validity)
-    pub fn find(&self, block_identifier: &LinkDescriptor) -> Option<&Block> {
+    pub fn find(&self, block_identifier: &LinkDescriptor) -> Option<&Link> {
         self.chain
             .iter()
             .find(|x| x.identifier() == block_identifier)
@@ -257,13 +269,13 @@ impl SectionChain {
     /// # Panics
     ///
     /// Panics if index is greater than the chains length.
-    pub fn insert(&mut self, index: usize, block: Block) {
+    pub fn insert(&mut self, index: usize, block: Link) {
         self.chain.insert(index, block)
     }
 
     /// Validates an individual block. Will get latest link and confirm all signatures
     /// were from last known valid group.
-    pub fn validate_block(&mut self, block: &mut Block) -> bool {
+    pub fn validate_block(&mut self, block: &mut Link) -> bool {
         for link in &self.valid_links_at_block_id(block.identifier()) {
             if Self::validate_block_with_proof(block, link, self.group_size) {
                 block.valid = true;
@@ -290,24 +302,24 @@ impl SectionChain {
     }
 
     /// Should contain majority of the current common_close_group
-    fn last_valid_link(&mut self) -> Option<&mut Block> {
+    fn last_valid_link(&mut self) -> Option<&mut Link> {
         self.chain.iter_mut().rev().find(|x| x.valid)
     }
 
     /// Returns all links in chain
     /// Does not perform validation on links
-    pub fn all_links(&self) -> Vec<Block> {
+    pub fn all_links(&self) -> Vec<Link> {
         self.chain.iter().cloned().collect_vec()
     }
 
     /// Validates and returns all links in chain
-    pub fn valid_links(&mut self) -> Vec<Block> {
+    pub fn valid_links(&mut self) -> Vec<Link> {
         self.mark_blocks_valid();
         self.chain.iter().cloned().filter(|x| x.valid).collect_vec()
     }
 
     /// Validates and returns the previous valid link in chain before the target
-    pub fn valid_links_at_block_id(&mut self, block_id: &LinkDescriptor) -> Option<Block> {
+    pub fn valid_links_at_block_id(&mut self, block_id: &LinkDescriptor) -> Option<Link> {
         self.chain
             .iter()
             .rev()
@@ -319,7 +331,7 @@ impl SectionChain {
 
     /// Mark all links that are valid as such.
     pub fn mark_blocks_valid(&mut self) {
-        if let Some(mut first_link) = self.chain.clone().iter().next(){
+        if let Some(mut first_link) = self.chain.clone().iter().next() {
             for block in &mut self.chain {
                 block.remove_invalid_signatures();
                 if Self::validate_block_with_proof(&block, &first_link, self.group_size) {
@@ -356,7 +368,7 @@ impl SectionChain {
         }
     }
 
-    fn validate_block_with_proof(block: &Block, proof: &Block, group_size: usize) -> bool {
+    fn validate_block_with_proof(block: &Link, proof: &Link, group_size: usize) -> bool {
         let p_len = proof
             .proofs()
             .iter()
@@ -368,7 +380,7 @@ impl SectionChain {
 
 impl Debug for SectionChain {
     fn fmt(&self, formatter: &mut Formatter) -> fmt::Result {
-        let print_block = |block: &Block| -> String {
+        let print_block = |block: &Link| -> String {
             let mut output = format!(
                 "    Block {{\n        identifier: {:?}\n        valid: {}\n",
                 block.identifier(),
@@ -406,7 +418,7 @@ mod tests {
     use super::*;
     use crate::chain::link_descriptor::LinkDescriptor;
     use crate::chain::vote::Vote;
-    use ed25519_dalek::{Keypair, PublicKey, SecretKey, Signer, Verifier};
+    use ed25519_dalek::{Keypair, PublicKey, SecretKey};
     use env_logger;
     use itertools::Itertools;
     use tempdir::TempDir;
@@ -475,7 +487,7 @@ mod tests {
                 .is_some(),
             "Node2 can vote for next new node, but no quorum"
         );
-        
+
         assert!(
             chain
                 .add_vote(
@@ -540,7 +552,9 @@ mod tests {
     fn file_based_chain() {
         info!("creating keys");
         let mut csprng = rand::thread_rng();
-        let keys = (0..10).map(|_| Keypair::generate(&mut csprng)).collect_vec();
+        let keys = (0..10)
+            .map(|_| Keypair::generate(&mut csprng))
+            .collect_vec();
         let add_node_1 = LinkDescriptor::NodeGained(keys[1].public.clone());
         let add_node_2 = LinkDescriptor::NodeGained(keys[2].public.clone());
         let add_node_3 = LinkDescriptor::NodeGained(keys[3].public.clone());
@@ -552,22 +566,34 @@ mod tests {
                     .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_1).unwrap())
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_2.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[1].public, &keys[1].secret, add_node_2.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[2].public, &keys[2].secret, add_node_3.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[2].public, &keys[2].secret, add_node_3.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_3.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[1].public, &keys[1].secret, add_node_3.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[3].public, &keys[3].secret, add_node_4.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[3].public, &keys[3].secret, add_node_4.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[1].public, &keys[1].secret, add_node_4.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[1].public, &keys[1].secret, add_node_4.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain
-                    .add_vote(Vote::new(&keys[2].public, &keys[2].secret, add_node_4.clone()).unwrap())
+                    .add_vote(
+                        Vote::new(&keys[2].public, &keys[2].secret, add_node_4.clone()).unwrap()
+                    )
                     .is_some());
                 assert!(chain.write().is_ok());
                 let chain2 = SectionChain::from_path(dir.path().to_path_buf(), 999);

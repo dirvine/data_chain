@@ -18,28 +18,26 @@
 use crate::chain::link_descriptor::LinkDescriptor;
 use crate::chain::proof::Proof;
 use crate::chain::vote::Vote;
-use crate::error::Error;
-use rmp_serde::{Deserializer, Serializer};
+use crate::error::ChainError;
+use rmp_serde::Serializer;
 use serde::{Deserialize, Serialize};
 
 /// Used to validate chain
-/// Block can be a data item or
-/// a chain link.
 #[allow(missing_docs)]
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-pub struct Block {
+pub struct Link {
     identifier: LinkDescriptor,
     proofs: Vec<Proof>,
     pub valid: bool,
 }
 
-impl Block {
+impl Link {
     /// new block
-    pub fn new(vote: Vote) -> Result<Block, Error> {
+    pub fn new(vote: Vote) -> Result<Link, ChainError> {
         if !vote.validate() {
-            return Err(Error::Signature);
+            return Err(ChainError::Signature);
         }
-        Ok(Block {
+        Ok(Link {
             identifier: vote.identifier().clone(),
             proofs: vec![vote.proof().clone()],
             valid: false,
@@ -47,35 +45,53 @@ impl Block {
     }
 
     /// Add a proof from a peer
-    pub fn add_proof(&mut self, proof: Proof) -> Result<(), Error> {
+    pub fn add_proof(&mut self, proof: Proof) -> Result<(), ChainError> {
         if !self.validate_proof(&proof) {
-            return Err(Error::Signature);
+            return Err(ChainError::Signature);
         }
         if !self.proofs.iter().any(|x| x.key() == proof.key()) {
             self.proofs.push(proof);
             return Ok(());
         }
-        Err(Error::Validation)
+        Err(ChainError::Validation)
     }
 
     /// validate signed correctly
     pub fn validate_proof(&self, proof: &Proof) -> bool {
         let mut buf = Vec::new();
-        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        if self
+            .identifier
+            .serialize(&mut Serializer::new(&mut buf))
+            .is_err()
+        {
+            return false;
+        }
         proof.validate(&buf[..])
     }
 
     /// validate signed correctly
-    pub fn validate_block_signatures(&self) -> bool {
+    pub fn validate_link_signatures(&self) -> bool {
         let mut buf = Vec::new();
-        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        if self
+            .identifier
+            .serialize(&mut Serializer::new(&mut buf))
+            .is_err()
+        {
+            return false;
+        }
         self.proofs.iter().all(|proof| proof.validate(&buf[..]))
     }
 
     /// Prune any bad signatures.
     pub fn remove_invalid_signatures(&mut self) {
-                let mut buf = Vec::new();
-        &self.identifier.serialize(&mut Serializer::new(&mut buf));
+        let mut buf = Vec::new();
+        if self
+            .identifier
+            .serialize(&mut Serializer::new(&mut buf))
+            .is_err()
+        {
+            return;
+        }
         self.proofs.retain(|proof| proof.validate(&buf[..]));
     }
 

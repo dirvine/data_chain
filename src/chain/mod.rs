@@ -72,10 +72,10 @@ pub mod vote;
 /// A sig and id (`PublickKey`) that may form a `Vote` and also a `Block`
 pub mod proof;
 
-/// Identify the variant parts of a block, for links this is the Digest of the hash of that group.
+/// What caused the change in the chain
 mod link_descriptor;
 
-pub use crate::chain::link::Block;
+pub use crate::chain::link::Link;
 pub use crate::chain::link_descriptor::LinkDescriptor;
 pub use crate::chain::section_chain::SectionChain;
 pub use crate::chain::proof::Proof;

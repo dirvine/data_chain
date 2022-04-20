@@ -59,4 +59,4 @@ pub mod chain;
 
 pub mod sha3;
 
-pub use chain::{Block, SectionChain, LinkDescriptor, Proof, Vote};
+pub use chain::{Link, SectionChain, LinkDescriptor, Proof, Vote};

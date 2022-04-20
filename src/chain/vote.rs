@@ -17,8 +17,8 @@
 
 use crate::chain::link_descriptor::LinkDescriptor;
 use crate::chain::proof::Proof;
-use crate::error::Error;
-use ed25519_dalek::{ExpandedSecretKey, PublicKey, SecretKey, Signer};
+use crate::error::ChainError;
+use ed25519_dalek::{ExpandedSecretKey, PublicKey, SecretKey};
 use rmp_serde::Serializer;
 use serde::{Deserialize, Serialize};
 
@@ -38,7 +38,7 @@ impl Vote {
         pub_key: &PublicKey,
         secret_key: &SecretKey,
         data_identifier: LinkDescriptor,
-    ) -> Result<Vote, Error> {
+    ) -> Result<Vote, ChainError> {
         let mut buf = Vec::new();
         let msg = data_identifier
             .serialize(&mut Serializer::new(&mut buf))
