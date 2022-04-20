@@ -17,6 +17,7 @@
 use thiserror::Error;
 use std::io;
 
+
 #[derive(Error, Debug)]
 pub enum ChainError {
     #[error("Failed to serialize message: {0}")]

@@ -37,16 +37,15 @@ impl Vote {
     pub fn new(
         pub_key: &PublicKey,
         secret_key: &SecretKey,
-        data_identifier: LinkDescriptor,
+        link_descriptor: LinkDescriptor,
     ) -> Result<Vote, ChainError> {
         let mut buf = Vec::new();
-        let msg = data_identifier
-            .serialize(&mut Serializer::new(&mut buf))
-            .unwrap();
+        let _msg = link_descriptor
+            .serialize(&mut Serializer::new(&mut buf)).map_err(|_err| ChainError::Serialisation("serialisation error".to_string()))?;
         let key = ExpandedSecretKey::from(secret_key);
         let signature = key.sign(&buf, pub_key);
         Ok(Vote {
-            identifier: data_identifier,
+            identifier: link_descriptor,
             proof: Proof::new(*pub_key, signature),
         })
     }
@@ -62,7 +61,7 @@ impl Vote {
 
     /// validate signed correctly
     pub fn validate(&self) -> bool {
-        self.validate_detached(&self.identifier)
+        self.validate_detached(&self.identifier).is_ok() 
     }
 
     /// Check vote is not for self added/removed
@@ -75,10 +74,10 @@ impl Vote {
     }
 
     /// validate signed correctly
-    pub fn validate_detached(&self, identifier: &LinkDescriptor) -> bool {
+    pub fn validate_detached(&self, identifier: &LinkDescriptor) -> Result<bool, ChainError> {
         let mut buf = Vec::new();
-        let data = identifier.serialize(&mut Serializer::new(&mut buf));
-        self.proof.validate(&buf)
+        identifier.serialize(&mut Serializer::new(&mut buf)).map_err(|_err| ChainError::Serialisation("Serialisation error {err}".to_string()))?;
+        Ok(self.proof.validate(&buf))
     }
 }
 

@@ -128,7 +128,7 @@ impl SectionChain {
             .write(true)
             .create(false)
             .open(path.as_path())?;
-        self.chain.serialize(&mut Serializer::new(&mut buf));
+        self.chain.serialize(&mut Serializer::new(&mut buf)).map_err(|_err| ChainError::Serialisation("serialise error ".to_string()))?;
         file.write_all(&buf)?;
         self.path = Some(path);
         Ok(file.lock_exclusive()?)
@@ -331,16 +331,16 @@ impl SectionChain {
 
     /// Mark all links that are valid as such.
     pub fn mark_blocks_valid(&mut self) {
-        if let Some(mut first_link) = self.chain.clone().iter().next() {
+        if let Some(first_link) = self.chain.clone().iter().next() {
             for block in &mut self.chain {
                 block.remove_invalid_signatures();
                 if Self::validate_block_with_proof(&block, &first_link, self.group_size) {
                     block.valid = true;
-                    let first_link = &block.clone();
                 } else {
                     block.valid = false;
                 }
             }
+        } else {
             self.chain.clear();
         }
     }
